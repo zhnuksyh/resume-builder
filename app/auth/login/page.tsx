@@ -44,7 +44,12 @@ export default function LoginPage() {
 
       // Ensure session is established before redirect
       if (data.session) {
-        console.log("Login successful, redirecting to dashboard...");
+        console.log("Login successful, waiting for session to establish...");
+
+        // Wait a moment for the session to be properly stored
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        console.log("Redirecting to dashboard...");
         // Use router.push for cleaner navigation
         router.push("/dashboard");
       } else {
