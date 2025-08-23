@@ -52,9 +52,13 @@ export default function SignUpPage() {
       
       if (error) throw error
       
-      // Redirect directly to dashboard after successful signup
-      // The database trigger will handle profile creation
-      router.push("/dashboard")
+      // Ensure session is established before redirect
+      if (data.session) {
+        // Use router.push for cleaner navigation
+        router.push('/dashboard')
+      } else {
+        throw new Error('Signup successful but no session created')
+      }
     } catch (error: unknown) {
       setError(error instanceof Error ? error.message : "An error occurred")
     } finally {

@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { FileText, MoreVertical, Edit, Copy, Trash2, Download } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 interface Resume {
   id: string
@@ -32,13 +32,22 @@ export function ResumeCard({ resume }: ResumeCardProps) {
   const router = useRouter()
   const supabase = createClient()
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    if (!isClient) return 'Loading...'
+    
+    const date = new Date(dateString)
+    const options: Intl.DateTimeFormatOptions = {
       month: "short",
       day: "numeric",
-      year: "numeric",
-    })
+      year: "numeric"
+    }
+    return date.toLocaleDateString("en-US", options)
   }
 
   const handleEdit = () => {
