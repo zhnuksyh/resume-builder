@@ -1,11 +1,10 @@
-import { generateText } from "ai"
-import { groq } from "@ai-sdk/groq"
 import { type NextRequest, NextResponse } from "next/server"
-import { createServerClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
+import { generateWithGemini } from "@/lib/gemini"
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createServerClient()
+    const supabase = await createClient()
     const {
       data: { user },
       error: authError,
@@ -38,10 +37,8 @@ export async function POST(request: NextRequest) {
     
     Keep suggestions specific and actionable.`
 
-    const { text } = await generateText({
-      model: groq("llama-3.1-70b-versatile"),
-      prompt,
-      maxTokens: 1000,
+    const text = await generateWithGemini(prompt, {
+      maxOutputTokens: 1000,
       temperature: 0.3,
     })
 

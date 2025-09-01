@@ -1,0 +1,6 @@
+Problem on #1 Development
+
+1. AI Assistance in General
+2. Cannot Full Screen or Download PDF
+3. Preview func. need to automatically start and be set by side with adding information.
+4. Resume Section need to be horizontally at top rather than vertically at side.

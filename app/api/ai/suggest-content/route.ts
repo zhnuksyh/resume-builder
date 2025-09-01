@@ -1,11 +1,10 @@
-import { generateText } from "ai"
-import { groq } from "@ai-sdk/groq"
 import { type NextRequest, NextResponse } from "next/server"
-import { createServerClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
+import { generateWithGemini } from "@/lib/gemini"
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createServerClient()
+    const supabase = await createClient()
     const {
       data: { user },
       error: authError,
@@ -68,16 +67,22 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Invalid section type" }, { status: 400 })
     }
 
-    const { text } = await generateText({
-      model: groq("llama-3.1-70b-versatile"),
-      prompt,
-      maxTokens: 500,
+    const text = await generateWithGemini(prompt, {
+      maxOutputTokens: 500,
       temperature: 0.7,
     })
 
     return NextResponse.json({ suggestion: text })
   } catch (error) {
     console.error("AI suggestion error:", error)
-    return NextResponse.json({ error: "Failed to generate suggestion" }, { status: 500 })
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : null,
+      hasApiKey: !!process.env.GOOGLE_GENERATIVE_AI_API_KEY
+    })
+    return NextResponse.json({ 
+      error: "Failed to generate suggestion",
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, { status: 500 })
   }
 }

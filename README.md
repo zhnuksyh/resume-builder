@@ -6,7 +6,7 @@ A modern, intelligent resume builder that helps you create professional, ATS-fri
 
 ## ✨ Features
 
-- **🤖 AI-Powered Suggestions**: Get intelligent recommendations for content, formatting, and keywords tailored to your industry using Groq AI
+- **🤖 AI-Powered Suggestions**: Get intelligent recommendations for content, formatting, and keywords tailored to your industry using Google Gemini AI
 - **👁️ Live Preview**: See your resume come to life in real-time as you make changes with instant visual feedback
 - **📄 Professional Export**: Download high-quality PDFs ready for job applications and ATS systems using Puppeteer
 - **🎨 Multiple Templates**: Choose from various professional resume templates
@@ -30,7 +30,7 @@ A modern, intelligent resume builder that helps you create professional, ATS-fri
 - **Backend**: Supabase (PostgreSQL + Auth + Real-time)
 - **Database**: PostgreSQL with Row Level Security (RLS)
 - **Authentication**: Supabase Auth with SSR support
-- **AI Integration**: Groq AI SDK for intelligent suggestions
+- **AI Integration**: Google Gemini AI for intelligent suggestions
 
 ### Development & Tools
 - **PDF Generation**: Puppeteer for high-quality resume exports
@@ -45,7 +45,7 @@ Before running this project, make sure you have:
 - Node.js 18+ installed
 - npm, yarn, or pnpm package manager
 - A Supabase account and project
-- A Groq AI API key (optional, for AI features)
+- A Google AI API key (optional, for AI features)
 
 ## 🛠️ Installation
 
@@ -72,8 +72,8 @@ Before running this project, make sure you have:
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
    
-   # Groq AI Configuration (optional)
-   GROQ_API_KEY=your_groq_api_key
+   # Google Gemini AI Configuration (optional)
+   GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_api_key
    
    # Next.js Configuration
    NEXTAUTH_URL=http://localhost:3000
@@ -171,7 +171,7 @@ If you encounter any issues or have questions:
 - [Radix UI](https://www.radix-ui.com/) - Low-level UI primitives
 - [Tailwind CSS](https://tailwindcss.com/) - A utility-first CSS framework
 - [shadcn/ui](https://ui.shadcn.com/) - Beautifully designed components
-- [Groq](https://groq.com/) - Fast AI inference
+- [Google AI](https://ai.google.dev/) - Powerful generative AI
 
 ## 🔮 Roadmap
 
