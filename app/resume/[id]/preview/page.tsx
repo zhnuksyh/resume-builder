@@ -15,7 +15,8 @@ interface ResumeSection {
   order_index: number
 }
 
-export default async function PreviewPage({ params }: { params: { id: string } }) {
+export default async function PreviewPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
   const supabase = createServerClient()
 
   // Get user
@@ -31,7 +32,7 @@ export default async function PreviewPage({ params }: { params: { id: string } }
   const { data: resume, error: resumeError } = await supabase
     .from("resumes")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", id)
     .eq("user_id", user.id)
     .single()
 
@@ -43,7 +44,7 @@ export default async function PreviewPage({ params }: { params: { id: string } }
   const { data: sections, error: sectionsError } = await supabase
     .from("resume_sections")
     .select("*")
-    .eq("resume_id", params.id)
+    .eq("resume_id", id)
     .order("order_index")
 
   if (sectionsError) {
@@ -65,7 +66,7 @@ export default async function PreviewPage({ params }: { params: { id: string } }
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Link href={`/resume/${params.id}/edit`}>
+              <Link href={`/resume/${id}/edit`}>
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Back to Editor
@@ -74,7 +75,7 @@ export default async function PreviewPage({ params }: { params: { id: string } }
               <h1 className="text-xl font-semibold">{resume.title} - Preview</h1>
             </div>
             <div className="flex items-center gap-2">
-              <PDFExport resumeId={params.id} resumeTitle={resume.title} variant="outline" size="sm" />
+              <PDFExport resumeId={id} resumeTitle={resume.title} variant="outline" size="sm" />
             </div>
           </div>
         </div>

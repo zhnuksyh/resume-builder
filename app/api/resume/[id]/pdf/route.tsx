@@ -1,10 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { createServerClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 import puppeteer from "puppeteer"
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const supabase = createServerClient()
+    const { id } = await params
+    const supabase = await createClient()
 
     // Get user
     const {
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const { data: resume, error: resumeError } = await supabase
       .from("resumes")
       .select("*")
-      .eq("id", params.id)
+      .eq("id", id)
       .eq("user_id", user.id)
       .single()
 
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     const { data: sections, error: sectionsError } = await supabase
       .from("resume_sections")
       .select("*")
-      .eq("resume_id", params.id)
+      .eq("resume_id", id)
       .order("order_index")
 
     if (sectionsError) {
