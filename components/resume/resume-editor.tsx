@@ -14,6 +14,7 @@ import { EducationSection } from "./sections/education-section"
 import { SkillsSection } from "./sections/skills-section"
 import { SectionTabs } from "./section-tabs"
 import { PreviewModal } from "./preview-modal"
+import { LivePreviewPanel } from "./live-preview-panel"
 
 interface Resume {
   id: string
@@ -224,13 +225,28 @@ export function ResumeEditor({ resume: initialResume, sections: initialSections 
         {/* Section Tabs */}
         <SectionTabs activeSection={activeSection} onSectionChange={setActiveSection} sections={sections} />
         
-        {/* Main Content */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="capitalize">{activeSection.replace("_", " ")}</CardTitle>
-          </CardHeader>
-          <CardContent>{renderActiveSection()}</CardContent>
-        </Card>
+        {/* Main Layout - Side by Side */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {/* Editor Panel */}
+          <div className="xl:col-span-1">
+            <Card>
+              <CardHeader>
+                <CardTitle className="capitalize">{activeSection.replace("_", " ")}</CardTitle>
+              </CardHeader>
+              <CardContent>{renderActiveSection()}</CardContent>
+            </Card>
+          </div>
+          
+          {/* Live Preview Panel - Hidden on mobile, visible on xl+ screens */}
+          <div className="hidden xl:block xl:col-span-1">
+            <LivePreviewPanel
+              resumeData={getResumeData()}
+              resumeId={resume.id}
+              resumeTitle={resume.title}
+              onOpenFullPreview={() => setShowPreview(true)}
+            />
+          </div>
+        </div>
       </div>
 
       <PreviewModal
