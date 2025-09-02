@@ -12,7 +12,7 @@ import { PersonalInfoSection } from "./sections/personal-info-section"
 import { ExperienceSection } from "./sections/experience-section"
 import { EducationSection } from "./sections/education-section"
 import { SkillsSection } from "./sections/skills-section"
-import { SectionSidebar } from "./section-sidebar"
+import { SectionTabs } from "./section-tabs"
 import { PreviewModal } from "./preview-modal"
 
 interface Resume {
@@ -221,22 +221,16 @@ export function ResumeEditor({ resume: initialResume, sections: initialSections 
       </header>
 
       <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <SectionSidebar activeSection={activeSection} onSectionChange={setActiveSection} sections={sections} />
-          </div>
-
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            <Card>
-              <CardHeader>
-                <CardTitle className="capitalize">{activeSection.replace("_", " ")}</CardTitle>
-              </CardHeader>
-              <CardContent>{renderActiveSection()}</CardContent>
-            </Card>
-          </div>
-        </div>
+        {/* Section Tabs */}
+        <SectionTabs activeSection={activeSection} onSectionChange={setActiveSection} sections={sections} />
+        
+        {/* Main Content */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="capitalize">{activeSection.replace("_", " ")}</CardTitle>
+          </CardHeader>
+          <CardContent>{renderActiveSection()}</CardContent>
+        </Card>
       </div>
 
       <PreviewModal
