@@ -39,6 +39,7 @@ interface ResumeData {
   skills?: {
     skills: string[];
   };
+  [key: string]: any; // Allow custom sections
 }
 
 interface ResumePreviewProps {
@@ -269,6 +270,40 @@ export function ResumePreview({
             </div>
           </div>
         )}
+
+        {/* Custom Sections */}
+        {Object.entries(data).map(([key, sectionData]) => {
+          if (
+            key.startsWith("custom_") &&
+            sectionData?.items &&
+            sectionData.items.length > 0
+          ) {
+            return (
+              <div key={key} className={a4Styles.section}>
+                <h2 className={a4Styles.sectionTitle}>
+                  {sectionData.title || "Custom Section"}
+                </h2>
+                <div className="space-y-4">
+                  {sectionData.items.map((item: any, index: number) => (
+                    <div key={index} className={a4Styles.educationItem}>
+                      <div className={a4Styles.itemHeader}>
+                        <div>
+                          <h3 className={a4Styles.itemTitle}>{item.title}</h3>
+                        </div>
+                      </div>
+                      {item.description && (
+                        <p className={a4Styles.itemDescription}>
+                          {item.description}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+          return null;
+        })}
       </div>
     </div>
   );
