@@ -1,4 +1,4 @@
-import { createServerClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { ResumePreview } from "@/components/resume/resume-preview";
 import { Button } from "@/components/ui/button";
 import { PDFExport } from "@/components/resume/pdf-export";
@@ -21,7 +21,7 @@ export default async function PreviewPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const supabase = createServerClient();
+  const supabase = await createClient();
 
   // Get user
   const {

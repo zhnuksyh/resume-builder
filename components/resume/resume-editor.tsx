@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Save, Eye } from "lucide-react";
+import { ArrowLeft, Save, Eye, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { PersonalInfoSection } from "./sections/personal-info-section";
@@ -268,6 +268,7 @@ export function ResumeEditor({
               <CustomSection
                 content={section.content}
                 onSave={(content) => saveSection(activeSection, content)}
+                onDelete={() => deleteCustomSection(activeSection)}
               />
             );
           }
@@ -353,12 +354,53 @@ export function ResumeEditor({
           <div className="xl:col-span-1">
             <Card>
               <CardHeader>
-                <CardTitle className="capitalize">
-                  {activeSection.startsWith("custom_")
-                    ? sections.find((s) => s.section_type === activeSection)
-                        ?.title || "Custom Section"
-                    : activeSection.replace("_", " ")}
-                </CardTitle>
+                <div className="flex justify-between items-center">
+                  <CardTitle className="capitalize">
+                    {activeSection.startsWith("custom_")
+                      ? (() => {
+                          const section = sections.find(
+                            (s) => s.section_type === activeSection
+                          );
+                          if (section?.title) {
+                            return section.title
+                              .split(" ")
+                              .map(
+                                (word) =>
+                                  word.charAt(0).toUpperCase() +
+                                  word.slice(1).toLowerCase()
+                              )
+                              .join(" ");
+                          }
+                          return "Custom Section";
+                        })()
+                      : activeSection.replace("_", " ")}
+                  </CardTitle>
+                  {activeSection.startsWith("custom_") && (
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteCustomSection(activeSection)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          const section = sections.find(
+                            (s) => s.section_type === activeSection
+                          );
+                          if (section) {
+                            saveSection(activeSection, section.content);
+                          }
+                        }}
+                      >
+                        Save
+                      </Button>
+                    </div>
+                  )}
+                </div>
               </CardHeader>
               <CardContent>{renderActiveSection()}</CardContent>
             </Card>

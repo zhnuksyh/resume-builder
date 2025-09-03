@@ -10,6 +10,7 @@ import { Plus, Trash2 } from "lucide-react";
 interface CustomSectionProps {
   content: any;
   onSave: (content: any) => void;
+  onDelete?: () => void;
 }
 
 interface CustomItem {
@@ -18,7 +19,11 @@ interface CustomItem {
   description: string;
 }
 
-export function CustomSection({ content, onSave }: CustomSectionProps) {
+export function CustomSection({
+  content,
+  onSave,
+  onDelete,
+}: CustomSectionProps) {
   const [items, setItems] = useState<CustomItem[]>(content.items || []);
 
   const addItem = () => {
@@ -46,11 +51,6 @@ export function CustomSection({ content, onSave }: CustomSectionProps) {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h3 className="text-lg font-medium">Custom Section</h3>
-        <Button onClick={handleSave}>Save</Button>
-      </div>
-
       <div className="space-y-4">
         {items.map((item) => (
           <div key={item.id} className="border rounded-lg p-4 space-y-3">

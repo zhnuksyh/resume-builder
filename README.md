@@ -100,6 +100,46 @@ Before running this project, make sure you have:
 6. **Open your browser**:
    Navigate to [http://localhost:3000](http://localhost:3000)
 
+## 🔧 Development Scripts
+
+### Available Commands
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run check-icons` - Check for missing icon imports
+- `npm run pre-commit` - Run icon check and linting (use before commits)
+
+### Icon Import Validation
+
+To prevent missing icon import errors, the project includes an automated script that checks for proper Lucide React icon imports:
+
+```bash
+npm run check-icons
+```
+
+This script will:
+- Scan all TypeScript/TSX files for icon usage
+- Verify that all icons are properly imported from `lucide-react`
+- Report any missing imports with specific file locations
+- Exit with error code 1 if issues are found
+
+**Best Practices:**
+- Always import icons from `lucide-react` before using them in JSX
+- Use the `check-icons` script before committing changes
+- Run `npm run pre-commit` to catch both icon and linting issues
+
+**Example of proper icon import:**
+```tsx
+import { User, Briefcase, GraduationCap, FileText } from "lucide-react";
+
+// Use in JSX
+<User className="h-4 w-4" />
+<FileText className="h-4 w-4" />
+```
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
 ## 📁 Project Structure
 
 ```
