@@ -24,8 +24,95 @@ import {
   Lightbulb,
   Target,
   Zap,
+  GripVertical,
 } from "lucide-react";
 import { AddCustomSectionDialog } from "./add-custom-section-dialog";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  horizontalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+// Sortable Tab Component
+function SortableTab({
+  section,
+  isActive,
+  onSectionChange,
+  getSectionStatus,
+  getCustomSectionIcon,
+}: {
+  section: ResumeSection;
+  isActive: boolean;
+  onSectionChange: (section: string) => void;
+  getSectionStatus: (sectionId: string) => string;
+  getCustomSectionIcon: (title: string) => any;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: section.section_type });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const status = getSectionStatus(section.section_type);
+  const sectionTitle = section.title || "Custom Section";
+  const capitalizedTitle = sectionTitle
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(" ");
+  const CustomIcon = getCustomSectionIcon(sectionTitle);
+
+  return (
+    <TabsTrigger
+      ref={setNodeRef}
+      style={style}
+      value={section.section_type}
+      className={`flex items-center gap-2 px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 whitespace-nowrap ${
+        isActive ? "bg-blue-50 text-blue-700" : ""
+      }`}
+      onClick={() => onSectionChange(section.section_type)}
+    >
+      <div
+        {...attributes}
+        {...listeners}
+        className="cursor-grab active:cursor-grabbing mr-1"
+      >
+        <GripVertical className="h-3 w-3 text-gray-400" />
+      </div>
+      <CustomIcon className="h-4 w-4 flex-shrink-0" />
+      <span className="hidden sm:inline">{capitalizedTitle}</span>
+      <span className="sm:hidden">{capitalizedTitle.split(" ")[0]}</span>
+      <div className="ml-2 flex-shrink-0">
+        {status === "completed" && (
+          <div className="w-2 h-2 bg-green-500 rounded-full" />
+        )}
+        {status === "empty" && (
+          <div className="w-2 h-2 bg-gray-300 rounded-full" />
+        )}
+      </div>
+    </TabsTrigger>
+  );
+}
 
 interface ResumeSection {
   id: string;
@@ -40,6 +127,7 @@ interface SectionTabsProps {
   sections: ResumeSection[];
   onAddCustomSection?: (title: string) => void;
   onDeleteCustomSection?: (sectionType: string) => void;
+  onReorderCustomSections?: (newOrder: ResumeSection[]) => void;
 }
 
 const sectionConfig = [
@@ -75,6 +163,7 @@ export function SectionTabs({
   sections,
   onAddCustomSection,
   onDeleteCustomSection,
+  onReorderCustomSections,
 }: SectionTabsProps) {
   const getSectionStatus = (sectionId: string) => {
     const section = sections.find((s) => s.section_type === sectionId);
@@ -109,6 +198,31 @@ export function SectionTabs({
   const customSections = sections.filter((section) =>
     section.section_type.startsWith("custom_")
   );
+
+  // Drag and Drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Handle drag end
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id && onReorderCustomSections) {
+      const oldIndex = customSections.findIndex(
+        (section) => section.section_type === active.id
+      );
+      const newIndex = customSections.findIndex(
+        (section) => section.section_type === over?.id
+      );
+
+      const newOrder = arrayMove(customSections, oldIndex, newIndex);
+      onReorderCustomSections(newOrder);
+    }
+  };
 
   // Function to get unique icon for custom sections based on title
   const getCustomSectionIcon = (title: string) => {
@@ -240,45 +354,29 @@ export function SectionTabs({
           <div className="mb-6">
             <div className="flex-1 min-w-0">
               <div className="overflow-x-auto scrollbar-hide">
-                <TabsList className="flex w-max bg-white border min-w-full">
-                  {customSections.map((section) => {
-                    const status = getSectionStatus(section.section_type);
-                    const sectionTitle = section.title || "Custom Section";
-                    const capitalizedTitle = sectionTitle
-                      .split(" ")
-                      .map(
-                        (word) =>
-                          word.charAt(0).toUpperCase() +
-                          word.slice(1).toLowerCase()
-                      )
-                      .join(" ");
-                    const CustomIcon = getCustomSectionIcon(sectionTitle);
-
-                    return (
-                      <TabsTrigger
-                        key={section.section_type}
-                        value={section.section_type}
-                        className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 whitespace-nowrap"
-                      >
-                        <CustomIcon className="h-4 w-4 flex-shrink-0" />
-                        <span className="hidden sm:inline">
-                          {capitalizedTitle}
-                        </span>
-                        <span className="sm:hidden">
-                          {capitalizedTitle.split(" ")[0]}
-                        </span>
-                        <div className="ml-2 flex-shrink-0">
-                          {status === "completed" && (
-                            <div className="w-2 h-2 bg-green-500 rounded-full" />
-                          )}
-                          {status === "empty" && (
-                            <div className="w-2 h-2 bg-gray-300 rounded-full" />
-                          )}
-                        </div>
-                      </TabsTrigger>
-                    );
-                  })}
-                </TabsList>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={customSections.map((s) => s.section_type)}
+                    strategy={horizontalListSortingStrategy}
+                  >
+                    <TabsList className="flex w-max bg-white border min-w-full">
+                      {customSections.map((section) => (
+                        <SortableTab
+                          key={section.section_type}
+                          section={section}
+                          isActive={activeSection === section.section_type}
+                          onSectionChange={onSectionChange}
+                          getSectionStatus={getSectionStatus}
+                          getCustomSectionIcon={getCustomSectionIcon}
+                        />
+                      ))}
+                    </TabsList>
+                  </SortableContext>
+                </DndContext>
               </div>
             </div>
           </div>

@@ -147,6 +147,32 @@ export function ResumeEditor({
     }
   };
 
+  const handleReorderCustomSections = async (newOrder: any[]) => {
+    try {
+      // Update local state immediately for smooth UX
+      const nonCustomSections = sections.filter(
+        (s) => !s.section_type.startsWith("custom_")
+      );
+      const reorderedSections = [...nonCustomSections, ...newOrder];
+      setSections(reorderedSections);
+
+      // Update order in database
+      for (let i = 0; i < newOrder.length; i++) {
+        const section = newOrder[i];
+        const { error } = await supabase
+          .from("resume_sections")
+          .update({ order_index: i + nonCustomSections.length })
+          .eq("id", section.id);
+
+        if (error) {
+          console.error("Error updating section order:", error);
+        }
+      }
+    } catch (error) {
+      console.error("Error reordering custom sections:", error);
+    }
+  };
+
   const saveSection = async (
     sectionType: string,
     content: any,
@@ -346,6 +372,7 @@ export function ResumeEditor({
           sections={sections}
           onAddCustomSection={addCustomSection}
           onDeleteCustomSection={deleteCustomSection}
+          onReorderCustomSections={handleReorderCustomSections}
         />
 
         {/* Main Layout - Editor and Preview */}
