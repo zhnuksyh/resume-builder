@@ -19,7 +19,7 @@ export function PreviewModal({ isOpen, onClose, resumeData, resumeId, resumeTitl
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle>{resumeTitle} - Preview</DialogTitle>
+            <DialogTitle>{resumeTitle} - Preview (A4)</DialogTitle>
             <div className="flex items-center gap-2">
               <Link href={`/resume/${resumeId}/preview`} target="_blank">
                 <Button variant="outline" size="sm">
@@ -31,8 +31,10 @@ export function PreviewModal({ isOpen, onClose, resumeData, resumeId, resumeTitl
             </div>
           </div>
         </DialogHeader>
-        <div className="mt-4">
-          <ResumePreview data={resumeData} className="scale-75 origin-top" />
+        <div className="mt-4 flex justify-center">
+          <div className="a4-preview-container">
+            <ResumePreview data={resumeData} isA4Preview={true} />
+          </div>
         </div>
       </DialogContent>
     </Dialog>

@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { User, Briefcase, GraduationCap, Wrench, Plus } from "lucide-react"
+import { User, Briefcase, GraduationCap, Wrench, Plus, Code, Award, Heart, Globe, FileText, Lightbulb } from "lucide-react"
+import { AddCustomSectionDialog } from "./dialogs/add-custom-section-dialog"
 
 interface ResumeSection {
   id: string

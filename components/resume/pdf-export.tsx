@@ -86,17 +86,20 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
             line-height: 1.6;
             color: #333;
             background: white;
-            padding: 0.5in;
+            padding: 0;
           }
           
           .resume {
-            max-width: 8.5in;
+            width: 210mm;
+            height: 297mm;
             margin: 0 auto;
+            padding: 20mm;
+            background: white;
           }
           
           .header {
             border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 1rem;
+            padding-bottom: 1.5rem;
             margin-bottom: 1.5rem;
           }
           
@@ -104,7 +107,7 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
             font-size: 2rem;
             font-weight: bold;
             color: #1f2937;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
           }
           
           .contact-info {
@@ -119,12 +122,13 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
           .contact-item {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.5rem;
           }
           
           .summary {
             color: #4b5563;
             line-height: 1.7;
+            font-size: 1rem;
           }
           
           .section {
@@ -199,7 +203,16 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
               print-color-adjust: exact;
               -webkit-print-color-adjust: exact;
             }
-            .resume { margin: 0; }
+            .resume { 
+              margin: 0; 
+              padding: 20mm;
+              width: 210mm;
+              height: 297mm;
+            }
+            @page {
+              size: A4;
+              margin: 0;
+            }
           }
         </style>
       </head>

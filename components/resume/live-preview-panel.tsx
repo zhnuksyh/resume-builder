@@ -1,45 +1,329 @@
-"use client"
+"use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { ExternalLink, Eye } from "lucide-react"
-import { ResumePreview } from "./resume-preview"
-import Link from "next/link"
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ResumePreview } from "./resume-preview";
+import { PDFExport } from "./pdf-export";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 
 interface LivePreviewPanelProps {
-  resumeData: any
-  resumeId: string
-  resumeTitle: string
-  onOpenFullPreview: () => void
+  resumeData: any;
+  resumeId: string;
+  resumeTitle: string;
 }
 
-export function LivePreviewPanel({ resumeData, resumeId, resumeTitle, onOpenFullPreview }: LivePreviewPanelProps) {
+export function LivePreviewPanel({
+  resumeData,
+  resumeId,
+  resumeTitle,
+}: LivePreviewPanelProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageInputValue, setPageInputValue] = useState("1");
+
+  // Advanced pagination logic with better content estimation
+  const { pages, totalPages } = useMemo(() => {
+    const { personalInfo, experience, education, skills } = resumeData;
+
+    // A4 page content height in mm (297mm - 40mm margins = 257mm available)
+    const PAGE_HEIGHT = 257;
+    const HEADER_HEIGHT = 70; // Personal info header
+    const SECTION_TITLE_HEIGHT = 12;
+    const EXPERIENCE_ITEM_HEIGHT = 45; // Per experience item
+    const EDUCATION_ITEM_HEIGHT = 35; // Per education item
+    const SKILLS_HEIGHT = 30;
+    const SECTION_SPACING = 8;
+
+    const pageArray: Array<Array<{ type: string; content: any }>> = [];
+    let currentPageItems: Array<{ type: string; content: any }> = [];
+    let currentHeight = 0;
+
+    const addItemToPage = (type: string, content: any, itemHeight: number) => {
+      if (
+        currentHeight + itemHeight > PAGE_HEIGHT &&
+        currentPageItems.length > 0
+      ) {
+        // Start new page
+        pageArray.push([...currentPageItems]);
+        currentPageItems = [{ type, content }];
+        currentHeight = itemHeight;
+      } else {
+        currentPageItems.push({ type, content });
+        currentHeight += itemHeight;
+      }
+    };
+
+    // Personal Info (always on first page)
+    if (personalInfo) {
+      let personalHeight = HEADER_HEIGHT;
+      if (personalInfo.summary) {
+        personalHeight += Math.min(personalInfo.summary.length / 5, 40); // Estimate based on text length
+      }
+      addItemToPage("personalInfo", personalInfo, personalHeight);
+    }
+
+    // Experience section
+    if (experience?.items?.length > 0) {
+      const totalExpHeight =
+        SECTION_TITLE_HEIGHT +
+        SECTION_SPACING +
+        experience.items.length * EXPERIENCE_ITEM_HEIGHT;
+
+      // Check if we can fit the entire experience section
+      if (
+        currentHeight + totalExpHeight <= PAGE_HEIGHT ||
+        currentPageItems.length === 0
+      ) {
+        addItemToPage("experience", experience, totalExpHeight);
+      } else {
+        // Split experience items across pages if needed
+        const itemsPerPage = Math.floor(
+          (PAGE_HEIGHT - SECTION_TITLE_HEIGHT - SECTION_SPACING) /
+            EXPERIENCE_ITEM_HEIGHT
+        );
+        const experienceChunks = [];
+
+        for (let i = 0; i < experience.items.length; i += itemsPerPage) {
+          experienceChunks.push({
+            items: experience.items.slice(i, i + itemsPerPage),
+          });
+        }
+
+        experienceChunks.forEach((chunk, index) => {
+          const chunkHeight =
+            SECTION_TITLE_HEIGHT +
+            SECTION_SPACING +
+            chunk.items.length * EXPERIENCE_ITEM_HEIGHT;
+          addItemToPage("experience", chunk, chunkHeight);
+        });
+      }
+    }
+
+    // Education section
+    if (education?.items?.length > 0) {
+      const totalEduHeight =
+        SECTION_TITLE_HEIGHT +
+        SECTION_SPACING +
+        education.items.length * EDUCATION_ITEM_HEIGHT;
+
+      if (
+        currentHeight + totalEduHeight <= PAGE_HEIGHT ||
+        currentPageItems.length === 0
+      ) {
+        addItemToPage("education", education, totalEduHeight);
+      } else {
+        // Split education if needed
+        const itemsPerPage = Math.floor(
+          (PAGE_HEIGHT - SECTION_TITLE_HEIGHT - SECTION_SPACING) /
+            EDUCATION_ITEM_HEIGHT
+        );
+        const educationChunks = [];
+
+        for (let i = 0; i < education.items.length; i += itemsPerPage) {
+          educationChunks.push({
+            items: education.items.slice(i, i + itemsPerPage),
+          });
+        }
+
+        educationChunks.forEach((chunk) => {
+          const chunkHeight =
+            SECTION_TITLE_HEIGHT +
+            SECTION_SPACING +
+            chunk.items.length * EDUCATION_ITEM_HEIGHT;
+          addItemToPage("education", chunk, chunkHeight);
+        });
+      }
+    }
+
+    // Skills section
+    if (skills?.skills?.length > 0) {
+      const skillsHeight =
+        SECTION_TITLE_HEIGHT + SECTION_SPACING + SKILLS_HEIGHT;
+      addItemToPage("skills", skills, skillsHeight);
+    }
+
+    // Add the last page if it has content
+    if (currentPageItems.length > 0) {
+      pageArray.push(currentPageItems);
+    }
+
+    // Ensure at least one page exists
+    if (pageArray.length === 0) {
+      pageArray.push([]);
+    }
+
+    return { pages: pageArray, totalPages: pageArray.length };
+  }, [resumeData]);
+
+  // Update page input when current page changes
+  useEffect(() => {
+    setPageInputValue(currentPage.toString());
+  }, [currentPage]);
+
+  // Navigation functions
+  const goToFirstPage = useCallback(() => setCurrentPage(1), []);
+  const goToLastPage = useCallback(
+    () => setCurrentPage(totalPages),
+    [totalPages]
+  );
+  const nextPage = useCallback(() => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  }, [currentPage, totalPages]);
+  const prevPage = useCallback(() => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  }, [currentPage]);
+
+  // Handle page input change
+  const handlePageInputChange = (value: string) => {
+    setPageInputValue(value);
+    const pageNum = parseInt(value);
+    if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
+    }
+  };
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.target && (e.target as HTMLElement).tagName === "INPUT") return;
+
+      switch (e.key) {
+        case "ArrowLeft":
+          e.preventDefault();
+          prevPage();
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          nextPage();
+          break;
+        case "Home":
+          e.preventDefault();
+          goToFirstPage();
+          break;
+        case "End":
+          e.preventDefault();
+          goToLastPage();
+          break;
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [nextPage, prevPage, goToFirstPage, goToLastPage]);
+
+  // Get content for current page
+  const currentPageContent = pages[currentPage - 1] || [];
+
   return (
-    <Card className="h-fit max-h-[calc(100vh-200px)] overflow-hidden">
-      <CardHeader className="pb-3">
+    <Card className="h-fit overflow-hidden">
+      <CardHeader className="pb-0">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Live Preview</CardTitle>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={onOpenFullPreview}>
-              <Eye className="h-4 w-4 mr-1" />
-              Modal
-            </Button>
-            <Link href={`/resume/${resumeId}/preview`} target="_blank">
-              <Button variant="ghost" size="sm">
-                <ExternalLink className="h-4 w-4 mr-1" />
-                Full
-              </Button>
-            </Link>
+            <CardTitle className="text-lg">Live Preview</CardTitle>
+            <div className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded">
+              A4 Format
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <PDFExport
+              resumeId={resumeId}
+              resumeTitle={resumeTitle}
+              variant="outline"
+              size="sm"
+            />
           </div>
         </div>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="overflow-y-auto max-h-[calc(100vh-280px)] p-4">
-          <div className="transform scale-50 origin-top-left w-[200%]">
-            <ResumePreview data={resumeData} />
+        <div className="flex flex-col items-center px-4 pt-1 pb-2 min-h-[400px]">
+          {/* A4 Paper Container */}
+          <div className="a4-live-preview">
+            <div className="a4-preview-container">
+              <ResumePreview
+                data={currentPageContent}
+                isA4Preview={true}
+                isPageContent={true}
+              />
+            </div>
           </div>
+
+          {/* Enhanced Page Navigation */}
+          {totalPages > 1 && (
+            <div className="flex items-center gap-3 mt-8 p-2 bg-gray-50 rounded-lg border">
+              {/* First page */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goToFirstPage}
+                disabled={currentPage === 1}
+                title="First page (Home)"
+              >
+                <ChevronsLeft className="h-4 w-4" />
+              </Button>
+
+              {/* Previous page */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={prevPage}
+                disabled={currentPage === 1}
+                title="Previous page (←)"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+
+              {/* Page input */}
+              <div className="flex items-center gap-2 text-sm">
+                <span>Page</span>
+                <Input
+                  type="number"
+                  value={pageInputValue}
+                  onChange={(e) => handlePageInputChange(e.target.value)}
+                  className="w-16 h-8 text-center text-sm"
+                  min={1}
+                  max={totalPages}
+                />
+                <span>of {totalPages}</span>
+              </div>
+
+              {/* Next page */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={nextPage}
+                disabled={currentPage === totalPages}
+                title="Next page (→)"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+
+              {/* Last page */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={goToLastPage}
+                disabled={currentPage === totalPages}
+                title="Last page (End)"
+              >
+                <ChevronsRight className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
+          {/* Single page message */}
+          {totalPages === 1 && (
+            <div className="mt-2 text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded">
+              Single page • A4 format
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

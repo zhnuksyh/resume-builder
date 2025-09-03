@@ -1,31 +1,35 @@
-import { createServerClient } from "@/lib/supabase/server"
-import { ResumePreview } from "@/components/resume/resume-preview"
-import { Button } from "@/components/ui/button"
-import { PDFExport } from "@/components/resume/pdf-export"
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
-import { notFound } from "next/navigation"
+import { createServerClient } from "@/lib/supabase/server";
+import { ResumePreview } from "@/components/resume/resume-preview";
+import { Button } from "@/components/ui/button";
+import { PDFExport } from "@/components/resume/pdf-export";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 interface ResumeSection {
-  id: string
-  resume_id: string
-  section_type: string
-  title: string | null
-  content: any
-  order_index: number
+  id: string;
+  resume_id: string;
+  section_type: string;
+  title: string | null;
+  content: any;
+  order_index: number;
 }
 
-export default async function PreviewPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const supabase = createServerClient()
+export default async function PreviewPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const supabase = createServerClient();
 
   // Get user
   const {
     data: { user },
     error: authError,
-  } = await supabase.auth.getUser()
+  } = await supabase.auth.getUser();
   if (authError || !user) {
-    return notFound()
+    return notFound();
   }
 
   // Get resume
@@ -34,10 +38,10 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
     .select("*")
     .eq("id", id)
     .eq("user_id", user.id)
-    .single()
+    .single();
 
   if (resumeError || !resume) {
-    return notFound()
+    return notFound();
   }
 
   // Get sections
@@ -45,19 +49,26 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
     .from("resume_sections")
     .select("*")
     .eq("resume_id", id)
-    .order("order_index")
+    .order("order_index");
 
   if (sectionsError) {
-    console.error("Error fetching sections:", sectionsError)
+    console.error("Error fetching sections:", sectionsError);
   }
 
   // Transform sections data for preview
   const resumeData = {
-    personalInfo: sections?.find((s: ResumeSection) => s.section_type === "personal_info")?.content || {},
-    experience: sections?.find((s: ResumeSection) => s.section_type === "experience")?.content || { items: [] },
-    education: sections?.find((s: ResumeSection) => s.section_type === "education")?.content || { items: [] },
-    skills: sections?.find((s: ResumeSection) => s.section_type === "skills")?.content || { skills: [] },
-  }
+    personalInfo:
+      sections?.find((s: ResumeSection) => s.section_type === "personal_info")
+        ?.content || {},
+    experience: sections?.find(
+      (s: ResumeSection) => s.section_type === "experience"
+    )?.content || { items: [] },
+    education: sections?.find(
+      (s: ResumeSection) => s.section_type === "education"
+    )?.content || { items: [] },
+    skills: sections?.find((s: ResumeSection) => s.section_type === "skills")
+      ?.content || { skills: [] },
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -72,19 +83,28 @@ export default async function PreviewPage({ params }: { params: Promise<{ id: st
                   Back to Editor
                 </Button>
               </Link>
-              <h1 className="text-xl font-semibold">{resume.title} - Preview</h1>
+              <h1 className="text-xl font-semibold">
+                {resume.title} - Preview (A4)
+              </h1>
             </div>
             <div className="flex items-center gap-2">
-              <PDFExport resumeId={id} resumeTitle={resume.title} variant="outline" size="sm" />
+              <PDFExport
+                resumeId={id}
+                resumeTitle={resume.title}
+                variant="outline"
+                size="sm"
+              />
             </div>
           </div>
         </div>
       </header>
 
       {/* Preview Content */}
-      <div className="container mx-auto px-4 py-8">
-        <ResumePreview data={resumeData} />
+      <div className="container mx-auto px-4 py-8 flex justify-center">
+        <div className="a4-preview-container">
+          <ResumePreview data={resumeData} isA4Preview={true} />
+        </div>
       </div>
     </div>
-  )
+  );
 }

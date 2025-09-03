@@ -92,17 +92,13 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
-  --color-input: var(--input);
+  --color-input: var(--border);
   --color-ring: var(--ring);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -111,6 +107,229 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/* A4 Preview Styles - Exact Print Dimensions */
+.a4-preview-container {
+  width: 210mm;
+  height: 297mm;
+  padding: 20mm;
+  box-sizing: border-box;
+  background: white;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.a4-paper {
+  background: white;
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.a4-paper .a4-preview-container {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.a4-paper-scaled {
+  width: 210mm;
+  height: 297mm;
+  background: white;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.a4-paper-scaled .a4-preview-container {
+  width: 100%;
+  height: 100%;
+  padding: 20mm;
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.a4-preview-proper {
+  width: 210mm;
+  height: 297mm;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: scale(0.7);
+  transform-origin: top center;
+  margin-bottom: -90px;
+}
+
+.a4-preview-proper .a4-preview-container {
+  width: 100%;
+  height: 100%;
+  padding: 20mm;
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.a4-preview-paginated {
+  width: 210mm;
+  height: 297mm;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: scale(0.7);
+  transform-origin: top center;
+  margin-bottom: -90px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #e5e7eb;
+}
+
+.a4-content-wrapper {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+  overflow: hidden;
+}
+
+.a4-preview-paginated .a4-preview-container {
+  width: 100%;
+  height: 297mm;
+  padding: 20mm;
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* Page content area calculations */
+.a4-content-area {
+  width: 170mm; /* 210mm - 40mm padding */
+  height: 257mm; /* 297mm - 40mm padding */
+  overflow: hidden;
+}
+
+/* Live preview specific scaling - Using pixels for better accuracy */
+.a4-live-preview {
+  width: 794px; /* A4 width in pixels at 96 DPI (210mm * 96/25.4) */
+  height: 1123px; /* A4 height in pixels at 96 DPI (297mm * 96/25.4) */
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: scale(0.65);
+  transform-origin: top center;
+  margin-bottom: -400px;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.a4-live-preview .a4-preview-container {
+  width: 794px;
+  height: 1123px;
+  padding: 76px; /* 20mm in pixels */
+  margin: 0;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Print styles to match preview exactly */
+@media print {
+  .a4-paper {
+    transform: none !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  
+  .a4-paper .a4-preview-container {
+    width: 210mm !important;
+    height: 297mm !important;
+    padding: 20mm !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    page-break-after: always;
+  }
+  
+  .a4-paper-scaled {
+    transform: none !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+  
+  .a4-paper-scaled .a4-preview-container {
+    width: 210mm !important;
+    height: 297mm !important;
+    padding: 20mm !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    page-break-after: always;
+  }
+  
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}
+
+.a4-preview-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.a4-preview-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.a4-preview-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.a4-preview-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Ensure proper A4 dimensions on different screen sizes */
+@media (max-width: 768px) {
+  .a4-preview-container {
+    width: 100%;
+    min-height: auto;
+    padding: 16px;
+  }
+  
+  .a4-paper {
+    width: 100% !important;
+    min-height: auto !important;
+    transform: none !important;
+    margin-bottom: 0 !important;
+  }
+  
+  .a4-paper .a4-preview-container {
+    padding: 16px;
+  }
+  
+  .a4-paper-scaled {
+    width: 100% !important;
+    min-height: auto !important;
+    transform: none !important;
+    margin-bottom: 0 !important;
+  }
+  
+  .a4-paper-scaled .a4-preview-container {
+    padding: 16px;
+  }
 }
 
 @layer base {

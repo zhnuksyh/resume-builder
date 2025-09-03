@@ -243,7 +243,6 @@ export function ResumeEditor({ resume: initialResume, sections: initialSections 
               resumeData={getResumeData()}
               resumeId={resume.id}
               resumeTitle={resume.title}
-              onOpenFullPreview={() => setShowPreview(true)}
             />
           </div>
         </div>
