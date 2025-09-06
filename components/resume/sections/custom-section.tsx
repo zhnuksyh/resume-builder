@@ -165,11 +165,11 @@ export function CustomSection({
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label>Title *</Label>
+              <Label>{isReferenceSection ? "Name *" : "Title *"}</Label>
               <Input
                 value={item.title}
                 onChange={(e) => updateItem(item.id, "title", e.target.value)}
-                placeholder="Enter title"
+                placeholder={isReferenceSection ? "Enter name" : "Enter title"}
               />
             </div>
             {isReferenceSection ? (
@@ -208,27 +208,33 @@ export function CustomSection({
             )}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label>{isReferenceSection ? "Remarks" : "Description"}</Label>
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => formatAsBulletPoints(item.id)}
-                    className="h-8 px-2"
-                  >
-                    <List className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => formatAsNumberedList(item.id)}
-                    className="h-8 px-2"
-                  >
-                    <Hash className="h-4 w-4" />
-                  </Button>
-                </div>
+                <Label>
+                  {isReferenceSection
+                    ? "Institution Address or Workplace"
+                    : "Description"}
+                </Label>
+                {!isReferenceSection && (
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => formatAsBulletPoints(item.id)}
+                      className="h-8 px-2"
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => formatAsNumberedList(item.id)}
+                      className="h-8 px-2"
+                    >
+                      <Hash className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
               <Textarea
                 value={item.description}
@@ -236,14 +242,16 @@ export function CustomSection({
                   updateItem(item.id, "description", e.target.value)
                 }
                 placeholder={
-                  isReferenceSection ? "Enter remarks" : "Enter description"
+                  isReferenceSection
+                    ? "Enter institution address or workplace"
+                    : "Enter description"
                 }
                 rows={4}
               />
             </div>
-            {item.title && (
+            {item.title && !isReferenceSection && (
               <AIAssistant
-                sectionType="summary"
+                sectionType="custom"
                 currentContent={item.description}
                 onApplySuggestion={(suggestion) =>
                   handleAISuggestion(item.id, suggestion)
@@ -262,6 +270,16 @@ export function CustomSection({
         <Plus className="mr-2 h-4 w-4" />
         Add Item
       </Button>
+
+      <div className="flex justify-end">
+        <Button onClick={handleSave}>
+          {sectionTitle
+            ? `Save ${
+                sectionTitle.charAt(0).toUpperCase() + sectionTitle.slice(1)
+              }`
+            : "Save Section"}
+        </Button>
+      </div>
     </div>
   );
 }

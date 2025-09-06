@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles, Copy, Check, Loader2 } from "lucide-react";
 
 interface AIAssistantProps {
-  sectionType: "experience" | "skills" | "summary" | "education";
+  sectionType: "experience" | "skills" | "summary" | "education" | "custom";
   currentContent: string;
   jobTitle?: string;
   industry?: string;
@@ -72,6 +72,8 @@ export function AIAssistant({
         return "Professional Summary";
       case "education":
         return "Education";
+      case "custom":
+        return "Professional Summary";
       default:
         return "Content";
     }

@@ -212,7 +212,7 @@ function generateResumeHTML(
         }
         
         .resume-content {
-          padding: 40px 50px;
+          padding: 20px 50px 40px 50px;
           background: white;
         }
         
@@ -366,7 +366,7 @@ function generateResumeHTML(
             width: 210mm !important;
           }
           .resume-content {
-            padding: 40px 50px;
+            padding: 20px 50px 40px 50px;
           }
           .resume * {
             line-height: 1.4 !important;
@@ -387,6 +387,11 @@ function generateResumeHTML(
             orphans: 3;
             widows: 3;
           }
+          /* Add extra space when sections start on new pages */
+          .section + .section {
+            page-break-before: auto;
+            margin-top: 1.5rem;
+          }
           .section:first-of-type {
             margin-top: 0;
           }
@@ -397,10 +402,19 @@ function generateResumeHTML(
             page-break-inside: avoid;
             break-inside: avoid;
           }
+          /* Add spacing for items that start on new pages */
+          .experience-item:first-child,
+          .education-item:first-child {
+            margin-top: 0.75rem;
+          }
+          /* Ensure proper spacing for continued sections */
+          .section[data-continued="true"] {
+            margin-top: 2rem;
+          }
           @page {
             size: A4;
             margin: 0;
-            padding-top: 1.5rem;
+            padding-top: 2rem;
           }
           /* Ensure consistent spacing for content that appears at the top of any page */
           .section-title {
@@ -411,10 +425,22 @@ function generateResumeHTML(
           }
           /* Add extra space for content that appears at the top of new pages */
           .section-title:first-of-type {
-            margin-top: 2.5rem;
+            margin-top: 3rem;
           }
           .section:first-of-type .section-title:first-of-type {
             margin-top: 0;
+          }
+          /* Add extra space for sections that start on new pages */
+          .section {
+            margin-top: 1.5rem;
+          }
+          .section:first-of-type {
+            margin-top: 0;
+          }
+          /* Ensure experience and education items have proper spacing when they start new pages */
+          .experience-item:first-child,
+          .education-item:first-child {
+            margin-top: 1rem;
           }
         }
       </style>
@@ -601,16 +627,19 @@ function generateResumeHTML(
               sectionData?.items &&
               sectionData.items.length > 0
             ) {
-              return `
-            <div class="section">
-              <h2 class="section-title">${
+              const sectionTitle =
                 sectionData.title ||
                 key
                   .replace(/^custom_/, "")
                   .replace(/_/g, " ")
                   .replace(/\b\w/g, (l) => l.toUpperCase()) ||
-                "Custom Section"
-              }</h2>
+                "Custom Section";
+              const isReferenceSection =
+                sectionTitle.toLowerCase() === "reference";
+
+              return `
+            <div class="section">
+              <h2 class="section-title">${sectionTitle}</h2>
               ${sectionData.items
                 .map(
                   (item: any, index: number) => `
@@ -619,6 +648,11 @@ function generateResumeHTML(
                     <div>
                       <div class="item-title">${item.title}</div>
                     </div>
+                    ${
+                      isReferenceSection && item.position
+                        ? `<div class="item-date"><p>${item.position}</p></div>`
+                        : ""
+                    }
                   </div>
                   ${
                     item.description

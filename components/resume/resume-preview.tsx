@@ -378,15 +378,18 @@ export function ResumePreview({
             Array.isArray(sectionData.items) &&
             sectionData.items.length > 0
           ) {
+            const sectionTitle =
+              sectionData.title ||
+              key
+                .replace(/^custom_/, "")
+                .replace(/_/g, " ")
+                .replace(/\b\w/g, (l) => l.toUpperCase());
+            const isReferenceSection =
+              sectionTitle.toLowerCase() === "reference";
+
             return (
               <div key={key} className={a4Styles.section}>
-                <h2 className={a4Styles.sectionTitle}>
-                  {sectionData.title ||
-                    key
-                      .replace(/^custom_/, "")
-                      .replace(/_/g, " ")
-                      .replace(/\b\w/g, (l) => l.toUpperCase())}
-                </h2>
+                <h2 className={a4Styles.sectionTitle}>{sectionTitle}</h2>
                 <div className={isA4Preview ? "space-y-3.5" : "space-y-5"}>
                   {sectionData.items.map((item: any, index: number) => (
                     <div key={index} className={a4Styles.educationItem}>
@@ -394,18 +397,24 @@ export function ResumePreview({
                         <div>
                           <h3 className={a4Styles.itemTitle}>{item.title}</h3>
                         </div>
-                        {(item.startDate || item.endDate) && (
+                        {isReferenceSection && item.position ? (
                           <div className={a4Styles.itemDate}>
-                            <p>
-                              {item.startDate && item.endDate
-                                ? `${formatDate(item.startDate)} - ${formatDate(
-                                    item.endDate
-                                  )}`
-                                : item.startDate
-                                ? formatDate(item.startDate)
-                                : formatDate(item.endDate)}
-                            </p>
+                            <p>{item.position}</p>
                           </div>
+                        ) : (
+                          (item.startDate || item.endDate) && (
+                            <div className={a4Styles.itemDate}>
+                              <p>
+                                {item.startDate && item.endDate
+                                  ? `${formatDate(
+                                      item.startDate
+                                    )} - ${formatDate(item.endDate)}`
+                                  : item.startDate
+                                  ? formatDate(item.startDate)
+                                  : formatDate(item.endDate)}
+                              </p>
+                            </div>
+                          )
                         )}
                       </div>
                       {item.description && (
