@@ -1,47 +1,108 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { AIAssistant } from "@/components/resume/ai-assistant"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { AIAssistant } from "@/components/resume/ai-assistant";
+import { List, Hash } from "lucide-react";
 
 interface PersonalInfoContent {
-  fullName?: string
-  email?: string
-  phone?: string
-  location?: string
-  website?: string
-  linkedin?: string
-  summary?: string
+  fullName?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
+  website?: string;
+  linkedin?: string;
+  summary?: string;
 }
 
 interface PersonalInfoSectionProps {
-  content: PersonalInfoContent
-  onSave: (content: PersonalInfoContent) => void
-  jobTitle?: string
-  industry?: string
+  content: PersonalInfoContent;
+  onSave: (content: PersonalInfoContent) => void;
+  jobTitle?: string;
+  industry?: string;
 }
 
-export function PersonalInfoSection({ content, onSave, jobTitle, industry }: PersonalInfoSectionProps) {
-  const [formData, setFormData] = useState<PersonalInfoContent>(content)
+export function PersonalInfoSection({
+  content,
+  onSave,
+  jobTitle,
+  industry,
+}: PersonalInfoSectionProps) {
+  const [formData, setFormData] = useState<PersonalInfoContent>(content);
 
   useEffect(() => {
-    setFormData(content)
-  }, [content])
+    setFormData(content);
+  }, [content]);
 
   const handleChange = (field: keyof PersonalInfoContent, value: string) => {
-    setFormData({ ...formData, [field]: value })
-  }
+    setFormData({ ...formData, [field]: value });
+  };
 
   const handleSave = () => {
-    onSave(formData)
-  }
+    onSave(formData);
+  };
 
   const handleAISuggestion = (suggestion: string) => {
-    setFormData({ ...formData, summary: suggestion })
-  }
+    setFormData({ ...formData, summary: suggestion });
+  };
+
+  const formatAsBulletPoints = () => {
+    if (!formData.summary) return;
+
+    const lines = formData.summary.split("\n").filter((line) => line.trim());
+    const bulletPoints = lines
+      .map((line) => {
+        const trimmed = line.trim();
+        // If already a bullet point, keep as is
+        if (
+          trimmed.startsWith("•") ||
+          trimmed.startsWith("-") ||
+          trimmed.startsWith("*")
+        ) {
+          return trimmed;
+        }
+        // If it's a numbered list, remove the number and add bullet
+        if (/^\d+\./.test(trimmed)) {
+          const match = trimmed.match(/^\d+\.\s*(.*)/);
+          return match ? `• ${match[1]}` : `• ${trimmed}`;
+        }
+        // Otherwise, add bullet point
+        return `• ${trimmed}`;
+      })
+      .join("\n");
+
+    setFormData({ ...formData, summary: bulletPoints });
+  };
+
+  const formatAsNumberedList = () => {
+    if (!formData.summary) return;
+
+    const lines = formData.summary.split("\n").filter((line) => line.trim());
+    const numberedList = lines
+      .map((line, index) => {
+        const trimmed = line.trim();
+        // If already numbered, keep as is
+        if (/^\d+\./.test(trimmed)) {
+          return trimmed;
+        }
+        // If it's a bullet point, remove the bullet and add number
+        if (
+          trimmed.startsWith("•") ||
+          trimmed.startsWith("-") ||
+          trimmed.startsWith("*")
+        ) {
+          return `${index + 1}. ${trimmed.substring(1).trim()}`;
+        }
+        // Otherwise, add number
+        return `${index + 1}. ${trimmed}`;
+      })
+      .join("\n");
+
+    setFormData({ ...formData, summary: numberedList });
+  };
 
   return (
     <div className="space-y-6">
@@ -105,7 +166,29 @@ export function PersonalInfoSection({ content, onSave, jobTitle, industry }: Per
 
       <div className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="summary">Professional Summary</Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="summary">Professional Summary</Label>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={formatAsBulletPoints}
+                className="h-8 px-2"
+              >
+                <List className="h-4 w-4" />
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={formatAsNumberedList}
+                className="h-8 px-2"
+              >
+                <Hash className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
           <Textarea
             id="summary"
             value={formData.summary || ""}
@@ -128,5 +211,5 @@ export function PersonalInfoSection({ content, onSave, jobTitle, industry }: Per
         <Button onClick={handleSave}>Save Personal Information</Button>
       </div>
     </div>
-  )
+  );
 }

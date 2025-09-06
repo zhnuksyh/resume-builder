@@ -133,31 +133,33 @@ function generateResumeHTML(data: any, title: string): string {
         }
         
         .resume {
-          max-width: 8.5in;
+          width: 210mm;
+          height: 297mm;
           margin: 0 auto;
-          padding: 0.6in;
+          padding: 15mm;
+          background: white;
         }
         
         .header {
-          border-bottom: 2px solid #e5e7eb;
-          padding-bottom: 0.75rem;
-          margin-bottom: 1.25rem;
+          padding-bottom: 0.5rem;
+          margin-bottom: 0.75rem;
         }
         
         .name {
-          font-size: 2rem;
+          font-size: 1.25rem;
           font-weight: bold;
-          color: #1f2937;
-          margin-bottom: 0.375rem;
+          color: #111827;
+          margin-bottom: 0.25rem;
+          line-height: 1.25;
         }
         
         .contact-info {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.75rem;
-          font-size: 0.9rem;
-          color: #6b7280;
-          margin-bottom: 0.75rem;
+          gap: 0.5rem;
+          font-size: 0.75rem;
+          color: #4b5563;
+          margin-bottom: 0.5rem;
         }
         
         .contact-item {
@@ -167,74 +169,99 @@ function generateResumeHTML(data: any, title: string): string {
         }
         
         .summary {
-          color: #4b5563;
-          line-height: 1.7;
+          color: #374151;
+          line-height: 1.25;
+          font-size: 0.875rem;
+          margin-top: 0.5rem;
         }
         
         .section {
-          margin-bottom: 1.25rem;
+          margin-bottom: 0.75rem;
         }
         
         .section-title {
-          font-size: 1.25rem;
+          font-size: 1rem;
           font-weight: bold;
-          color: #1f2937;
-          border-bottom: 1px solid #e5e7eb;
-          padding-bottom: 0.375rem;
-          margin-bottom: 0.875rem;
+          color: #111827;
+          border-bottom: 1px solid #d1d5db;
+          padding-bottom: 0.125rem;
+          margin-bottom: 0.5rem;
+          text-transform: uppercase;
+          letter-spacing: 0.025em;
         }
         
-        .experience-item, .education-item {
-          margin-bottom: 1.25rem;
+        .experience-section-title {
+          font-size: 1rem;
+          font-weight: bold;
+          color: #111827;
+          border-bottom: 1px solid #d1d5db;
+          padding-bottom: 0.125rem;
+          margin-bottom: 0.5rem;
+          text-transform: uppercase;
+          letter-spacing: 0.025em;
+        }
+        
+        .experience-item {
+          margin-bottom: 0.625rem;
+        }
+        
+        .education-item {
+          margin-bottom: 0.5rem;
         }
         
         .item-header {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          margin-bottom: 0.375rem;
+          margin-bottom: 0.125rem;
         }
         
         .item-title {
-          font-size: 1.1rem;
+          font-size: 0.875rem;
           font-weight: 600;
-          color: #1f2937;
+          color: #111827;
+          line-height: 1.25;
         }
         
         .item-company {
           color: #2563eb;
           font-weight: 500;
+          font-size: 0.75rem;
         }
         
         .item-location {
-          font-size: 0.9rem;
-          color: #6b7280;
+          font-size: 0.75rem;
+          color: #4b5563;
+          margin-top: 0;
         }
         
         .item-date {
-          font-size: 0.9rem;
-          color: #6b7280;
+          font-size: 0.75rem;
+          color: #4b5563;
           text-align: right;
+          line-height: 1.25;
         }
         
         .item-description {
-          color: #4b5563;
-          line-height: 1.6;
+          color: #374151;
+          line-height: 1.25;
+          font-size: 0.75rem;
+          margin-top: 0.125rem;
           white-space: pre-line;
         }
         
         .skills-container {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.5rem;
+          gap: 0.25rem;
         }
         
         .skill-tag {
           background: #f3f4f6;
           color: #374151;
-          padding: 0.25rem 0.75rem;
-          border-radius: 0.375rem;
-          font-size: 0.9rem;
+          padding: 0.125rem 0.375rem;
+          border-radius: 0.25rem;
+          font-size: 0.75rem;
           border: 1px solid #d1d5db;
         }
         
@@ -242,11 +269,25 @@ function generateResumeHTML(data: any, title: string): string {
           body { 
             print-color-adjust: exact; 
             -webkit-print-color-adjust: exact;
+            line-height: 1.25 !important;
           }
           .resume { 
             margin: 0; 
-            padding: 0.6in; 
+            padding: 15mm; 
             page-break-inside: avoid;
+            width: 210mm !important;
+            height: 297mm !important;
+          }
+          .resume * {
+            line-height: 1.25 !important;
+          }
+          .resume h1, .resume h2, .resume h3 {
+            margin-top: 0 !important;
+            margin-bottom: 0.25rem !important;
+          }
+          .resume p {
+            margin-top: 0 !important;
+            margin-bottom: 0.125rem !important;
           }
           .section {
             page-break-inside: avoid;
@@ -258,7 +299,7 @@ function generateResumeHTML(data: any, title: string): string {
           }
           @page {
             size: A4;
-            margin: 0.6in;
+            margin: 0;
           }
         }
       </style>
@@ -311,7 +352,7 @@ function generateResumeHTML(data: any, title: string): string {
           experience?.items?.length > 0
             ? `
           <div class="section">
-            <h2 class="section-title">Professional Experience</h2>
+            <h2 class="experience-section-title">Professional Experience</h2>
             ${experience.items
               .map(
                 (exp: any) => `

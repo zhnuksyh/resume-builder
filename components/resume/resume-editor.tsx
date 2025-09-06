@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -47,7 +47,14 @@ export function ResumeEditor({
   const [sections, setSections] = useState(initialSections);
   const [activeSection, setActiveSection] = useState("personal_info");
   const [isSaving, setIsSaving] = useState(false);
+  const [currentCustomSectionContent, setCurrentCustomSectionContent] =
+    useState<any>(null);
   const supabase = createClient();
+
+  // Reset current custom section content when switching sections
+  useEffect(() => {
+    setCurrentCustomSectionContent(null);
+  }, [activeSection]);
 
   const getJobContext = () => {
     const personalInfo = getSectionContent("personal_info");
@@ -293,6 +300,7 @@ export function ResumeEditor({
                 content={section.content}
                 onSave={(content) => saveSection(activeSection, content)}
                 onDelete={() => deleteCustomSection(activeSection)}
+                onContentChange={setCurrentCustomSectionContent}
               />
             );
           }
@@ -313,7 +321,10 @@ export function ResumeEditor({
     sections
       .filter((section) => section.section_type.startsWith("custom_"))
       .forEach((section) => {
-        data[section.section_type] = section.content;
+        data[section.section_type] = {
+          ...section.content,
+          title: section.title || section.content.title || "Custom Section",
+        };
       });
 
     return data;
@@ -405,11 +416,13 @@ export function ResumeEditor({
                       <Button
                         size="sm"
                         onClick={() => {
-                          const section = sections.find(
-                            (s) => s.section_type === activeSection
-                          );
-                          if (section) {
-                            saveSection(activeSection, section.content);
+                          const contentToSave =
+                            currentCustomSectionContent ||
+                            sections.find(
+                              (s) => s.section_type === activeSection
+                            )?.content;
+                          if (contentToSave) {
+                            saveSection(activeSection, contentToSave);
                           }
                         }}
                       >

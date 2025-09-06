@@ -236,12 +236,52 @@
 .a4-live-preview .a4-preview-container {
   width: 794px;
   height: 1123px;
-  padding: 57px; /* 15mm in pixels */
+  padding: 57px; /* 15mm in pixels - optimized for space */
   margin: 0;
   box-shadow: none;
   border-radius: 0;
   overflow: hidden;
   box-sizing: border-box;
+}
+
+/* Improved spacing for A4 preview for better readability */
+.a4-live-preview .a4-preview-container * {
+  line-height: 1.4 !important;
+}
+
+.a4-live-preview .a4-preview-container h1 {
+  margin-top: 0 !important;
+  margin-bottom: 0.5rem !important;
+  line-height: 1.3 !important;
+}
+
+.a4-live-preview .a4-preview-container h2,
+.a4-live-preview .a4-preview-container h3 {
+  margin-top: 0 !important;
+  margin-bottom: 0.375rem !important;
+  line-height: 1.3 !important;
+}
+
+.a4-live-preview .a4-preview-container p {
+  margin-top: 0 !important;
+  margin-bottom: 0.25rem !important;
+  line-height: 1.4 !important;
+}
+
+.a4-live-preview .a4-preview-container .space-y-6 > * + * {
+  margin-top: 1rem !important;
+}
+
+.a4-live-preview .a4-preview-container .space-y-4 > * + * {
+  margin-top: 0.75rem !important;
+}
+
+.a4-live-preview .a4-preview-container .space-y-3 > * + * {
+  margin-top: 0.5rem !important;
+}
+
+.a4-live-preview .a4-preview-container .space-y-2 > * + * {
+  margin-top: 0.375rem !important;
 }
 
 /* Print styles to match preview exactly */
@@ -253,6 +293,30 @@
     margin: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
+  }
+  
+  /* Ensure print output matches improved preview spacing */
+  .a4-paper .a4-preview-container * {
+    line-height: 1.4 !important;
+  }
+  
+  .a4-paper .a4-preview-container h1 {
+    margin-top: 0 !important;
+    margin-bottom: 0.5rem !important;
+    line-height: 1.3 !important;
+  }
+  
+  .a4-paper .a4-preview-container h2,
+  .a4-paper .a4-preview-container h3 {
+    margin-top: 0 !important;
+    margin-bottom: 0.375rem !important;
+    line-height: 1.3 !important;
+  }
+  
+  .a4-paper .a4-preview-container p {
+    margin-top: 0 !important;
+    margin-bottom: 0.25rem !important;
+    line-height: 1.4 !important;
   }
   
   .a4-paper .a4-preview-container {

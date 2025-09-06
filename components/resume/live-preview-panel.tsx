@@ -29,25 +29,27 @@ export function LivePreviewPanel({
 
   // Advanced pagination logic with better content estimation
   const { pages, totalPages } = useMemo(() => {
-    const { personalInfo, experience, education, skills } = resumeData;
+    const { personalInfo, experience, education, skills, ...customSections } =
+      resumeData;
 
     // A4 page content height in mm (297mm - 30mm margins = 267mm available)
     const PAGE_HEIGHT = 267;
-    const HEADER_HEIGHT = 65; // Personal info header (reduced)
-    const SECTION_TITLE_HEIGHT = 10; // Section title height (reduced)
-    const EXPERIENCE_ITEM_HEIGHT = 40; // Per experience item (reduced)
-    const EDUCATION_ITEM_HEIGHT = 32; // Per education item (reduced)
-    const SKILLS_HEIGHT = 25; // Skills section height (reduced)
-    const SECTION_SPACING = 6; // Spacing between sections (reduced)
+    const BOTTOM_MARGIN = 15; // Bottom margin as page-full indicator
+    const HEADER_HEIGHT = 50; // Personal info header (optimized)
+    const SECTION_TITLE_HEIGHT = 8; // Section title height (optimized)
+    const EXPERIENCE_ITEM_HEIGHT = 30; // Per experience item (optimized)
+    const EDUCATION_ITEM_HEIGHT = 24; // Per education item (optimized)
+    const SKILLS_HEIGHT = 20; // Skills section height (optimized)
+    const SECTION_SPACING = 4; // Spacing between sections (optimized)
 
     const pageArray: Array<Array<{ type: string; content: any }>> = [];
     let currentPageItems: Array<{ type: string; content: any }> = [];
     let currentHeight = 0;
 
     const addItemToPage = (type: string, content: any, itemHeight: number) => {
-      // Check if we need to start a new page
+      // Check if we need to start a new page (using bottom margin as page-full indicator)
       if (
-        currentHeight + itemHeight > PAGE_HEIGHT &&
+        currentHeight + itemHeight > PAGE_HEIGHT - BOTTOM_MARGIN &&
         currentPageItems.length > 0
       ) {
         // Start new page
@@ -63,14 +65,14 @@ export function LivePreviewPanel({
     // Helper function to calculate dynamic content height
     const calculateContentHeight = (content: any, baseHeight: number) => {
       if (content?.summary) {
-        // Estimate height based on summary length
-        const summaryLines = Math.ceil(content.summary.length / 80); // ~80 chars per line
-        return baseHeight + summaryLines * 4; // 4mm per line
+        // Estimate height based on summary length (optimized for smaller text)
+        const summaryLines = Math.ceil(content.summary.length / 90); // ~90 chars per line with smaller text
+        return baseHeight + summaryLines * 3; // 3mm per line (optimized)
       }
       if (content?.description) {
-        // Estimate height based on description length
-        const descLines = Math.ceil(content.description.length / 80);
-        return baseHeight + descLines * 4;
+        // Estimate height based on description length (optimized for smaller text)
+        const descLines = Math.ceil(content.description.length / 90);
+        return baseHeight + descLines * 3; // 3mm per line (optimized)
       }
       return baseHeight;
     };
@@ -92,9 +94,9 @@ export function LivePreviewPanel({
         totalExpHeight += calculateContentHeight(item, EXPERIENCE_ITEM_HEIGHT);
       });
 
-      // Check if we can fit the entire experience section
+      // Check if we can fit the entire experience section (using bottom margin as indicator)
       if (
-        currentHeight + totalExpHeight <= PAGE_HEIGHT ||
+        currentHeight + totalExpHeight <= PAGE_HEIGHT - BOTTOM_MARGIN ||
         currentPageItems.length === 0
       ) {
         addItemToPage("experience", experience, totalExpHeight);
@@ -167,7 +169,7 @@ export function LivePreviewPanel({
       });
 
       if (
-        currentHeight + totalEduHeight <= PAGE_HEIGHT ||
+        currentHeight + totalEduHeight <= PAGE_HEIGHT - BOTTOM_MARGIN ||
         currentPageItems.length === 0
       ) {
         addItemToPage("education", education, totalEduHeight);
@@ -237,6 +239,89 @@ export function LivePreviewPanel({
         SECTION_TITLE_HEIGHT + SECTION_SPACING + SKILLS_HEIGHT;
       addItemToPage("skills", skills, skillsHeight);
     }
+
+    // Custom sections
+    Object.entries(customSections).forEach(([sectionKey, sectionData]) => {
+      if (sectionKey.startsWith("custom_") && sectionData?.items?.length > 0) {
+        // Calculate total height for all custom section items
+        let totalCustomHeight = SECTION_TITLE_HEIGHT + SECTION_SPACING;
+        sectionData.items.forEach((item: any) => {
+          totalCustomHeight += calculateContentHeight(
+            item,
+            EDUCATION_ITEM_HEIGHT
+          );
+        });
+
+        if (
+          currentHeight + totalCustomHeight <= PAGE_HEIGHT - BOTTOM_MARGIN ||
+          currentPageItems.length === 0
+        ) {
+          addItemToPage(sectionKey, sectionData, totalCustomHeight);
+        } else {
+          // Split custom section items across pages intelligently
+          const availableHeight = PAGE_HEIGHT - currentHeight;
+          const sectionHeaderHeight = SECTION_TITLE_HEIGHT + SECTION_SPACING;
+
+          if (availableHeight > sectionHeaderHeight + EDUCATION_ITEM_HEIGHT) {
+            // Can fit at least one item on current page
+            const remainingHeight = availableHeight - sectionHeaderHeight;
+            let itemsOnCurrentPage = 0;
+            let currentItemHeight = 0;
+
+            for (let i = 0; i < sectionData.items.length; i++) {
+              const itemHeight = calculateContentHeight(
+                sectionData.items[i],
+                EDUCATION_ITEM_HEIGHT
+              );
+              if (currentItemHeight + itemHeight <= remainingHeight) {
+                currentItemHeight += itemHeight;
+                itemsOnCurrentPage++;
+              } else {
+                break;
+              }
+            }
+
+            if (itemsOnCurrentPage > 0) {
+              // Add partial custom section to current page
+              const partialCustom = {
+                ...sectionData,
+                items: sectionData.items.slice(0, itemsOnCurrentPage),
+                isPartial: true,
+              };
+              addItemToPage(
+                sectionKey,
+                partialCustom,
+                sectionHeaderHeight + currentItemHeight
+              );
+
+              // Add remaining items to new pages
+              const remainingItems =
+                sectionData.items.slice(itemsOnCurrentPage);
+              if (remainingItems.length > 0) {
+                const remainingCustom = {
+                  ...sectionData,
+                  items: remainingItems,
+                };
+                const remainingHeight =
+                  sectionHeaderHeight +
+                  remainingItems.reduce(
+                    (sum: number, item: any) =>
+                      sum + calculateContentHeight(item, EDUCATION_ITEM_HEIGHT),
+                    0
+                  );
+                addItemToPage(sectionKey, remainingCustom, remainingHeight);
+              }
+            } else {
+              // Start new page for custom section
+              addItemToPage(sectionKey, sectionData, totalCustomHeight);
+            }
+          } else {
+            // Start new page for custom section
+            addItemToPage(sectionKey, sectionData, totalCustomHeight);
+          }
+        }
+      }
+    });
 
     // Add the last page if it has content
     if (currentPageItems.length > 0) {
@@ -408,7 +493,7 @@ export function LivePreviewPanel({
 
           {/* Single page message */}
           {totalPages === 1 && (
-            <div className="mt-2 text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded">
+            <div className="mt-6 text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded">
               Single page • A4 format
             </div>
           )}

@@ -56,7 +56,11 @@ export function ResumePreview({
   isPageContent = false,
 }: ResumePreviewProps) {
   // Extract data based on format
-  let personalInfo, experience, education, skills;
+  let personalInfo,
+    experience,
+    education,
+    skills,
+    customSections = {};
 
   if (isPageContent && Array.isArray(data)) {
     // Page-based content format
@@ -65,6 +69,10 @@ export function ResumePreview({
       if (item.type === "experience") experience = item.content;
       if (item.type === "education") education = item.content;
       if (item.type === "skills") skills = item.content;
+      if (item.type.startsWith("custom_")) {
+        // Handle custom sections
+        customSections[item.type] = item.content;
+      }
     });
   } else {
     // Full resume data format
@@ -73,6 +81,12 @@ export function ResumePreview({
     experience = resumeData.experience;
     education = resumeData.education;
     skills = resumeData.skills;
+    // Extract custom sections from full data
+    Object.keys(resumeData).forEach((key) => {
+      if (key.startsWith("custom_")) {
+        customSections[key] = resumeData[key];
+      }
+    });
   }
 
   const formatDate = (dateString: string) => {
@@ -84,38 +98,43 @@ export function ResumePreview({
     });
   };
 
-  // A4 preview styles that match PDF generation exactly - optimized for space
+  // A4 preview styles with improved spacing for better readability
   const a4Styles = isA4Preview
     ? {
         container: "max-w-none mx-0 h-full",
-        header: "border-b-2 border-gray-200 pb-3 mb-4",
-        name: "text-2xl font-bold text-gray-900 mb-1.5 leading-tight",
-        contactInfo: "flex flex-wrap gap-2.5 text-xs text-gray-600 mb-2.5",
-        contactItem: "flex items-center gap-1.5",
-        summary: "text-gray-700 leading-normal text-sm mt-2.5",
+        header: "pb-3 mb-4",
+        name: "text-xl font-bold text-gray-900 mb-2 leading-tight",
+        contactInfo: "flex flex-wrap gap-2 text-xs text-gray-600 mb-3",
+        contactItem: "flex items-center gap-1",
+        summary: "text-gray-700 leading-relaxed text-sm mt-3 text-justify",
         section: "mb-4",
         sectionTitle:
-          "text-lg font-bold text-gray-900 mb-2.5 border-b border-gray-300 pb-1 uppercase tracking-wide",
-        experienceItem: "mb-3.5",
-        educationItem: "mb-2.5",
+          "text-base font-bold text-gray-900 mb-3 border-b border-gray-300 pb-1 uppercase tracking-wide",
+        experienceSectionTitle:
+          "text-base font-bold text-gray-900 mb-3 border-b border-gray-300 pb-1 uppercase tracking-wide",
+        experienceItem: "mb-3",
+        educationItem: "mb-3",
         itemHeader: "flex justify-between items-start mb-1",
-        itemTitle: "text-base font-semibold text-gray-900 leading-tight",
-        itemCompany: "text-blue-600 font-medium text-sm",
-        itemLocation: "text-xs text-gray-600 mt-0.5",
+        itemTitle: "text-sm font-semibold text-gray-900 leading-tight",
+        itemCompany: "text-blue-600 font-medium text-xs",
+        itemLocation: "text-xs text-gray-600 mt-0",
         itemDate: "text-xs text-gray-600 text-right leading-tight",
-        itemDescription: "text-gray-700 leading-normal text-sm mt-1",
+        itemDescription:
+          "text-gray-700 leading-relaxed text-xs mt-1 text-justify",
         skillsContainer: "flex flex-wrap gap-1.5",
         skillTag: "text-xs px-2 py-1",
       }
     : {
         container: "max-w-4xl mx-auto",
-        header: "border-b border-gray-200 pb-6",
+        header: "pb-6",
         name: "text-3xl font-bold text-gray-900 mb-2",
         contactInfo: "flex flex-wrap gap-4 text-sm text-gray-600",
         contactItem: "flex items-center gap-1",
-        summary: "text-gray-700 leading-relaxed mt-4",
+        summary: "text-gray-700 leading-relaxed mt-4 text-justify",
         section: "mb-6",
         sectionTitle:
+          "text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2",
+        experienceSectionTitle:
           "text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2",
         experienceItem: "mb-6",
         educationItem: "mb-4",
@@ -124,14 +143,14 @@ export function ResumePreview({
         itemCompany: "text-blue-600 font-medium",
         itemLocation: "text-sm text-gray-600",
         itemDate: "text-sm text-gray-600 text-right",
-        itemDescription: "text-gray-700 leading-relaxed",
+        itemDescription: "text-gray-700 leading-relaxed text-justify",
         skillsContainer: "flex flex-wrap gap-2",
         skillTag: "text-sm",
       };
 
   return (
     <div className={`bg-white ${a4Styles.container} ${className}`}>
-      <div className={isA4Preview ? "space-y-6" : "p-8 space-y-6"}>
+      <div className={isA4Preview ? "space-y-5" : "p-8 space-y-6"}>
         {/* Header */}
         {personalInfo && (
           <div className={a4Styles.header}>
@@ -183,35 +202,65 @@ export function ResumePreview({
         {/* Experience */}
         {experience?.items && experience.items.length > 0 && (
           <div className={a4Styles.section}>
-            <h2 className={a4Styles.sectionTitle}>
+            <h2 className={a4Styles.experienceSectionTitle}>
               Professional Experience
               {experience.isPartial ? " (continued)" : ""}
             </h2>
-            <div className="space-y-6">
+            <div className={isA4Preview ? "space-y-4" : "space-y-6"}>
               {experience.items.map((exp) => (
                 <div key={exp.id} className={a4Styles.experienceItem}>
                   <div className={a4Styles.itemHeader}>
                     <div>
                       <h3 className={a4Styles.itemTitle}>{exp.jobTitle}</h3>
                       <p className={a4Styles.itemCompany}>{exp.company}</p>
-                      {exp.location && (
-                        <p className={a4Styles.itemLocation}>{exp.location}</p>
-                      )}
                     </div>
                     <div className={a4Styles.itemDate}>
                       <p>
                         {formatDate(exp.startDate)} -{" "}
                         {exp.current ? "Present" : formatDate(exp.endDate)}
                       </p>
+                      {exp.location && (
+                        <p className={a4Styles.itemLocation}>{exp.location}</p>
+                      )}
                     </div>
                   </div>
                   {exp.description && (
                     <div className={a4Styles.itemDescription}>
-                      {exp.description.split("\n").map((line, index) => (
-                        <p key={index} className="mb-1">
-                          {line}
-                        </p>
-                      ))}
+                      {exp.description.split("\n").map((line, index) => {
+                        const trimmedLine = line.trim();
+                        if (
+                          trimmedLine.startsWith("•") ||
+                          trimmedLine.startsWith("-") ||
+                          trimmedLine.startsWith("*")
+                        ) {
+                          return (
+                            <div key={index} className="flex items-start mb-1">
+                              <span className="mr-2">•</span>
+                              <span className="flex-1">
+                                {trimmedLine.substring(1).trim()}
+                              </span>
+                            </div>
+                          );
+                        } else if (/^\d+\./.test(trimmedLine)) {
+                          const match = trimmedLine.match(/^(\d+)\.\s*(.*)/);
+                          if (match) {
+                            return (
+                              <div
+                                key={index}
+                                className="flex items-start mb-1"
+                              >
+                                <span className="mr-2">{match[1]}.</span>
+                                <span className="flex-1">{match[2]}</span>
+                              </div>
+                            );
+                          }
+                        }
+                        return (
+                          <p key={index} className="mb-1">
+                            {line}
+                          </p>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -226,31 +275,65 @@ export function ResumePreview({
             <h2 className={a4Styles.sectionTitle}>
               Education{education.isPartial ? " (continued)" : ""}
             </h2>
-            <div className="space-y-4">
+            <div className={isA4Preview ? "space-y-3" : "space-y-4"}>
               {education.items.map((edu) => (
                 <div key={edu.id} className={a4Styles.educationItem}>
                   <div className={a4Styles.itemHeader}>
                     <div>
                       <h3 className={a4Styles.itemTitle}>{edu.degree}</h3>
-                      <p className={a4Styles.itemCompany}>{edu.school}</p>
-                      {edu.location && (
-                        <p className={a4Styles.itemLocation}>{edu.location}</p>
-                      )}
-                      {edu.gpa && (
-                        <p className={a4Styles.itemLocation}>GPA: {edu.gpa}</p>
-                      )}
+                      <p className={a4Styles.itemCompany}>
+                        {edu.school}
+                        {edu.gpa && ` • GPA: ${edu.gpa}`}
+                      </p>
                     </div>
                     <div className={a4Styles.itemDate}>
                       <p>
                         {formatDate(edu.startDate)} -{" "}
                         {edu.current ? "Present" : formatDate(edu.endDate)}
                       </p>
+                      {edu.location && (
+                        <p className={a4Styles.itemLocation}>{edu.location}</p>
+                      )}
                     </div>
                   </div>
                   {edu.description && (
-                    <p className={a4Styles.itemDescription}>
-                      {edu.description}
-                    </p>
+                    <div className={a4Styles.itemDescription}>
+                      {edu.description.split("\n").map((line, index) => {
+                        const trimmedLine = line.trim();
+                        if (
+                          trimmedLine.startsWith("•") ||
+                          trimmedLine.startsWith("-") ||
+                          trimmedLine.startsWith("*")
+                        ) {
+                          return (
+                            <div key={index} className="flex items-start mb-1">
+                              <span className="mr-2">•</span>
+                              <span className="flex-1">
+                                {trimmedLine.substring(1).trim()}
+                              </span>
+                            </div>
+                          );
+                        } else if (/^\d+\./.test(trimmedLine)) {
+                          const match = trimmedLine.match(/^(\d+)\.\s*(.*)/);
+                          if (match) {
+                            return (
+                              <div
+                                key={index}
+                                className="flex items-start mb-1"
+                              >
+                                <span className="mr-2">{match[1]}.</span>
+                                <span className="flex-1">{match[2]}</span>
+                              </div>
+                            );
+                          }
+                        }
+                        return (
+                          <p key={index} className="mb-1">
+                            {line}
+                          </p>
+                        );
+                      })}
+                    </div>
                   )}
                 </div>
               ))}
@@ -277,7 +360,7 @@ export function ResumePreview({
         )}
 
         {/* Custom Sections */}
-        {Object.entries(data).map(([key, sectionData]) => {
+        {Object.entries(customSections).map(([key, sectionData]) => {
           if (
             key.startsWith("custom_") &&
             sectionData?.items &&
@@ -288,7 +371,7 @@ export function ResumePreview({
                 <h2 className={a4Styles.sectionTitle}>
                   {sectionData.title || "Custom Section"}
                 </h2>
-                <div className="space-y-4">
+                <div className={isA4Preview ? "space-y-3" : "space-y-4"}>
                   {sectionData.items.map((item: any, index: number) => (
                     <div key={index} className={a4Styles.educationItem}>
                       <div className={a4Styles.itemHeader}>
@@ -297,9 +380,47 @@ export function ResumePreview({
                         </div>
                       </div>
                       {item.description && (
-                        <p className={a4Styles.itemDescription}>
-                          {item.description}
-                        </p>
+                        <div className={a4Styles.itemDescription}>
+                          {item.description.split("\n").map((line, index) => {
+                            const trimmedLine = line.trim();
+                            if (
+                              trimmedLine.startsWith("•") ||
+                              trimmedLine.startsWith("-") ||
+                              trimmedLine.startsWith("*")
+                            ) {
+                              return (
+                                <div
+                                  key={index}
+                                  className="flex items-start mb-1"
+                                >
+                                  <span className="mr-2">•</span>
+                                  <span className="flex-1">
+                                    {trimmedLine.substring(1).trim()}
+                                  </span>
+                                </div>
+                              );
+                            } else if (/^\d+\./.test(trimmedLine)) {
+                              const match =
+                                trimmedLine.match(/^(\d+)\.\s*(.*)/);
+                              if (match) {
+                                return (
+                                  <div
+                                    key={index}
+                                    className="flex items-start mb-1"
+                                  >
+                                    <span className="mr-2">{match[1]}.</span>
+                                    <span className="flex-1">{match[2]}</span>
+                                  </div>
+                                );
+                              }
+                            }
+                            return (
+                              <p key={index} className="mb-1">
+                                {line}
+                              </p>
+                            );
+                          })}
+                        </div>
                       )}
                     </div>
                   ))}
