@@ -278,6 +278,20 @@
   position: relative;
 }
 
+/* Page break rules for live preview */
+.a4-live-preview .a4-preview-container .section {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  orphans: 3;
+  widows: 3;
+}
+
+.a4-live-preview .a4-preview-container .experience-item,
+.a4-live-preview .a4-preview-container .education-item {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
 /* Improved spacing for A4 preview for better readability */
 .a4-live-preview .a4-preview-container * {
   line-height: 1.4 !important;
@@ -331,6 +345,20 @@
     margin: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
+  }
+  
+  /* Page break rules for preview */
+  .a4-paper .a4-preview-container .section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    orphans: 3;
+    widows: 3;
+  }
+  
+  .a4-paper .a4-preview-container .experience-item,
+  .a4-paper .a4-preview-container .education-item {
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
   
   /* Ensure print output matches improved preview spacing */

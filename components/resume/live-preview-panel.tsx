@@ -85,7 +85,14 @@ export function LivePreviewPanel({
       case "customSection":
         height = baseHeights.customSection;
         if (content?.items?.length) {
-          height += content.items.length * 40; // 40px per custom item
+          content.items.forEach((item: any) => {
+            height += 30; // Base height for item title
+            if (item.description) {
+              // Estimate height based on description length
+              const descLines = Math.ceil(item.description.length / 60);
+              height += descLines * 14; // 14px per line
+            }
+          });
         }
         break;
     }
@@ -137,9 +144,14 @@ export function LivePreviewPanel({
         const itemHeight = estimateContentHeight(item, "experienceItem");
 
         // Check if adding this item would exceed page height
+        // Also check if there's enough space for at least 3 lines (orphans/widows rule)
+        const remainingSpace = AVAILABLE_HEIGHT - currentHeight;
+        const minSpaceNeeded = 100; // Approximate height for 3-4 lines of text
+
         if (
           currentHeight + itemHeight > AVAILABLE_HEIGHT &&
-          experienceItemsToAdd.length > 0
+          experienceItemsToAdd.length > 0 &&
+          remainingSpace < minSpaceNeeded
         ) {
           // Add current experience items to page and start new page
           currentPage.experience = {
@@ -182,7 +194,14 @@ export function LivePreviewPanel({
         educationHeight += estimateContentHeight(item, "educationItem");
       });
 
-      if (currentHeight + educationHeight > AVAILABLE_HEIGHT) {
+      // Check if there's enough space for at least 3 lines (orphans/widows rule)
+      const remainingSpace = AVAILABLE_HEIGHT - currentHeight;
+      const minSpaceNeeded = 100; // Approximate height for 3-4 lines of text
+
+      if (
+        currentHeight + educationHeight > AVAILABLE_HEIGHT &&
+        remainingSpace < minSpaceNeeded
+      ) {
         // Add current page and start new page for education
         pages.push(currentPage);
         currentPage = {};
@@ -200,9 +219,14 @@ export function LivePreviewPanel({
       const sectionSpacing = estimateContentHeight({}, "sectionSpacing");
       const skillsHeight = estimateContentHeight(skills, "skills");
 
+      // Check if there's enough space for at least 3 lines (orphans/widows rule)
+      const remainingSpace = AVAILABLE_HEIGHT - currentHeight;
+      const minSpaceNeeded = 100; // Approximate height for 3-4 lines of text
+
       if (
         currentHeight + sectionTitleHeight + sectionSpacing + skillsHeight >
-        AVAILABLE_HEIGHT
+          AVAILABLE_HEIGHT &&
+        remainingSpace < minSpaceNeeded
       ) {
         // Add current page and start new page for skills
         pages.push(currentPage);
@@ -226,9 +250,14 @@ export function LivePreviewPanel({
           "customSection"
         );
 
+        // Check if there's enough space for at least 3 lines (orphans/widows rule)
+        const remainingSpace = AVAILABLE_HEIGHT - currentHeight;
+        const minSpaceNeeded = 100; // Approximate height for 3-4 lines of text
+
         if (
           currentHeight + sectionTitleHeight + sectionSpacing + customHeight >
-          AVAILABLE_HEIGHT
+            AVAILABLE_HEIGHT &&
+          remainingSpace < minSpaceNeeded
         ) {
           // Add current page and start new page for custom section
           pages.push(currentPage);
@@ -298,6 +327,7 @@ export function LivePreviewPanel({
               <ResumePreview
                 data={pages[currentPage] || {}}
                 isA4Preview={true}
+                isPageContent={false}
                 colorTheme={colorTheme}
               />
             </div>

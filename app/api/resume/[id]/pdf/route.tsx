@@ -266,8 +266,6 @@ function generateResumeHTML(
         
         .section {
           margin-bottom: 1rem;
-          page-break-inside: avoid;
-          break-inside: avoid;
         }
         
         .section-title {
@@ -386,6 +384,8 @@ function generateResumeHTML(
             break-inside: avoid;
             page-break-before: auto;
             margin-top: 0;
+            orphans: 3;
+            widows: 3;
           }
           .section:first-of-type {
             margin-top: 0;
@@ -400,53 +400,21 @@ function generateResumeHTML(
           @page {
             size: A4;
             margin: 0;
+            padding-top: 1.5rem;
           }
-          @page :first {
-            margin-top: 0;
-          }
-          @page :left {
-            margin-top: 0;
-          }
-          @page :right {
-            margin-top: 0;
-          }
-          /* Add space at the top of new pages */
+          /* Ensure consistent spacing for content that appears at the top of any page */
           .section-title {
             margin-top: 1rem;
-            padding-top: 0.5rem;
           }
           .section-title:first-child {
             margin-top: 0;
-            padding-top: 0;
           }
-          /* Ensure sections that break to new pages have proper spacing */
-          .section {
+          /* Add extra space for content that appears at the top of new pages */
+          .section-title:first-of-type {
+            margin-top: 2.5rem;
+          }
+          .section:first-of-type .section-title:first-of-type {
             margin-top: 0;
-          }
-          .section:not(:first-child) {
-            margin-top: 1.5rem;
-          }
-          /* Add extra space for content that appears at the top of any page */
-          .resume-content > *:first-child {
-            margin-top: 0;
-          }
-          .resume-content > *:not(:first-child) {
-            margin-top: 1.5rem;
-          }
-          /* Ensure section titles at the top of pages have breathing room */
-          .section-title {
-            page-break-after: avoid;
-            break-after: avoid;
-          }
-          /* Add space before sections that might appear at page top */
-          .section {
-            page-break-before: auto;
-            break-before: auto;
-          }
-          /* Special handling for sections that start new pages */
-          .section:not(:first-child) {
-            margin-top: 1.5rem;
-            padding-top: 0.5rem;
           }
         }
       </style>
