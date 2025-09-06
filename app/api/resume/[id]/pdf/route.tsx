@@ -62,7 +62,7 @@ export async function GET(
       if (section.section_type.startsWith("custom_")) {
         resumeData[section.section_type] = {
           ...section.content,
-          title: section.title || section.content.title, // Use database title first, then content title
+          title: section.title || section.content.title || "Custom Section", // Use database title first, then content title
         };
       }
     });
@@ -83,10 +83,10 @@ export async function GET(
       format: "A4",
       printBackground: true,
       margin: {
-        top: "8mm",
-        right: "8mm",
-        bottom: "8mm",
-        left: "8mm",
+        top: "0mm",
+        right: "0mm",
+        bottom: "0mm",
+        left: "0mm",
       },
       preferCSSPageSize: true,
     });
@@ -142,20 +142,20 @@ function generateResumeHTML(
           trimmedLine.startsWith("-") ||
           trimmedLine.startsWith("*")
         ) {
-          return `<div style="display: flex; align-items: flex-start; margin-bottom: 0.125rem;">
+          return `<div style="display: flex; align-items: flex-start; margin-bottom: 0.375rem;">
           <span style="margin-right: 0.5rem;">•</span>
           <span style="flex: 1;">${trimmedLine.substring(1).trim()}</span>
         </div>`;
         } else if (/^\d+\./.test(trimmedLine)) {
           const match = trimmedLine.match(/^(\d+)\.\s*(.*)/);
           if (match) {
-            return `<div style="display: flex; align-items: flex-start; margin-bottom: 0.125rem;">
+            return `<div style="display: flex; align-items: flex-start; margin-bottom: 0.375rem;">
             <span style="margin-right: 0.5rem;">${match[1]}.</span>
             <span style="flex: 1;">${match[2]}</span>
           </div>`;
           }
         }
-        return `<p style="margin-bottom: 0.125rem;">${line}</p>`;
+        return `<p style="margin-bottom: 0.375rem;">${line}</p>`;
       })
       .join("");
   };
@@ -176,7 +176,7 @@ function generateResumeHTML(
         
         body {
           font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          line-height: 1.25;
+          line-height: 1.4;
           color: #333;
           background: white;
         }
@@ -206,30 +206,35 @@ function generateResumeHTML(
         .resume {
           width: 210mm;
           margin: 0 auto;
-          padding: 8mm;
+          padding: 0;
+          background: white;
+          max-width: none;
+        }
+        
+        .resume-content {
+          padding: 40px 50px;
           background: white;
         }
         
         .header {
-          padding-bottom: 0.5rem;
-          margin-bottom: 0.75rem;
+          margin-bottom: 1rem;
         }
         
         .name {
-          font-size: 1.5rem;
+          font-size: 1.25rem;
           font-weight: bold;
           color: #111827;
           margin-bottom: 0.5rem;
-          line-height: 1.25;
+          line-height: 1.3;
         }
         
         .contact-info {
           display: flex;
           flex-wrap: wrap;
           gap: 0.5rem;
-          font-size: 0.875rem;
+          font-size: 0.75rem;
           color: #4b5563;
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.75rem;
         }
         
         .contact-item {
@@ -248,89 +253,91 @@ function generateResumeHTML(
         .contact-separator {
           color: #4b5563;
           margin: 0 0.25rem;
-          font-size: 0.875rem;
+          font-size: 0.75rem;
         }
         
         .summary {
           color: #374151;
-          line-height: 1.25;
-          font-size: 0.875rem;
-          margin-top: 0.5rem;
+          line-height: 1.4;
+          font-size: 0.75rem;
+          margin-top: 0.75rem;
           text-align: justify;
         }
         
         .section {
-          margin-bottom: 0.75rem;
+          margin-bottom: 1rem;
+          page-break-inside: avoid;
+          break-inside: avoid;
         }
         
         .section-title {
-          font-size: 1.125rem;
+          font-size: 1rem;
           font-weight: bold;
           color: #111827;
           border-bottom: 1px solid #d1d5db;
-          padding-bottom: 0.25rem;
-          margin-bottom: 0.5rem;
+          padding-bottom: 0.375rem;
+          margin-bottom: 0.75rem;
           text-transform: uppercase;
           letter-spacing: 0.025em;
         }
         
         .experience-section-title {
-          font-size: 1.125rem;
+          font-size: 1rem;
           font-weight: bold;
           color: #111827;
           border-bottom: 1px solid #d1d5db;
-          padding-bottom: 0.25rem;
-          margin-bottom: 0.5rem;
+          padding-bottom: 0.375rem;
+          margin-bottom: 0.75rem;
           text-transform: uppercase;
           letter-spacing: 0.025em;
         }
         
         .experience-item {
-          margin-bottom: 0.625rem;
+          margin-bottom: 0.875rem;
         }
         
         .education-item {
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.875rem;
         }
         
         .item-header {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          margin-bottom: 0.25rem;
+          margin-bottom: 0.375rem;
         }
         
         .item-title {
-          font-size: 1rem;
+          font-size: 0.875rem;
           font-weight: 600;
           color: #111827;
-          line-height: 1.25;
+          line-height: 1.4;
         }
         
         .item-company {
           color: var(--resume-primary);
           font-weight: 500;
-          font-size: 0.875rem;
+          font-size: 0.75rem;
         }
         
         .item-location {
-          font-size: 0.875rem;
+          font-size: 0.75rem;
           color: #4b5563;
           margin-top: 0;
         }
         
         .item-date {
-          font-size: 0.875rem;
+          font-size: 0.75rem;
           color: #4b5563;
           text-align: right;
-          line-height: 1.25;
+          line-height: 1.4;
         }
         
         .item-description {
           color: #374151;
-          line-height: 1.25;
-          font-size: 0.875rem;
-          margin-top: 0.25rem;
+          line-height: 1.4;
+          font-size: 0.75rem;
+          margin-top: 0.375rem;
           text-align: justify;
         }
         
@@ -343,9 +350,9 @@ function generateResumeHTML(
         .skill-tag {
           background: var(--resume-accent);
           color: var(--resume-accent-foreground);
-          padding: 0.25rem 0.75rem;
+          padding: 0.25rem 0.5rem;
           border-radius: 0.25rem;
-          font-size: 0.875rem;
+          font-size: 0.75rem;
           border: none;
         }
         
@@ -357,19 +364,22 @@ function generateResumeHTML(
           }
           .resume { 
             margin: 0; 
-            padding: 8mm; 
+            padding: 0; 
             width: 210mm !important;
           }
+          .resume-content {
+            padding: 40px 50px;
+          }
           .resume * {
-            line-height: 1.25 !important;
+            line-height: 1.4 !important;
           }
           .resume h1, .resume h2, .resume h3 {
             margin-top: 0 !important;
-            margin-bottom: 0.25rem !important;
+            margin-bottom: 0.375rem !important;
           }
           .resume p {
             margin-top: 0 !important;
-            margin-bottom: 0.125rem !important;
+            margin-bottom: 0.375rem !important;
           }
           .section {
             page-break-inside: avoid;
@@ -381,7 +391,7 @@ function generateResumeHTML(
             margin-top: 0;
           }
           .section:not(:first-of-type) {
-            margin-top: 0.75rem;
+            margin-top: 1rem;
           }
           .experience-item, .education-item {
             page-break-inside: avoid;
@@ -389,29 +399,61 @@ function generateResumeHTML(
           }
           @page {
             size: A4;
-            margin: 8mm;
+            margin: 0;
           }
           @page :first {
-            margin-top: 8mm;
+            margin-top: 0;
           }
           @page :left {
-            margin-top: 8mm;
+            margin-top: 0;
           }
           @page :right {
-            margin-top: 8mm;
+            margin-top: 0;
           }
-          /* Ensure consistent spacing for content that appears at the top of any page */
+          /* Add space at the top of new pages */
           .section-title {
-            margin-top: 0.75rem;
+            margin-top: 1rem;
+            padding-top: 0.5rem;
           }
           .section-title:first-child {
             margin-top: 0;
+            padding-top: 0;
+          }
+          /* Ensure sections that break to new pages have proper spacing */
+          .section {
+            margin-top: 0;
+          }
+          .section:not(:first-child) {
+            margin-top: 1.5rem;
+          }
+          /* Add extra space for content that appears at the top of any page */
+          .resume-content > *:first-child {
+            margin-top: 0;
+          }
+          .resume-content > *:not(:first-child) {
+            margin-top: 1.5rem;
+          }
+          /* Ensure section titles at the top of pages have breathing room */
+          .section-title {
+            page-break-after: avoid;
+            break-after: avoid;
+          }
+          /* Add space before sections that might appear at page top */
+          .section {
+            page-break-before: auto;
+            break-before: auto;
+          }
+          /* Special handling for sections that start new pages */
+          .section:not(:first-child) {
+            margin-top: 1.5rem;
+            padding-top: 0.5rem;
           }
         }
       </style>
     </head>
     <body>
       <div class="resume resume-theme-${colorTheme}">
+        <div class="resume-content">
         ${
           personalInfo
             ? `
@@ -457,7 +499,7 @@ function generateResumeHTML(
                   : "",
                 personalInfo.linkedin
                   ? `<div class="contact-item">
-                  <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transform: translateY(-1px);">
                     <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
                     <rect x="2" y="9" width="4" height="12"></rect>
                     <circle cx="4" cy="4" r="2"></circle>
@@ -598,7 +640,8 @@ function generateResumeHTML(
                 key
                   .replace(/^custom_/, "")
                   .replace(/_/g, " ")
-                  .replace(/\b\w/g, (l) => l.toUpperCase())
+                  .replace(/\b\w/g, (l) => l.toUpperCase()) ||
+                "Custom Section"
               }</h2>
               ${sectionData.items
                 .map(
@@ -626,6 +669,7 @@ function generateResumeHTML(
             return "";
           })
           .join("")}
+        </div>
       </div>
     </body>
     </html>
