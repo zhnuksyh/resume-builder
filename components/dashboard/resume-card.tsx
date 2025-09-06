@@ -29,6 +29,12 @@ interface Resume {
   is_published: boolean;
   created_at: string;
   updated_at: string;
+  last_changed_section?: {
+    resume_id: string;
+    section_type: string;
+    title: string;
+    updated_at: string;
+  } | null;
 }
 
 interface ResumeCardProps {
@@ -55,6 +61,32 @@ export function ResumeCard({ resume }: ResumeCardProps) {
       year: "numeric",
     };
     return date.toLocaleDateString("en-US", options);
+  };
+
+  const formatSectionType = (sectionType: string) => {
+    switch (sectionType) {
+      case "personal_info":
+        return "Personal Information";
+      case "experience":
+        return "Work Experience";
+      case "education":
+        return "Education";
+      case "skills":
+        return "Skills";
+      case "projects":
+        return "Projects";
+      case "custom":
+        return "Custom Section";
+      default:
+        return sectionType
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, (l) => l.toUpperCase());
+    }
+  };
+
+  const capitalizeFirstWord = (text: string) => {
+    if (!text) return text;
+    return text.charAt(0).toUpperCase() + text.slice(1);
   };
 
   const handleEdit = () => {
@@ -141,8 +173,8 @@ export function ResumeCard({ resume }: ResumeCardProps) {
   };
 
   return (
-    <Card className="hover:shadow-md transition-shadow cursor-pointer group">
-      <CardContent className="p-6">
+    <Card className="hover:shadow-md transition-shadow cursor-pointer group h-[320px] flex flex-col py-0 gap-0">
+      <CardContent className="p-6 flex-1 flex flex-col">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-purple-100 p-2">
@@ -153,7 +185,7 @@ export function ResumeCard({ resume }: ResumeCardProps) {
                 {resume.title}
               </h3>
               <p className="text-sm text-gray-500">
-                Updated {formatDate(resume.updated_at)}
+                Created {formatDate(resume.created_at)}
               </p>
             </div>
           </div>
@@ -189,7 +221,7 @@ export function ResumeCard({ resume }: ResumeCardProps) {
           </DropdownMenu>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-4">
           <Badge variant={resume.is_published ? "default" : "secondary"}>
             {resume.is_published ? "Published" : "Draft"}
           </Badge>
@@ -197,9 +229,22 @@ export function ResumeCard({ resume }: ResumeCardProps) {
             {resume.template_id} template
           </span>
         </div>
+
+        {resume.last_changed_section && (
+          <div className="mt-auto pt-4 border-t border-gray-100">
+            <div className="text-xs text-gray-500 mb-1">Last changed:</div>
+            <div className="text-sm text-gray-700 font-medium">
+              {capitalizeFirstWord(resume.last_changed_section.title) ||
+                formatSectionType(resume.last_changed_section.section_type)}
+            </div>
+            <div className="text-xs text-gray-500">
+              {formatDate(resume.last_changed_section.updated_at)}
+            </div>
+          </div>
+        )}
       </CardContent>
 
-      <CardFooter className="p-6 pt-0">
+      <CardFooter className="px-6 pb-6 pt-0">
         <Button
           onClick={handleEdit}
           className="w-full bg-transparent"

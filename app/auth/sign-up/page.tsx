@@ -77,7 +77,7 @@ export default function SignUpPage() {
       <div className="w-full max-w-md">
         <div className="flex flex-col gap-6">
           {/* Logo */}
-          <div className="flex items-center justify-center gap-1 mb-8">
+          <div className="flex items-center justify-center mb-8">
             <Image
               src="/rougeresume-logo.png"
               alt="RougeResume Logo"
@@ -85,9 +85,6 @@ export default function SignUpPage() {
               height={56}
               className="h-14 w-14"
             />
-            <span className="text-2xl font-bold text-gray-900">
-              RougeResume
-            </span>
           </div>
 
           <Card>

@@ -68,17 +68,14 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="flex flex-col gap-6">
           {/* Logo */}
-          <div className="flex items-center justify-center gap-1 mb-8">
+          <div className="flex items-center justify-center mb-8">
             <Image
               src="/rougeresume-logo.png"
               alt="RougeResume Logo"
               width={56}
               height={56}
-              className="h-14 w-14"
+              className="h-14 w-14 object-contain"
             />
-            <span className="text-2xl font-bold text-gray-900">
-              RougeResume
-            </span>
           </div>
 
           <Card>

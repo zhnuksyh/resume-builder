@@ -80,7 +80,10 @@ export function ResumeEditor({
 
     const { error } = await supabase
       .from("resumes")
-      .update({ title: newTitle })
+      .update({ 
+        title: newTitle,
+        updated_at: new Date().toISOString()
+      })
       .eq("id", resume.id);
 
     if (error) {
@@ -199,7 +202,6 @@ export function ResumeEditor({
           .update({
             content,
             title: title || existingSection.title,
-            updated_at: new Date().toISOString(),
           })
           .eq("id", existingSection.id);
 

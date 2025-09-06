@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -50,17 +50,19 @@ export function CreateResumeCard() {
   };
 
   return (
-    <Card className="border-2 border-dashed border-gray-300 hover:border-purple-400 transition-colors cursor-pointer group">
-      <CardContent className="flex flex-col items-center justify-center p-8 min-h-[280px]">
+    <Card className="border-2 border-dashed border-gray-300 hover:border-purple-400 transition-colors cursor-pointer group h-[320px] flex flex-col py-0 gap-0">
+      <CardContent className="flex flex-col items-center justify-center p-6 flex-1">
         <div className="rounded-full bg-purple-100 p-4 mb-4 group-hover:bg-purple-200 transition-colors">
           <Plus className="h-8 w-8 text-purple-600" />
         </div>
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
           Create New Resume
         </h3>
-        <p className="text-sm text-gray-600 text-center mb-6">
+        <p className="text-sm text-gray-600 text-center">
           Start building your professional resume with AI assistance
         </p>
+      </CardContent>
+      <CardFooter className="px-6 pb-6 pt-0">
         <Button
           onClick={handleCreateResume}
           disabled={isCreating}
@@ -69,7 +71,7 @@ export function CreateResumeCard() {
           <Sparkles className="mr-2 h-4 w-4" />
           {isCreating ? "Creating..." : "Get Started"}
         </Button>
-      </CardContent>
+      </CardFooter>
     </Card>
   );
 }
