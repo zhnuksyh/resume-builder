@@ -1,63 +1,70 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Badge } from "@/components/ui/badge"
-import { X, Plus } from "lucide-react"
-import { AIAssistant } from "@/components/resume/ai-assistant"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { X, Plus } from "lucide-react";
+import { AIAssistant } from "@/components/resume/ai-assistant";
 
 interface SkillsContent {
-  skills: string[]
+  skills: string[];
 }
 
 interface SkillsSectionProps {
-  content: SkillsContent
-  onSave: (content: SkillsContent) => void
-  jobTitle?: string
-  industry?: string
+  content: SkillsContent;
+  onSave: (content: SkillsContent) => void;
+  jobTitle?: string;
+  industry?: string;
 }
 
-export function SkillsSection({ content, onSave, jobTitle, industry }: SkillsSectionProps) {
-  const [formData, setFormData] = useState<SkillsContent>({ skills: [] })
-  const [newSkill, setNewSkill] = useState("")
+export function SkillsSection({
+  content,
+  onSave,
+  jobTitle,
+  industry,
+}: SkillsSectionProps) {
+  const [formData, setFormData] = useState<SkillsContent>({ skills: [] });
+  const [newSkill, setNewSkill] = useState("");
 
   useEffect(() => {
-    setFormData(content.skills ? content : { skills: [] })
-  }, [content])
+    setFormData(content.skills ? content : { skills: [] });
+  }, [content]);
 
   const addSkill = () => {
     if (newSkill.trim() && !formData.skills.includes(newSkill.trim())) {
-      setFormData({ skills: [...formData.skills, newSkill.trim()] })
-      setNewSkill("")
+      setFormData({ skills: [...formData.skills, newSkill.trim()] });
+      setNewSkill("");
     }
-  }
+  };
 
   const removeSkill = (skillToRemove: string) => {
-    setFormData({ skills: formData.skills.filter((skill) => skill !== skillToRemove) })
-  }
+    setFormData({
+      skills: formData.skills.filter((skill) => skill !== skillToRemove),
+    });
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      e.preventDefault()
-      addSkill()
+      e.preventDefault();
+      addSkill();
     }
-  }
+  };
 
   const handleSave = () => {
-    onSave(formData)
-  }
+    onSave(formData);
+  };
 
   const handleAISuggestion = (suggestion: string) => {
     const newSkills = suggestion
       .split(",")
       .map((skill) => skill.trim())
-      .filter((skill) => skill && !formData.skills.includes(skill))
-    setFormData({ skills: [...formData.skills, ...newSkills] })
-  }
+      .filter((skill) => skill && !formData.skills.includes(skill));
+    setFormData({ skills: [...formData.skills, ...newSkills] });
+  };
 
   const suggestedSkills = [
     "JavaScript",
@@ -80,9 +87,11 @@ export function SkillsSection({ content, onSave, jobTitle, industry }: SkillsSec
     "Leadership",
     "Communication",
     "Problem Solving",
-  ]
+  ];
 
-  const availableSuggestions = suggestedSkills.filter((skill) => !formData.skills.includes(skill))
+  const availableSuggestions = suggestedSkills.filter(
+    (skill) => !formData.skills.includes(skill)
+  );
 
   return (
     <div className="space-y-6">
@@ -112,7 +121,11 @@ export function SkillsSection({ content, onSave, jobTitle, industry }: SkillsSec
               {formData.skills.map((skill) => (
                 <Badge key={skill} variant="secondary" className="text-sm">
                   {skill}
-                  <button onClick={() => removeSkill(skill)} className="ml-2 hover:text-red-500" type="button">
+                  <button
+                    onClick={() => removeSkill(skill)}
+                    className="ml-2 hover:text-red-500"
+                    type="button"
+                  >
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
@@ -129,9 +142,9 @@ export function SkillsSection({ content, onSave, jobTitle, industry }: SkillsSec
                 <Badge
                   key={skill}
                   variant="outline"
-                  className="cursor-pointer hover:bg-blue-50"
+                  className="cursor-pointer hover:bg-purple-50"
                   onClick={() => {
-                    setFormData({ skills: [...formData.skills, skill] })
+                    setFormData({ skills: [...formData.skills, skill] });
                   }}
                 >
                   {skill}
@@ -155,5 +168,5 @@ export function SkillsSection({ content, onSave, jobTitle, industry }: SkillsSec
         <Button onClick={handleSave}>Save Skills</Button>
       </div>
     </div>
-  )
+  );
 }

@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -47,7 +47,7 @@ export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
             height={56}
             className="h-14 w-14"
           />
-          <span className="text-2xl font-bold text-gray-900">ResumeAI</span>
+          <span className="text-2xl font-bold text-gray-900">RougeResume</span>
         </div>
 
         <div className="flex items-center gap-4">
@@ -58,7 +58,11 @@ export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
                 className="relative h-10 w-10 rounded-full"
               >
                 <Avatar className="h-10 w-10">
-                  <AvatarFallback className="bg-blue-100 text-blue-600">
+                  <AvatarImage
+                    src={profile?.avatar_url}
+                    alt="Profile picture"
+                  />
+                  <AvatarFallback className="bg-purple-100 text-purple-600">
                     {profile?.full_name
                       ? getInitials(profile.full_name)
                       : getInitials(user.email)}
@@ -76,7 +80,7 @@ export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
                 </p>
               </div>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/profile")}>
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>

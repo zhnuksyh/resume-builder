@@ -1,17 +1,55 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ResumePreview } from "./resume-preview";
-import { PDFExport } from "./pdf-export";
 import { ResumeColor } from "./color-picker";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
-interface LivePreviewPanelProps {
-  resumeData: any;
-  resumeId: string;
-  resumeTitle: string;
+interface ResumeData {
+  personalInfo?: {
+    fullName?: string;
+    email?: string;
+    phone?: string;
+    location?: string;
+    website?: string;
+    linkedin?: string;
+    summary?: string;
+  };
+  experience?: {
+    items: Array<{
+      id: string;
+      jobTitle: string;
+      company: string;
+      location: string;
+      startDate: string;
+      endDate: string;
+      current: boolean;
+      description: string;
+    }>;
+  };
+  education?: {
+    items: Array<{
+      id: string;
+      degree: string;
+      school: string;
+      location: string;
+      startDate: string;
+      endDate: string;
+      current: boolean;
+      gpa?: string;
+      description?: string;
+    }>;
+  };
+  skills?: {
+    skills: string[];
+  };
+  [key: string]: any; // Allow custom sections
+}
+
+interface PaginatedResumePreviewProps {
+  data: ResumeData;
+  className?: string;
   colorTheme?: ResumeColor;
 }
 
@@ -23,12 +61,11 @@ interface PageContent {
   [key: string]: any; // Allow custom sections at root level
 }
 
-export function LivePreviewPanel({
-  resumeData,
-  resumeId,
-  resumeTitle,
+export function PaginatedResumePreview({
+  data,
+  className = "",
   colorTheme = "purple",
-}: LivePreviewPanelProps) {
+}: PaginatedResumePreviewProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [pages, setPages] = useState<PageContent[]>([]);
 
@@ -94,7 +131,7 @@ export function LivePreviewPanel({
   };
 
   // Function to split content into pages based on precise A4 space utilization
-  const splitContentIntoPages = (resumeData: any): PageContent[] => {
+  const splitContentIntoPages = (resumeData: ResumeData): PageContent[] => {
     const pages: PageContent[] = [];
 
     // A4 page dimensions in pixels (at 96 DPI)
@@ -178,7 +215,7 @@ export function LivePreviewPanel({
 
       // Check if we can fit education on current page
       let educationHeight = sectionTitleHeight + sectionSpacing;
-      educationItems.forEach((item: any) => {
+      educationItems.forEach((item) => {
         educationHeight += estimateContentHeight(item, "educationItem");
       });
 
@@ -257,9 +294,9 @@ export function LivePreviewPanel({
   };
 
   useEffect(() => {
-    const splitPages = splitContentIntoPages(resumeData);
+    const splitPages = splitContentIntoPages(data);
     setPages(splitPages);
-  }, [resumeData]);
+  }, [data]);
 
   const goToPreviousPage = () => {
     setCurrentPage((prev) => Math.max(0, prev - 1));
@@ -269,86 +306,80 @@ export function LivePreviewPanel({
     setCurrentPage((prev) => Math.min(pages.length - 1, prev + 1));
   };
 
+  if (pages.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <p className="text-gray-600">No content to display</p>
+      </div>
+    );
+  }
+
   return (
-    <Card className="h-fit overflow-hidden">
-      <CardHeader className="pb-0">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CardTitle className="text-lg">Live Preview</CardTitle>
-            <div className="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded">
-              A4 Format
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <PDFExport
-              resumeId={resumeId}
-              resumeTitle={resumeTitle}
-              variant="outline"
-              size="sm"
+    <div className={`flex flex-col items-center ${className}`}>
+      {/* Page Content - Clean A4 preview */}
+      <div className="a4-preview-paginated">
+        <div className="a4-content-wrapper">
+          <div
+            className="a4-preview-container"
+            style={{
+              transform: `translateY(-${currentPage * 100}%)`,
+              transition: "transform 0.3s ease-in-out",
+            }}
+          >
+            <ResumePreview
+              data={pages[currentPage]}
+              isA4Preview={true}
+              colorTheme={colorTheme}
             />
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="flex flex-col items-center px-4 pt-1 pb-2 min-h-[400px]">
-          {/* A4 Paper Container - Clean preview without pagination controls */}
-          <div className="a4-live-preview">
-            <div className="a4-preview-container">
-              <ResumePreview
-                data={pages[currentPage] || {}}
-                isA4Preview={true}
-                colorTheme={colorTheme}
-              />
+      </div>
+
+      {/* Page Navigation - Below preview */}
+      {pages.length > 1 && (
+        <div className="flex items-center justify-between mt-8 px-4 w-full max-w-2xl">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goToPreviousPage}
+            disabled={currentPage === 0}
+            className="flex items-center gap-2"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Previous
+          </Button>
+
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">
+              Page {currentPage + 1} of {pages.length}
+            </span>
+            <div className="flex gap-1">
+              {pages.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentPage(index)}
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    index === currentPage
+                      ? "bg-primary"
+                      : "bg-gray-300 hover:bg-gray-400"
+                  }`}
+                />
+              ))}
             </div>
           </div>
 
-          {/* Page Navigation - Below A4 preview */}
-          {pages.length > 1 && (
-            <div className="flex items-center justify-between w-full max-w-2xl mt-8 px-4">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={goToPreviousPage}
-                disabled={currentPage === 0}
-                className="flex items-center gap-2"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                Previous
-              </Button>
-
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
-                  Page {currentPage + 1} of {pages.length}
-                </span>
-                <div className="flex gap-1">
-                  {pages.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentPage(index)}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        index === currentPage
-                          ? "bg-primary"
-                          : "bg-gray-300 hover:bg-gray-400"
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={goToNextPage}
-                disabled={currentPage === pages.length - 1}
-                className="flex items-center gap-2"
-              >
-                Next
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goToNextPage}
+            disabled={currentPage === pages.length - 1}
+            className="flex items-center gap-2"
+          >
+            Next
+            <ChevronRight className="h-4 w-4" />
+          </Button>
         </div>
-      </CardContent>
-    </Card>
+      )}
+    </div>
   );
 }

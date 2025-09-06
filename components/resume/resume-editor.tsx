@@ -15,6 +15,7 @@ import { SkillsSection } from "./sections/skills-section";
 import { CustomSection } from "./sections/custom-section";
 import { SectionTabs } from "./section-tabs";
 import { LivePreviewPanel } from "./live-preview-panel";
+import { ColorPicker, ResumeColor } from "./color-picker";
 
 interface Resume {
   id: string;
@@ -49,6 +50,7 @@ export function ResumeEditor({
   const [isSaving, setIsSaving] = useState(false);
   const [currentCustomSectionContent, setCurrentCustomSectionContent] =
     useState<any>(null);
+  const [resumeColor, setResumeColor] = useState<ResumeColor>("purple");
   const supabase = createClient();
 
   // Reset current custom section content when switching sections
@@ -277,6 +279,8 @@ export function ResumeEditor({
           <EducationSection
             content={getSectionContent("education")}
             onSave={(content) => saveSection("education", content, "Education")}
+            jobTitle={jobTitle}
+            industry={industry}
           />
         );
       case "skills":
@@ -301,6 +305,7 @@ export function ResumeEditor({
                 onSave={(content) => saveSection(activeSection, content)}
                 onDelete={() => deleteCustomSection(activeSection)}
                 onContentChange={setCurrentCustomSectionContent}
+                sectionTitle={section.title || ""}
               />
             );
           }
@@ -347,7 +352,7 @@ export function ResumeEditor({
                 <Input
                   value={resume.title}
                   onChange={(e) => updateResumeTitle(e.target.value)}
-                  className="text-lg font-semibold border-none shadow-none p-0 h-auto bg-transparent"
+                  className="text-lg font-semibold border border-input rounded-md px-3 py-2 h-8 bg-transparent hover:bg-accent focus:bg-background"
                   placeholder="Resume Title"
                 />
                 <Badge variant={resume.is_published ? "default" : "secondary"}>
@@ -356,6 +361,10 @@ export function ResumeEditor({
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <ColorPicker
+                selectedColor={resumeColor}
+                onColorChange={setResumeColor}
+              />
               <Button size="sm" disabled={isSaving}>
                 <Save className="mr-2 h-4 w-4" />
                 {isSaving ? "Saving..." : "Save"}
@@ -442,6 +451,7 @@ export function ResumeEditor({
               resumeData={getResumeData()}
               resumeId={resume.id}
               resumeTitle={resume.title}
+              colorTheme={resumeColor}
             />
           </div>
         </div>

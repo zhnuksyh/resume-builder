@@ -63,6 +63,22 @@ export async function POST(request: NextRequest) {
         Return only the summary text.`
         break
 
+      case "education":
+        prompt = `As a professional resume writer, help improve this education description.
+        Job Title: ${jobTitle || "Not specified"}
+        Industry: ${industry || "Not specified"}
+        Current content: ${currentContent}
+        
+        Provide 3-5 improved bullet points for education details that are:
+        - Relevant to the job title and industry
+        - Highlight academic achievements, relevant coursework, or projects
+        - Include honors, awards, or extracurricular activities
+        - Show leadership or technical skills gained
+        - ATS-friendly with relevant keywords
+        
+        Return only the bullet points, one per line, starting with "•"`
+        break
+
       default:
         return NextResponse.json({ error: "Invalid section type" }, { status: 400 })
     }

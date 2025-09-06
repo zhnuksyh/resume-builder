@@ -1,19 +1,30 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { ExternalLink } from "lucide-react"
-import { ResumePreview } from "./resume-preview"
-import { PDFExport } from "./pdf-export"
-import Link from "next/link"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { ExternalLink } from "lucide-react";
+import { PaginatedResumePreview } from "./paginated-resume-preview";
+import { PDFExport } from "./pdf-export";
+import Link from "next/link";
 
 interface PreviewModalProps {
-  isOpen: boolean
-  onClose: () => void
-  resumeData: any
-  resumeId: string
-  resumeTitle: string
+  isOpen: boolean;
+  onClose: () => void;
+  resumeData: any;
+  resumeId: string;
+  resumeTitle: string;
 }
 
-export function PreviewModal({ isOpen, onClose, resumeData, resumeId, resumeTitle }: PreviewModalProps) {
+export function PreviewModal({
+  isOpen,
+  onClose,
+  resumeData,
+  resumeId,
+  resumeTitle,
+}: PreviewModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
@@ -27,16 +38,19 @@ export function PreviewModal({ isOpen, onClose, resumeData, resumeId, resumeTitl
                   Full Screen
                 </Button>
               </Link>
-              <PDFExport resumeId={resumeId} resumeTitle={resumeTitle} variant="outline" size="sm" />
+              <PDFExport
+                resumeId={resumeId}
+                resumeTitle={resumeTitle}
+                variant="outline"
+                size="sm"
+              />
             </div>
           </div>
         </DialogHeader>
         <div className="mt-4 flex justify-center">
-          <div className="a4-preview-container">
-            <ResumePreview data={resumeData} isA4Preview={true} />
-          </div>
+          <PaginatedResumePreview data={resumeData} colorTheme="purple" />
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

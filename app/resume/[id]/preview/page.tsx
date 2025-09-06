@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { ResumePreview } from "@/components/resume/resume-preview";
+import { PaginatedResumePreview } from "@/components/resume/paginated-resume-preview";
 import { Button } from "@/components/ui/button";
 import { PDFExport } from "@/components/resume/pdf-export";
 import { ArrowLeft } from "lucide-react";
@@ -70,6 +70,13 @@ export default async function PreviewPage({
       ?.content || { skills: [] },
   };
 
+  // Add custom sections to resumeData
+  sections?.forEach((section: ResumeSection) => {
+    if (section.section_type.startsWith("custom_")) {
+      resumeData[section.section_type] = section.content;
+    }
+  });
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -100,10 +107,8 @@ export default async function PreviewPage({
       </header>
 
       {/* Preview Content */}
-      <div className="container mx-auto px-4 py-8 flex justify-center">
-        <div className="a4-preview-container">
-          <ResumePreview data={resumeData} isA4Preview={true} />
-        </div>
+      <div className="container mx-auto px-4 py-8 flex flex-col items-center">
+        <PaginatedResumePreview data={resumeData} colorTheme="purple" />
       </div>
     </div>
   );

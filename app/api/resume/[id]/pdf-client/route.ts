@@ -46,6 +46,13 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       skills: sections?.find((s: any) => s.section_type === "skills")?.content || { skills: [] },
     }
 
+    // Add custom sections to resumeData
+    sections?.forEach((section: any) => {
+      if (section.section_type.startsWith("custom_")) {
+        resumeData[section.section_type] = section.content
+      }
+    })
+
     return NextResponse.json({
       resumeData,
       title: resume.title,

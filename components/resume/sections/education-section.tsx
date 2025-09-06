@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2, List, Hash } from "lucide-react";
+import { AIAssistant } from "@/components/resume/ai-assistant";
 
 interface EducationItem {
   id: string;
@@ -26,9 +27,16 @@ interface EducationContent {
 interface EducationSectionProps {
   content: EducationContent;
   onSave: (content: EducationContent) => void;
+  jobTitle?: string;
+  industry?: string;
 }
 
-export function EducationSection({ content, onSave }: EducationSectionProps) {
+export function EducationSection({
+  content,
+  onSave,
+  jobTitle,
+  industry,
+}: EducationSectionProps) {
   const [formData, setFormData] = useState<EducationContent>({ items: [] });
 
   useEffect(() => {
@@ -67,6 +75,10 @@ export function EducationSection({ content, onSave }: EducationSectionProps) {
 
   const handleSave = () => {
     onSave(formData);
+  };
+
+  const handleAISuggestion = (educationId: string, suggestion: string) => {
+    updateEducation(educationId, "description", suggestion);
   };
 
   const formatAsBulletPoints = (educationId: string) => {
@@ -242,6 +254,17 @@ export function EducationSection({ content, onSave }: EducationSectionProps) {
                 rows={3}
               />
             </div>
+            {education.degree && (
+              <AIAssistant
+                sectionType="education"
+                currentContent={education.description || ""}
+                jobTitle={jobTitle}
+                industry={industry}
+                onApplySuggestion={(suggestion) =>
+                  handleAISuggestion(education.id, suggestion)
+                }
+              />
+            )}
           </CardContent>
         </Card>
       ))}

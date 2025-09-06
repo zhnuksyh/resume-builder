@@ -64,7 +64,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-violet-100 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         <div className="flex flex-col gap-6">
           {/* Logo */}
@@ -76,7 +76,9 @@ export default function LoginPage() {
               height={56}
               className="h-14 w-14"
             />
-            <span className="text-2xl font-bold text-gray-900">ResumeAI</span>
+            <span className="text-2xl font-bold text-gray-900">
+              RougeResume
+            </span>
           </div>
 
           <Card>
@@ -126,7 +128,7 @@ export default function LoginPage() {
                 Don't have an account?{" "}
                 <Link
                   href="/auth/sign-up"
-                  className="text-blue-600 hover:underline"
+                  className="text-purple-600 hover:underline"
                 >
                   Sign up for free
                 </Link>

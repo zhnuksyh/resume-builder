@@ -1,5 +1,5 @@
-import { Badge } from "@/components/ui/badge";
 import { Mail, Phone, MapPin, Globe, Linkedin } from "lucide-react";
+import { ResumeColor } from "./color-picker";
 
 interface ResumeData {
   personalInfo?: {
@@ -22,6 +22,7 @@ interface ResumeData {
       current: boolean;
       description: string;
     }>;
+    isPartial?: boolean;
   };
   education?: {
     items: Array<{
@@ -35,6 +36,7 @@ interface ResumeData {
       gpa?: string;
       description?: string;
     }>;
+    isPartial?: boolean;
   };
   skills?: {
     skills: string[];
@@ -47,6 +49,7 @@ interface ResumePreviewProps {
   className?: string;
   isA4Preview?: boolean;
   isPageContent?: boolean;
+  colorTheme?: ResumeColor;
 }
 
 export function ResumePreview({
@@ -54,13 +57,14 @@ export function ResumePreview({
   className = "",
   isA4Preview = false,
   isPageContent = false,
+  colorTheme = "purple",
 }: ResumePreviewProps) {
   // Extract data based on format
   let personalInfo,
     experience,
     education,
     skills,
-    customSections = {};
+    customSections: { [key: string]: any } = {};
 
   if (isPageContent && Array.isArray(data)) {
     // Page-based content format
@@ -102,7 +106,7 @@ export function ResumePreview({
   const a4Styles = isA4Preview
     ? {
         container: "max-w-none mx-0 h-full",
-        header: "pb-2 mb-3",
+        header: "mb-3",
         name: "text-xl font-bold text-gray-900 mb-1.5 leading-tight",
         contactInfo: "flex flex-wrap gap-2 text-xs text-gray-600 mb-2",
         contactItem: "flex items-center gap-1",
@@ -116,7 +120,7 @@ export function ResumePreview({
         educationItem: "mb-2.5",
         itemHeader: "flex justify-between items-start mb-1",
         itemTitle: "text-sm font-semibold text-gray-900 leading-tight",
-        itemCompany: "text-blue-600 font-medium text-xs",
+        itemCompany: "text-[var(--resume-primary)] font-medium text-xs",
         itemLocation: "text-xs text-gray-600 mt-0",
         itemDate: "text-xs text-gray-600 text-right leading-tight",
         itemDescription:
@@ -140,7 +144,7 @@ export function ResumePreview({
         educationItem: "mb-4",
         itemHeader: "flex justify-between items-start mb-2",
         itemTitle: "text-lg font-semibold text-gray-900",
-        itemCompany: "text-blue-600 font-medium",
+        itemCompany: "text-[var(--resume-primary)] font-medium",
         itemLocation: "text-sm text-gray-600",
         itemDate: "text-sm text-gray-600 text-right",
         itemDescription: "text-gray-700 leading-relaxed text-justify",
@@ -149,7 +153,9 @@ export function ResumePreview({
       };
 
   return (
-    <div className={`bg-white ${a4Styles.container} ${className}`}>
+    <div
+      className={`bg-white ${a4Styles.container} ${className} resume-theme-${colorTheme}`}
+    >
       <div className={isA4Preview ? "space-y-4" : "p-8 space-y-6"}>
         {/* Header */}
         {personalInfo && (
@@ -347,13 +353,12 @@ export function ResumePreview({
             <h2 className={a4Styles.sectionTitle}>Skills</h2>
             <div className={a4Styles.skillsContainer}>
               {skills.skills.map((skill, index) => (
-                <Badge
+                <span
                   key={index}
-                  variant="secondary"
-                  className={a4Styles.skillTag}
+                  className={`${a4Styles.skillTag} inline-flex items-center justify-center rounded-md border border-transparent bg-[var(--resume-accent)] text-[var(--resume-accent-foreground)] px-2 py-1 text-xs font-medium`}
                 >
                   {skill}
-                </Badge>
+                </span>
               ))}
             </div>
           </div>
@@ -364,6 +369,7 @@ export function ResumePreview({
           if (
             key.startsWith("custom_") &&
             sectionData?.items &&
+            Array.isArray(sectionData.items) &&
             sectionData.items.length > 0
           ) {
             return (
@@ -378,48 +384,63 @@ export function ResumePreview({
                         <div>
                           <h3 className={a4Styles.itemTitle}>{item.title}</h3>
                         </div>
+                        {(item.startDate || item.endDate) && (
+                          <div className={a4Styles.itemDate}>
+                            <p>
+                              {item.startDate && item.endDate
+                                ? `${formatDate(item.startDate)} - ${formatDate(
+                                    item.endDate
+                                  )}`
+                                : item.startDate
+                                ? formatDate(item.startDate)
+                                : formatDate(item.endDate)}
+                            </p>
+                          </div>
+                        )}
                       </div>
                       {item.description && (
                         <div className={a4Styles.itemDescription}>
-                          {item.description.split("\n").map((line, index) => {
-                            const trimmedLine = line.trim();
-                            if (
-                              trimmedLine.startsWith("•") ||
-                              trimmedLine.startsWith("-") ||
-                              trimmedLine.startsWith("*")
-                            ) {
-                              return (
-                                <div
-                                  key={index}
-                                  className="flex items-start mb-1"
-                                >
-                                  <span className="mr-2">•</span>
-                                  <span className="flex-1">
-                                    {trimmedLine.substring(1).trim()}
-                                  </span>
-                                </div>
-                              );
-                            } else if (/^\d+\./.test(trimmedLine)) {
-                              const match =
-                                trimmedLine.match(/^(\d+)\.\s*(.*)/);
-                              if (match) {
+                          {item.description
+                            .split("\n")
+                            .map((line: string, index: number) => {
+                              const trimmedLine = line.trim();
+                              if (
+                                trimmedLine.startsWith("•") ||
+                                trimmedLine.startsWith("-") ||
+                                trimmedLine.startsWith("*")
+                              ) {
                                 return (
                                   <div
                                     key={index}
                                     className="flex items-start mb-1"
                                   >
-                                    <span className="mr-2">{match[1]}.</span>
-                                    <span className="flex-1">{match[2]}</span>
+                                    <span className="mr-2">•</span>
+                                    <span className="flex-1">
+                                      {trimmedLine.substring(1).trim()}
+                                    </span>
                                   </div>
                                 );
+                              } else if (/^\d+\./.test(trimmedLine)) {
+                                const match =
+                                  trimmedLine.match(/^(\d+)\.\s*(.*)/);
+                                if (match) {
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="flex items-start mb-1"
+                                    >
+                                      <span className="mr-2">{match[1]}.</span>
+                                      <span className="flex-1">{match[2]}</span>
+                                    </div>
+                                  );
+                                }
                               }
-                            }
-                            return (
-                              <p key={index} className="mb-1">
-                                {line}
-                              </p>
-                            );
-                          })}
+                              return (
+                                <p key={index} className="mb-1">
+                                  {line}
+                                </p>
+                              );
+                            })}
                         </div>
                       )}
                     </div>

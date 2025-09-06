@@ -1,8 +1,8 @@
-# ResumeAI - AI-Powered Resume Builder
+# RougeResume - AI-Powered Resume Builder
 
 A modern, intelligent resume builder that helps you create professional, ATS-friendly resumes with AI assistance. Built with Next.js 15, React 19, TypeScript, and Supabase.
 
-![ResumeAI](public/rougeresume-logo.png)
+![RougeResume](public/rougeresume-logo.png)
 
 ## ✨ Features
 

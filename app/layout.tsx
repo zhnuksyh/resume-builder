@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "RougeResume",
-  description: "Created with v0",
-  generator: "v0.app",
+  title: "RougeResume - AI-Powered Resume Builder",
+  description:
+    "Create professional, ATS-friendly resumes with AI assistance. Built with Next.js 15, React 19, TypeScript, and Supabase.",
+  generator: "Next.js",
 };
 
 export default function RootLayout({
@@ -25,7 +27,10 @@ html {
 }
         `}</style>
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

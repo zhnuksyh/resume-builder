@@ -13,6 +13,9 @@ interface CustomItem {
   id: string;
   title: string;
   description: string;
+  startDate: string;
+  endDate: string;
+  position?: string; // For reference sections
 }
 
 interface CustomContent {
@@ -24,6 +27,7 @@ interface CustomSectionProps {
   onSave: (content: CustomContent) => void;
   onDelete?: () => void;
   onContentChange?: (content: CustomContent) => void;
+  sectionTitle?: string; // To detect if this is a Reference section
 }
 
 export function CustomSection({
@@ -31,8 +35,10 @@ export function CustomSection({
   onSave,
   onDelete,
   onContentChange,
+  sectionTitle,
 }: CustomSectionProps) {
   const [formData, setFormData] = useState<CustomContent>({ items: [] });
+  const isReferenceSection = sectionTitle?.toLowerCase() === "reference";
 
   useEffect(() => {
     setFormData(content.items ? content : { items: [] });
@@ -43,6 +49,9 @@ export function CustomSection({
       id: Date.now().toString(),
       title: "",
       description: "",
+      startDate: "",
+      endDate: "",
+      ...(isReferenceSection && { position: "" }),
     };
     const newFormData = { items: [...formData.items, newItem] };
     setFormData(newFormData);
@@ -157,9 +166,44 @@ export function CustomSection({
                 placeholder="Enter title"
               />
             </div>
+            {isReferenceSection ? (
+              <div className="space-y-2">
+                <Label>Position</Label>
+                <Input
+                  value={item.position || ""}
+                  onChange={(e) =>
+                    updateItem(item.id, "position", e.target.value)
+                  }
+                  placeholder="Enter position"
+                />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Start Date</Label>
+                  <Input
+                    type="month"
+                    value={item.startDate}
+                    onChange={(e) =>
+                      updateItem(item.id, "startDate", e.target.value)
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>End Date</Label>
+                  <Input
+                    type="month"
+                    value={item.endDate}
+                    onChange={(e) =>
+                      updateItem(item.id, "endDate", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
+            )}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label>Description</Label>
+                <Label>{isReferenceSection ? "Remarks" : "Description"}</Label>
                 <div className="flex gap-2">
                   <Button
                     type="button"
@@ -186,7 +230,9 @@ export function CustomSection({
                 onChange={(e) =>
                   updateItem(item.id, "description", e.target.value)
                 }
-                placeholder="Enter description"
+                placeholder={
+                  isReferenceSection ? "Enter remarks" : "Enter description"
+                }
                 rows={4}
               />
             </div>

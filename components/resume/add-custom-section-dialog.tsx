@@ -71,7 +71,7 @@ export function AddCustomSectionDialog({
                 <SelectContent>
                   <SelectItem value="volunteering">Volunteering</SelectItem>
                   <SelectItem value="project">Project</SelectItem>
-                  <SelectItem value="organizations">Organizations</SelectItem>
+                  <SelectItem value="organization">Organization</SelectItem>
                   <SelectItem value="additional information">
                     Additional Information
                   </SelectItem>

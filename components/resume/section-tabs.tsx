@@ -87,8 +87,8 @@ function SortableTab({
       ref={setNodeRef}
       style={style}
       value={section.section_type}
-      className={`flex items-center gap-2 px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 whitespace-nowrap ${
-        isActive ? "bg-blue-50 text-blue-700" : ""
+      className={`flex items-center gap-2 px-4 py-2 data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700 whitespace-nowrap ${
+        isActive ? "bg-purple-50 text-purple-700" : ""
       }`}
       onClick={() => onSectionChange(section.section_type)}
     >
@@ -312,7 +312,7 @@ export function SectionTabs({
                     <TabsTrigger
                       key={section.id}
                       value={section.id}
-                      className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 whitespace-nowrap"
+                      className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700 whitespace-nowrap"
                     >
                       <Icon className="h-4 w-4 flex-shrink-0" />
                       <span className="hidden sm:inline">{section.label}</span>
