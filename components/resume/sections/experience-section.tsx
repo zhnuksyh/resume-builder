@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 import { Plus, Trash2, List, Hash } from "lucide-react";
 import { AIAssistant } from "@/components/resume/ai-assistant";
 
@@ -16,7 +17,6 @@ interface ExperienceItem {
   location: string;
   startDate: string;
   endDate: string;
-  current: boolean;
   description: string;
 }
 
@@ -49,7 +49,6 @@ export function ExperienceSection({
       location: "",
       startDate: "",
       endDate: "",
-      current: false,
       description: "",
     };
     const newFormData = { items: [...formData.items, newExperience] };
@@ -60,7 +59,7 @@ export function ExperienceSection({
   const updateExperience = (
     id: string,
     field: keyof ExperienceItem,
-    value: string | boolean
+    value: string
   ) => {
     const newFormData = {
       items: formData.items.map((item) =>
@@ -198,37 +197,24 @@ export function ExperienceSection({
               </div>
               <div className="space-y-2">
                 <Label>Start Date</Label>
-                <Input
-                  type="month"
+                <MonthYearPicker
                   value={experience.startDate}
-                  onChange={(e) =>
-                    updateExperience(experience.id, "startDate", e.target.value)
+                  onChange={(value) =>
+                    updateExperience(experience.id, "startDate", value)
                   }
+                  placeholder="Select start month and year"
                 />
               </div>
               <div className="space-y-2">
                 <Label>End Date</Label>
-                <Input
-                  type="month"
+                <MonthYearPicker
                   value={experience.endDate}
-                  onChange={(e) =>
-                    updateExperience(experience.id, "endDate", e.target.value)
+                  onChange={(value) =>
+                    updateExperience(experience.id, "endDate", value)
                   }
-                  disabled={experience.current}
+                  placeholder="Select end month and year"
+                  showPresentOption={true}
                 />
-              </div>
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id={`current-${experience.id}`}
-                  checked={experience.current}
-                  onChange={(e) =>
-                    updateExperience(experience.id, "current", e.target.checked)
-                  }
-                />
-                <Label htmlFor={`current-${experience.id}`}>
-                  Currently working here
-                </Label>
               </div>
             </div>
             <div className="space-y-2">

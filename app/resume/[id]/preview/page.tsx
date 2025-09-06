@@ -98,6 +98,7 @@ export default async function PreviewPage({
               <PDFExport
                 resumeId={id}
                 resumeTitle={resume.title}
+                colorTheme="purple"
                 variant="outline"
                 size="sm"
               />

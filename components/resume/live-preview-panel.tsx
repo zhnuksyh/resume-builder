@@ -283,6 +283,7 @@ export function LivePreviewPanel({
             <PDFExport
               resumeId={resumeId}
               resumeTitle={resumeTitle}
+              colorTheme={colorTheme}
               variant="outline"
               size="sm"
             />

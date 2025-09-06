@@ -110,7 +110,7 @@ export function ResumePreview({
         name: "text-xl font-bold text-gray-900 mb-1.5 leading-tight",
         contactInfo: "flex flex-wrap gap-2 text-xs text-gray-600 mb-2",
         contactItem: "flex items-center gap-1",
-        summary: "text-gray-700 leading-relaxed text-sm mt-2 text-justify",
+        summary: "text-gray-700 leading-relaxed text-xs mt-2 text-justify",
         section: "mb-3",
         sectionTitle:
           "text-base font-bold text-gray-900 mb-2 border-b border-gray-300 pb-1 uppercase tracking-wide",
@@ -134,7 +134,7 @@ export function ResumePreview({
         name: "text-3xl font-bold text-gray-900 mb-2",
         contactInfo: "flex flex-wrap gap-4 text-sm text-gray-600",
         contactItem: "flex items-center gap-1",
-        summary: "text-gray-700 leading-relaxed mt-4 text-justify",
+        summary: "text-gray-700 leading-relaxed mt-4 text-justify text-sm",
         section: "mb-6",
         sectionTitle:
           "text-xl font-bold text-gray-900 mb-4 border-b border-gray-200 pb-2",

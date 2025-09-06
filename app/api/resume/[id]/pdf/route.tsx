@@ -8,6 +8,8 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const colorTheme = searchParams.get("colorTheme") || "purple";
     const supabase = await createClient();
 
     // Get user
@@ -66,7 +68,7 @@ export async function GET(
     });
 
     // Generate HTML for PDF
-    const html = generateResumeHTML(resumeData, resume.title);
+    const html = generateResumeHTML(resumeData, resume.title, colorTheme);
 
     // Launch Puppeteer and generate PDF
     const browser = await puppeteer.launch({
@@ -81,10 +83,10 @@ export async function GET(
       format: "A4",
       printBackground: true,
       margin: {
-        top: "0.6in",
-        right: "0.6in",
-        bottom: "0.6in",
-        left: "0.6in",
+        top: "8mm",
+        right: "8mm",
+        bottom: "8mm",
+        left: "8mm",
       },
       preferCSSPageSize: true,
     });
@@ -110,7 +112,11 @@ export async function GET(
   }
 }
 
-function generateResumeHTML(data: any, title: string): string {
+function generateResumeHTML(
+  data: any,
+  title: string,
+  colorTheme: string = "purple"
+): string {
   const { personalInfo, experience, education, skills, ...customSections } =
     data;
 
@@ -160,6 +166,7 @@ function generateResumeHTML(data: any, title: string): string {
     <head>
       <meta charset="utf-8">
       <title>${title}</title>
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
       <style>
         * {
           margin: 0;
@@ -168,17 +175,38 @@ function generateResumeHTML(data: any, title: string): string {
         }
         
         body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
           line-height: 1.25;
           color: #333;
           background: white;
         }
         
+        /* Color Theme Variables */
+        .resume-theme-purple {
+          --resume-primary: oklch(0.6 0.15 300);
+          --resume-primary-foreground: oklch(0.98 0.01 300);
+          --resume-accent: oklch(0.9 0.08 300);
+          --resume-accent-foreground: oklch(0.2 0.02 300);
+        }
+        
+        .resume-theme-dark-blue {
+          --resume-primary: oklch(0.25 0.15 240);
+          --resume-primary-foreground: oklch(0.98 0.01 240);
+          --resume-accent: oklch(0.9 0.08 240);
+          --resume-accent-foreground: oklch(0.2 0.02 240);
+        }
+        
+        .resume-theme-grey {
+          --resume-primary: oklch(0.5 0.02 0);
+          --resume-primary-foreground: oklch(0.98 0 0);
+          --resume-accent: oklch(0.9 0 0);
+          --resume-accent-foreground: oklch(0.2 0 0);
+        }
+        
         .resume {
           width: 210mm;
-          height: 297mm;
           margin: 0 auto;
-          padding: 15mm;
+          padding: 8mm;
           background: white;
         }
         
@@ -188,10 +216,10 @@ function generateResumeHTML(data: any, title: string): string {
         }
         
         .name {
-          font-size: 1.25rem;
+          font-size: 1.5rem;
           font-weight: bold;
           color: #111827;
-          margin-bottom: 0.375rem;
+          margin-bottom: 0.5rem;
           line-height: 1.25;
         }
         
@@ -199,7 +227,7 @@ function generateResumeHTML(data: any, title: string): string {
           display: flex;
           flex-wrap: wrap;
           gap: 0.5rem;
-          font-size: 0.75rem;
+          font-size: 0.875rem;
           color: #4b5563;
           margin-bottom: 0.5rem;
         }
@@ -208,6 +236,19 @@ function generateResumeHTML(data: any, title: string): string {
           display: flex;
           align-items: center;
           gap: 0.25rem;
+        }
+        
+        .contact-icon {
+          width: 1rem;
+          height: 1rem;
+          color: #4b5563;
+          flex-shrink: 0;
+        }
+        
+        .contact-separator {
+          color: #4b5563;
+          margin: 0 0.25rem;
+          font-size: 0.875rem;
         }
         
         .summary {
@@ -223,7 +264,7 @@ function generateResumeHTML(data: any, title: string): string {
         }
         
         .section-title {
-          font-size: 1rem;
+          font-size: 1.125rem;
           font-weight: bold;
           color: #111827;
           border-bottom: 1px solid #d1d5db;
@@ -234,7 +275,7 @@ function generateResumeHTML(data: any, title: string): string {
         }
         
         .experience-section-title {
-          font-size: 1rem;
+          font-size: 1.125rem;
           font-weight: bold;
           color: #111827;
           border-bottom: 1px solid #d1d5db;
@@ -260,26 +301,26 @@ function generateResumeHTML(data: any, title: string): string {
         }
         
         .item-title {
-          font-size: 0.875rem;
+          font-size: 1rem;
           font-weight: 600;
           color: #111827;
           line-height: 1.25;
         }
         
         .item-company {
-          color: #2563eb;
+          color: var(--resume-primary);
           font-weight: 500;
-          font-size: 0.75rem;
+          font-size: 0.875rem;
         }
         
         .item-location {
-          font-size: 0.75rem;
+          font-size: 0.875rem;
           color: #4b5563;
           margin-top: 0;
         }
         
         .item-date {
-          font-size: 0.75rem;
+          font-size: 0.875rem;
           color: #4b5563;
           text-align: right;
           line-height: 1.25;
@@ -288,7 +329,7 @@ function generateResumeHTML(data: any, title: string): string {
         .item-description {
           color: #374151;
           line-height: 1.25;
-          font-size: 0.75rem;
+          font-size: 0.875rem;
           margin-top: 0.25rem;
           text-align: justify;
         }
@@ -300,12 +341,12 @@ function generateResumeHTML(data: any, title: string): string {
         }
         
         .skill-tag {
-          background: #f3f4f6;
-          color: #374151;
-          padding: 0.125rem 0.5rem;
+          background: var(--resume-accent);
+          color: var(--resume-accent-foreground);
+          padding: 0.25rem 0.75rem;
           border-radius: 0.25rem;
-          font-size: 0.75rem;
-          border: 1px solid #d1d5db;
+          font-size: 0.875rem;
+          border: none;
         }
         
         @media print {
@@ -316,10 +357,8 @@ function generateResumeHTML(data: any, title: string): string {
           }
           .resume { 
             margin: 0; 
-            padding: 15mm; 
-            page-break-inside: avoid;
+            padding: 8mm; 
             width: 210mm !important;
-            height: 297mm !important;
           }
           .resume * {
             line-height: 1.25 !important;
@@ -335,6 +374,14 @@ function generateResumeHTML(data: any, title: string): string {
           .section {
             page-break-inside: avoid;
             break-inside: avoid;
+            page-break-before: auto;
+            margin-top: 0;
+          }
+          .section:first-of-type {
+            margin-top: 0;
+          }
+          .section:not(:first-of-type) {
+            margin-top: 0.75rem;
           }
           .experience-item, .education-item {
             page-break-inside: avoid;
@@ -342,44 +389,85 @@ function generateResumeHTML(data: any, title: string): string {
           }
           @page {
             size: A4;
-            margin: 0;
+            margin: 8mm;
+          }
+          @page :first {
+            margin-top: 8mm;
+          }
+          @page :left {
+            margin-top: 8mm;
+          }
+          @page :right {
+            margin-top: 8mm;
+          }
+          /* Ensure consistent spacing for content that appears at the top of any page */
+          .section-title {
+            margin-top: 0.75rem;
+          }
+          .section-title:first-child {
+            margin-top: 0;
           }
         }
       </style>
     </head>
     <body>
-      <div class="resume">
+      <div class="resume resume-theme-${colorTheme}">
         ${
           personalInfo
             ? `
           <div class="header">
             <h1 class="name">${personalInfo.fullName || "Your Name"}</h1>
             <div class="contact-info">
-              ${
+              ${[
                 personalInfo.email
-                  ? `<div class="contact-item">📧 ${personalInfo.email}</div>`
-                  : ""
-              }
-              ${
+                  ? `<div class="contact-item">
+                  <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                  ${personalInfo.email}
+                </div>`
+                  : "",
                 personalInfo.phone
-                  ? `<div class="contact-item">📞 ${personalInfo.phone}</div>`
-                  : ""
-              }
-              ${
+                  ? `<div class="contact-item">
+                  <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                  </svg>
+                  ${personalInfo.phone}
+                </div>`
+                  : "",
                 personalInfo.location
-                  ? `<div class="contact-item">📍 ${personalInfo.location}</div>`
-                  : ""
-              }
-              ${
+                  ? `<div class="contact-item">
+                  <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  ${personalInfo.location}
+                </div>`
+                  : "",
                 personalInfo.website
-                  ? `<div class="contact-item">🌐 ${personalInfo.website}</div>`
-                  : ""
-              }
-              ${
+                  ? `<div class="contact-item">
+                  <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="2" y1="12" x2="22" y2="12"></line>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                  </svg>
+                  ${personalInfo.website}
+                </div>`
+                  : "",
                 personalInfo.linkedin
-                  ? `<div class="contact-item">💼 ${personalInfo.linkedin}</div>`
-                  : ""
-              }
+                  ? `<div class="contact-item">
+                  <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                    <rect x="2" y="9" width="4" height="12"></rect>
+                    <circle cx="4" cy="4" r="2"></circle>
+                  </svg>
+                  ${personalInfo.linkedin}
+                </div>`
+                  : "",
+              ]
+                .filter(Boolean)
+                .join('<span class="contact-separator">•</span>')}
             </div>
             ${
               personalInfo.summary

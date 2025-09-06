@@ -25,7 +25,7 @@ A modern, intelligent resume builder that helps you create professional, ATS-fri
 - **UI Components**: Radix UI primitives with shadcn/ui
 - **State Management**: React Hook Form with Zod validation
 - **Icons**: Lucide React
-- **Fonts**: Geist font family
+- **Fonts**: Poppins font family
 
 ### Backend & Database
 

@@ -41,6 +41,7 @@ export function PreviewModal({
               <PDFExport
                 resumeId={resumeId}
                 resumeTitle={resumeTitle}
+                colorTheme="purple"
                 variant="outline"
                 size="sm"
               />

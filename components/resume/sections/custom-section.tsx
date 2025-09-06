@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MonthYearPicker } from "@/components/ui/month-year-picker";
 import { Plus, Trash2, List, Hash } from "lucide-react";
 import { AIAssistant } from "@/components/resume/ai-assistant";
 
@@ -186,22 +187,21 @@ export function CustomSection({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>Start Date</Label>
-                  <Input
-                    type="month"
+                  <MonthYearPicker
                     value={item.startDate}
-                    onChange={(e) =>
-                      updateItem(item.id, "startDate", e.target.value)
+                    onChange={(value) =>
+                      updateItem(item.id, "startDate", value)
                     }
+                    placeholder="Select start month and year"
                   />
                 </div>
                 <div className="space-y-2">
                   <Label>End Date</Label>
-                  <Input
-                    type="month"
+                  <MonthYearPicker
                     value={item.endDate}
-                    onChange={(e) =>
-                      updateItem(item.id, "endDate", e.target.value)
-                    }
+                    onChange={(value) => updateItem(item.id, "endDate", value)}
+                    placeholder="Select end month and year"
+                    showPresentOption={true}
                   />
                 </div>
               </div>

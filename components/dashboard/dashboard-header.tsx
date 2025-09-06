@@ -39,7 +39,7 @@ export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
   return (
     <header className="border-b bg-white">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-3">
           <Image
             src="/rougeresume-logo.png"
             alt="RougeResume Logo"

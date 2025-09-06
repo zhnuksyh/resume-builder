@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download, Loader2 } from "lucide-react";
+import { ResumeColor } from "./color-picker";
 
 interface PDFExportProps {
   resumeId: string;
   resumeTitle: string;
+  colorTheme?: ResumeColor;
   variant?: "default" | "outline";
   size?: "default" | "sm" | "lg";
 }
@@ -14,6 +16,7 @@ interface PDFExportProps {
 export function PDFExport({
   resumeId,
   resumeTitle,
+  colorTheme = "purple",
   variant = "outline",
   size = "sm",
 }: PDFExportProps) {
@@ -23,9 +26,12 @@ export function PDFExport({
     setIsGenerating(true);
     try {
       // Generate PDF using server-side endpoint
-      const response = await fetch(`/api/resume/${resumeId}/pdf`, {
-        method: "GET",
-      });
+      const response = await fetch(
+        `/api/resume/${resumeId}/pdf?colorTheme=${colorTheme}`,
+        {
+          method: "GET",
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to generate PDF");
