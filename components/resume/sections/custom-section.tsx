@@ -27,6 +27,7 @@ interface CustomSectionProps {
   onSave: (content: CustomContent) => void;
   onDelete?: () => void;
   onContentChange?: (content: CustomContent) => void;
+  onChange?: () => void;
   sectionTitle?: string; // To detect if this is a Reference section
 }
 
@@ -35,6 +36,7 @@ export function CustomSection({
   onSave,
   onDelete,
   onContentChange,
+  onChange,
   sectionTitle,
 }: CustomSectionProps) {
   const [formData, setFormData] = useState<CustomContent>({ items: [] });
@@ -56,6 +58,7 @@ export function CustomSection({
     const newFormData = { items: [...formData.items, newItem] };
     setFormData(newFormData);
     onContentChange?.(newFormData);
+    onChange?.();
   };
 
   const updateItem = (id: string, field: keyof CustomItem, value: string) => {
@@ -66,6 +69,7 @@ export function CustomSection({
     };
     setFormData(newFormData);
     onContentChange?.(newFormData);
+    onChange?.();
   };
 
   const removeItem = (id: string) => {
@@ -74,6 +78,7 @@ export function CustomSection({
     };
     setFormData(newFormData);
     onContentChange?.(newFormData);
+    onChange?.();
   };
 
   const handleSave = () => {

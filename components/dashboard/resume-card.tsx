@@ -223,7 +223,7 @@ export function ResumeCard({ resume }: ResumeCardProps) {
 
         <div className="flex items-center justify-between mb-4">
           <Badge variant={resume.is_published ? "default" : "secondary"}>
-            {resume.is_published ? "Published" : "Draft"}
+            {resume.is_published ? "Published" : "Saved"}
           </Badge>
           <span className="text-xs text-gray-500 capitalize">
             {resume.template_id} template

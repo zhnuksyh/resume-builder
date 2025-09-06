@@ -21,6 +21,7 @@ interface PersonalInfoContent {
 interface PersonalInfoSectionProps {
   content: PersonalInfoContent;
   onSave: (content: PersonalInfoContent) => void;
+  onChange?: (formData: PersonalInfoContent) => void;
   jobTitle?: string;
   industry?: string;
 }
@@ -28,6 +29,7 @@ interface PersonalInfoSectionProps {
 export function PersonalInfoSection({
   content,
   onSave,
+  onChange,
   jobTitle,
   industry,
 }: PersonalInfoSectionProps) {
@@ -38,7 +40,9 @@ export function PersonalInfoSection({
   }, [content]);
 
   const handleChange = (field: keyof PersonalInfoContent, value: string) => {
-    setFormData({ ...formData, [field]: value });
+    const newFormData = { ...formData, [field]: value };
+    setFormData(newFormData);
+    onChange?.(newFormData);
   };
 
   const handleSave = () => {
@@ -46,7 +50,9 @@ export function PersonalInfoSection({
   };
 
   const handleAISuggestion = (suggestion: string) => {
-    setFormData({ ...formData, summary: suggestion });
+    const newFormData = { ...formData, summary: suggestion };
+    setFormData(newFormData);
+    onChange?.(newFormData);
   };
 
   const formatAsBulletPoints = () => {
@@ -74,7 +80,9 @@ export function PersonalInfoSection({
       })
       .join("\n");
 
-    setFormData({ ...formData, summary: bulletPoints });
+    const newFormData = { ...formData, summary: bulletPoints };
+    setFormData(newFormData);
+    onChange?.(newFormData);
   };
 
   const formatAsNumberedList = () => {
@@ -101,7 +109,9 @@ export function PersonalInfoSection({
       })
       .join("\n");
 
-    setFormData({ ...formData, summary: numberedList });
+    const newFormData = { ...formData, summary: numberedList };
+    setFormData(newFormData);
+    onChange?.(newFormData);
   };
 
   return (

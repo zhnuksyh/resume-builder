@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { PersonalInfoSection } from "./sections/personal-info-section";
@@ -48,9 +48,12 @@ export function ResumeEditor({
   const [sections, setSections] = useState(initialSections);
   const [activeSection, setActiveSection] = useState("personal_info");
   const [isSaving, setIsSaving] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [currentCustomSectionContent, setCurrentCustomSectionContent] =
     useState<any>(null);
   const [resumeColor, setResumeColor] = useState<ResumeColor>("purple");
+  const [pendingSectionContent, setPendingSectionContent] = useState<any>(null);
+  const [lastSavedTime, setLastSavedTime] = useState<Date | null>(null);
   const supabase = createClient();
 
   // Reset current custom section content when switching sections
@@ -77,17 +80,20 @@ export function ResumeEditor({
 
   const updateResumeTitle = async (newTitle: string) => {
     setResume({ ...resume, title: newTitle });
+    setHasUnsavedChanges(true);
 
     const { error } = await supabase
       .from("resumes")
-      .update({ 
+      .update({
         title: newTitle,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq("id", resume.id);
 
     if (error) {
       console.error("Error updating resume title:", error);
+    } else {
+      setHasUnsavedChanges(false);
     }
   };
 
@@ -218,6 +224,8 @@ export function ResumeEditor({
               : s
           )
         );
+        setHasUnsavedChanges(false);
+        setLastSavedTime(new Date());
       } else {
         // Create new section
         const { data: newSection, error } = await supabase
@@ -239,6 +247,8 @@ export function ResumeEditor({
 
         // Update local state
         setSections([...sections, newSection]);
+        setHasUnsavedChanges(false);
+        setLastSavedTime(new Date());
       }
     } catch (error) {
       console.error("Error saving section:", error);
@@ -252,6 +262,35 @@ export function ResumeEditor({
     return section?.content || {};
   };
 
+  const handleContentChange = () => {
+    setHasUnsavedChanges(true);
+  };
+
+  const handleSectionChange = async (newSection: string) => {
+    // Save current section content before switching
+    if (hasUnsavedChanges) {
+      try {
+        // For custom sections, use the current custom section content
+        if (
+          activeSection.startsWith("custom_") &&
+          currentCustomSectionContent
+        ) {
+          await saveSection(activeSection, currentCustomSectionContent);
+        } else if (pendingSectionContent) {
+          await saveSection(activeSection, pendingSectionContent);
+        }
+      } catch (error) {
+        console.error("Error auto-saving section:", error);
+        // Continue with navigation even if save fails
+      }
+    }
+
+    // Switch to new section
+    setActiveSection(newSection);
+    setPendingSectionContent(null);
+    setCurrentCustomSectionContent(null);
+  };
+
   const renderActiveSection = () => {
     const { jobTitle, industry } = getJobContext();
 
@@ -260,9 +299,14 @@ export function ResumeEditor({
         return (
           <PersonalInfoSection
             content={getSectionContent("personal_info")}
-            onSave={(content) =>
-              saveSection("personal_info", content, "Personal Information")
-            }
+            onSave={(content) => {
+              setPendingSectionContent(content);
+              saveSection("personal_info", content, "Personal Information");
+            }}
+            onChange={(formData) => {
+              handleContentChange();
+              setPendingSectionContent(formData);
+            }}
             jobTitle={jobTitle}
             industry={industry}
           />
@@ -271,16 +315,28 @@ export function ResumeEditor({
         return (
           <ExperienceSection
             content={getSectionContent("experience")}
-            onSave={(content) =>
-              saveSection("experience", content, "Work Experience")
-            }
+            onSave={(content) => {
+              setPendingSectionContent(content);
+              saveSection("experience", content, "Work Experience");
+            }}
+            onChange={(formData) => {
+              handleContentChange();
+              setPendingSectionContent(formData);
+            }}
           />
         );
       case "education":
         return (
           <EducationSection
             content={getSectionContent("education")}
-            onSave={(content) => saveSection("education", content, "Education")}
+            onSave={(content) => {
+              setPendingSectionContent(content);
+              saveSection("education", content, "Education");
+            }}
+            onChange={(formData) => {
+              handleContentChange();
+              setPendingSectionContent(formData);
+            }}
             jobTitle={jobTitle}
             industry={industry}
           />
@@ -289,7 +345,14 @@ export function ResumeEditor({
         return (
           <SkillsSection
             content={getSectionContent("skills")}
-            onSave={(content) => saveSection("skills", content, "Skills")}
+            onSave={(content) => {
+              setPendingSectionContent(content);
+              saveSection("skills", content, "Skills");
+            }}
+            onChange={(formData) => {
+              handleContentChange();
+              setPendingSectionContent(formData);
+            }}
             jobTitle={jobTitle}
             industry={industry}
           />
@@ -304,9 +367,17 @@ export function ResumeEditor({
             return (
               <CustomSection
                 content={section.content}
-                onSave={(content) => saveSection(activeSection, content)}
+                onSave={(content) => {
+                  setPendingSectionContent(content);
+                  saveSection(activeSection, content);
+                }}
                 onDelete={() => deleteCustomSection(activeSection)}
-                onContentChange={setCurrentCustomSectionContent}
+                onContentChange={(content) => {
+                  setCurrentCustomSectionContent(content);
+                  setPendingSectionContent(content);
+                  handleContentChange();
+                }}
+                onChange={handleContentChange}
                 sectionTitle={section.title || ""}
               />
             );
@@ -357,8 +428,24 @@ export function ResumeEditor({
                   className="text-lg font-semibold border border-input rounded-md px-3 py-2 h-8 bg-transparent hover:bg-accent focus:bg-background"
                   placeholder="Resume Title"
                 />
-                <Badge variant={resume.is_published ? "default" : "secondary"}>
-                  {resume.is_published ? "Published" : "Draft"}
+                <Badge
+                  variant={
+                    resume.is_published
+                      ? "default"
+                      : isSaving
+                      ? "secondary"
+                      : hasUnsavedChanges
+                      ? "destructive"
+                      : "secondary"
+                  }
+                >
+                  {resume.is_published
+                    ? "Published"
+                    : isSaving
+                    ? "Saving..."
+                    : hasUnsavedChanges
+                    ? "Draft"
+                    : "Saved"}
                 </Badge>
               </div>
             </div>
@@ -367,10 +454,6 @@ export function ResumeEditor({
                 selectedColor={resumeColor}
                 onColorChange={setResumeColor}
               />
-              <Button size="sm" disabled={isSaving}>
-                <Save className="mr-2 h-4 w-4" />
-                {isSaving ? "Saving..." : "Save"}
-              </Button>
             </div>
           </div>
         </div>
@@ -380,7 +463,7 @@ export function ResumeEditor({
         {/* Section Tabs */}
         <SectionTabs
           activeSection={activeSection}
-          onSectionChange={setActiveSection}
+          onSectionChange={handleSectionChange}
           sections={sections}
           onAddCustomSection={addCustomSection}
           onDeleteCustomSection={deleteCustomSection}
@@ -423,21 +506,6 @@ export function ResumeEditor({
                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          const contentToSave =
-                            currentCustomSectionContent ||
-                            sections.find(
-                              (s) => s.section_type === activeSection
-                            )?.content;
-                          if (contentToSave) {
-                            saveSection(activeSection, contentToSave);
-                          }
-                        }}
-                      >
-                        Save
                       </Button>
                     </div>
                   )}

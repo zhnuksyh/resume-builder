@@ -27,9 +27,14 @@ interface ExperienceContent {
 interface ExperienceSectionProps {
   content: ExperienceContent;
   onSave: (content: ExperienceContent) => void;
+  onChange?: (formData: ExperienceContent) => void;
 }
 
-export function ExperienceSection({ content, onSave }: ExperienceSectionProps) {
+export function ExperienceSection({
+  content,
+  onSave,
+  onChange,
+}: ExperienceSectionProps) {
   const [formData, setFormData] = useState<ExperienceContent>({ items: [] });
 
   useEffect(() => {
@@ -47,7 +52,9 @@ export function ExperienceSection({ content, onSave }: ExperienceSectionProps) {
       current: false,
       description: "",
     };
-    setFormData({ items: [...formData.items, newExperience] });
+    const newFormData = { items: [...formData.items, newExperience] };
+    setFormData(newFormData);
+    onChange?.(newFormData);
   };
 
   const updateExperience = (
@@ -55,15 +62,21 @@ export function ExperienceSection({ content, onSave }: ExperienceSectionProps) {
     field: keyof ExperienceItem,
     value: string | boolean
   ) => {
-    setFormData({
+    const newFormData = {
       items: formData.items.map((item) =>
         item.id === id ? { ...item, [field]: value } : item
       ),
-    });
+    };
+    setFormData(newFormData);
+    onChange?.(newFormData);
   };
 
   const removeExperience = (id: string) => {
-    setFormData({ items: formData.items.filter((item) => item.id !== id) });
+    const newFormData = {
+      items: formData.items.filter((item) => item.id !== id),
+    };
+    setFormData(newFormData);
+    onChange?.(newFormData);
   };
 
   const handleSave = () => {

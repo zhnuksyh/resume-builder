@@ -17,6 +17,7 @@ interface SkillsContent {
 interface SkillsSectionProps {
   content: SkillsContent;
   onSave: (content: SkillsContent) => void;
+  onChange?: (formData: SkillsContent) => void;
   jobTitle?: string;
   industry?: string;
 }
@@ -24,6 +25,7 @@ interface SkillsSectionProps {
 export function SkillsSection({
   content,
   onSave,
+  onChange,
   jobTitle,
   industry,
 }: SkillsSectionProps) {
@@ -36,15 +38,19 @@ export function SkillsSection({
 
   const addSkill = () => {
     if (newSkill.trim() && !formData.skills.includes(newSkill.trim())) {
-      setFormData({ skills: [...formData.skills, newSkill.trim()] });
+      const newFormData = { skills: [...formData.skills, newSkill.trim()] };
+      setFormData(newFormData);
       setNewSkill("");
+      onChange?.(newFormData);
     }
   };
 
   const removeSkill = (skillToRemove: string) => {
-    setFormData({
+    const newFormData = {
       skills: formData.skills.filter((skill) => skill !== skillToRemove),
-    });
+    };
+    setFormData(newFormData);
+    onChange?.(newFormData);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -63,7 +69,9 @@ export function SkillsSection({
       .split(",")
       .map((skill) => skill.trim())
       .filter((skill) => skill && !formData.skills.includes(skill));
-    setFormData({ skills: [...formData.skills, ...newSkills] });
+    const newFormData = { skills: [...formData.skills, ...newSkills] };
+    setFormData(newFormData);
+    onChange?.(newFormData);
   };
 
   const suggestedSkills = [
@@ -105,6 +113,7 @@ export function SkillsSection({
               onChange={(e) => setNewSkill(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Type a skill and press Enter"
+              className="mt-2"
             />
           </div>
           <div className="flex items-end">

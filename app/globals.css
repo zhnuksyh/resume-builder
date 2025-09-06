@@ -472,4 +472,23 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+  /* Ensure all clickable elements show pointer cursor */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a[href],
+  input[type="button"]:not(:disabled),
+  input[type="submit"]:not(:disabled),
+  input[type="reset"]:not(:disabled),
+  [onclick],
+  [data-clickable="true"] {
+    cursor: pointer;
+  }
+  
+  /* Ensure disabled elements show not-allowed cursor */
+  button:disabled,
+  [role="button"][aria-disabled="true"],
+  input:disabled {
+    cursor: not-allowed;
+  }
 }

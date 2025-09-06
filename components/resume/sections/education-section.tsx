@@ -27,6 +27,7 @@ interface EducationContent {
 interface EducationSectionProps {
   content: EducationContent;
   onSave: (content: EducationContent) => void;
+  onChange?: (formData: EducationContent) => void;
   jobTitle?: string;
   industry?: string;
 }
@@ -34,6 +35,7 @@ interface EducationSectionProps {
 export function EducationSection({
   content,
   onSave,
+  onChange,
   jobTitle,
   industry,
 }: EducationSectionProps) {
@@ -54,7 +56,9 @@ export function EducationSection({
       gpa: "",
       description: "",
     };
-    setFormData({ items: [...formData.items, newEducation] });
+    const newFormData = { items: [...formData.items, newEducation] };
+    setFormData(newFormData);
+    onChange?.(newFormData);
   };
 
   const updateEducation = (
@@ -62,15 +66,21 @@ export function EducationSection({
     field: keyof EducationItem,
     value: string
   ) => {
-    setFormData({
+    const newFormData = {
       items: formData.items.map((item) =>
         item.id === id ? { ...item, [field]: value } : item
       ),
-    });
+    };
+    setFormData(newFormData);
+    onChange?.(newFormData);
   };
 
   const removeEducation = (id: string) => {
-    setFormData({ items: formData.items.filter((item) => item.id !== id) });
+    const newFormData = {
+      items: formData.items.filter((item) => item.id !== id),
+    };
+    setFormData(newFormData);
+    onChange?.(newFormData);
   };
 
   const handleSave = () => {
