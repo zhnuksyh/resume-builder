@@ -98,22 +98,22 @@ export function ResumePreview({
     });
   };
 
-  // A4 preview styles with improved spacing for better readability
+  // A4 preview styles with optimized spacing for maximum space utilization
   const a4Styles = isA4Preview
     ? {
         container: "max-w-none mx-0 h-full",
-        header: "pb-3 mb-4",
-        name: "text-xl font-bold text-gray-900 mb-2 leading-tight",
-        contactInfo: "flex flex-wrap gap-2 text-xs text-gray-600 mb-3",
+        header: "pb-2 mb-3",
+        name: "text-xl font-bold text-gray-900 mb-1.5 leading-tight",
+        contactInfo: "flex flex-wrap gap-2 text-xs text-gray-600 mb-2",
         contactItem: "flex items-center gap-1",
-        summary: "text-gray-700 leading-relaxed text-sm mt-3 text-justify",
-        section: "mb-4",
+        summary: "text-gray-700 leading-relaxed text-sm mt-2 text-justify",
+        section: "mb-3",
         sectionTitle:
-          "text-base font-bold text-gray-900 mb-3 border-b border-gray-300 pb-1 uppercase tracking-wide",
+          "text-base font-bold text-gray-900 mb-2 border-b border-gray-300 pb-1 uppercase tracking-wide",
         experienceSectionTitle:
-          "text-base font-bold text-gray-900 mb-3 border-b border-gray-300 pb-1 uppercase tracking-wide",
-        experienceItem: "mb-3",
-        educationItem: "mb-3",
+          "text-base font-bold text-gray-900 mb-2 border-b border-gray-300 pb-1 uppercase tracking-wide",
+        experienceItem: "mb-2.5",
+        educationItem: "mb-2.5",
         itemHeader: "flex justify-between items-start mb-1",
         itemTitle: "text-sm font-semibold text-gray-900 leading-tight",
         itemCompany: "text-blue-600 font-medium text-xs",
@@ -150,7 +150,7 @@ export function ResumePreview({
 
   return (
     <div className={`bg-white ${a4Styles.container} ${className}`}>
-      <div className={isA4Preview ? "space-y-5" : "p-8 space-y-6"}>
+      <div className={isA4Preview ? "space-y-4" : "p-8 space-y-6"}>
         {/* Header */}
         {personalInfo && (
           <div className={a4Styles.header}>
@@ -206,7 +206,7 @@ export function ResumePreview({
               Professional Experience
               {experience.isPartial ? " (continued)" : ""}
             </h2>
-            <div className={isA4Preview ? "space-y-4" : "space-y-6"}>
+            <div className={isA4Preview ? "space-y-3" : "space-y-6"}>
               {experience.items.map((exp) => (
                 <div key={exp.id} className={a4Styles.experienceItem}>
                   <div className={a4Styles.itemHeader}>
@@ -275,7 +275,7 @@ export function ResumePreview({
             <h2 className={a4Styles.sectionTitle}>
               Education{education.isPartial ? " (continued)" : ""}
             </h2>
-            <div className={isA4Preview ? "space-y-3" : "space-y-4"}>
+            <div className={isA4Preview ? "space-y-2.5" : "space-y-4"}>
               {education.items.map((edu) => (
                 <div key={edu.id} className={a4Styles.educationItem}>
                   <div className={a4Styles.itemHeader}>
@@ -371,7 +371,7 @@ export function ResumePreview({
                 <h2 className={a4Styles.sectionTitle}>
                   {sectionData.title || "Custom Section"}
                 </h2>
-                <div className={isA4Preview ? "space-y-3" : "space-y-4"}>
+                <div className={isA4Preview ? "space-y-2.5" : "space-y-4"}>
                   {sectionData.items.map((item: any, index: number) => (
                     <div key={index} className={a4Styles.educationItem}>
                       <div className={a4Styles.itemHeader}>

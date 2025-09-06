@@ -236,7 +236,7 @@
 .a4-live-preview .a4-preview-container {
   width: 794px;
   height: 1123px;
-  padding: 57px; /* 15mm in pixels - optimized for space */
+  padding: 40px 50px; /* Reduced padding: 10mm top/bottom, 13mm left/right for better space utilization */
   margin: 0;
   box-shadow: none;
   border-radius: 0;
@@ -278,6 +278,10 @@
 
 .a4-live-preview .a4-preview-container .space-y-3 > * + * {
   margin-top: 0.5rem !important;
+}
+
+.a4-live-preview .a4-preview-container .space-y-2\.5 > * + * {
+  margin-top: 0.4rem !important;
 }
 
 .a4-live-preview .a4-preview-container .space-y-2 > * + * {
@@ -322,7 +326,7 @@
   .a4-paper .a4-preview-container {
     width: 210mm !important;
     height: 297mm !important;
-    padding: 15mm !important;
+    padding: 10mm 13mm !important; /* Match optimized live preview padding */
     margin: 0 !important;
     box-shadow: none !important;
     page-break-after: always;
@@ -340,7 +344,7 @@
   .a4-paper-scaled .a4-preview-container {
     width: 210mm !important;
     height: 297mm !important;
-    padding: 15mm !important;
+    padding: 10mm 13mm !important; /* Match optimized live preview padding */
     margin: 0 !important;
     box-shadow: none !important;
     page-break-after: always;

@@ -42,8 +42,8 @@ export async function GET(
       console.error("Error fetching sections:", sectionsError);
     }
 
-    // Transform sections data
-    const resumeData = {
+    // Transform sections data to match live preview format
+    const resumeData: any = {
       personalInfo:
         sections?.find((s: any) => s.section_type === "personal_info")
           ?.content || {},
@@ -54,6 +54,16 @@ export async function GET(
       skills: sections?.find((s: any) => s.section_type === "skills")
         ?.content || { skills: [] },
     };
+
+    // Add custom sections with proper title
+    sections?.forEach((section: any) => {
+      if (section.section_type.startsWith("custom_")) {
+        resumeData[section.section_type] = {
+          ...section.content,
+          title: section.title || section.content.title, // Use database title first, then content title
+        };
+      }
+    });
 
     // Generate HTML for PDF
     const html = generateResumeHTML(resumeData, resume.title);
@@ -101,7 +111,8 @@ export async function GET(
 }
 
 function generateResumeHTML(data: any, title: string): string {
-  const { personalInfo, experience, education, skills } = data;
+  const { personalInfo, experience, education, skills, ...customSections } =
+    data;
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "";
@@ -110,6 +121,37 @@ function generateResumeHTML(data: any, title: string): string {
       year: "numeric",
       month: "short",
     });
+  };
+
+  // Helper function to process description text with bullet points and numbered lists
+  const processDescription = (description: string) => {
+    if (!description) return "";
+
+    return description
+      .split("\n")
+      .map((line, index) => {
+        const trimmedLine = line.trim();
+        if (
+          trimmedLine.startsWith("•") ||
+          trimmedLine.startsWith("-") ||
+          trimmedLine.startsWith("*")
+        ) {
+          return `<div style="display: flex; align-items: flex-start; margin-bottom: 0.125rem;">
+          <span style="margin-right: 0.5rem;">•</span>
+          <span style="flex: 1;">${trimmedLine.substring(1).trim()}</span>
+        </div>`;
+        } else if (/^\d+\./.test(trimmedLine)) {
+          const match = trimmedLine.match(/^(\d+)\.\s*(.*)/);
+          if (match) {
+            return `<div style="display: flex; align-items: flex-start; margin-bottom: 0.125rem;">
+            <span style="margin-right: 0.5rem;">${match[1]}.</span>
+            <span style="flex: 1;">${match[2]}</span>
+          </div>`;
+          }
+        }
+        return `<p style="margin-bottom: 0.125rem;">${line}</p>`;
+      })
+      .join("");
   };
 
   return `
@@ -127,7 +169,7 @@ function generateResumeHTML(data: any, title: string): string {
         
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-          line-height: 1.6;
+          line-height: 1.25;
           color: #333;
           background: white;
         }
@@ -149,7 +191,7 @@ function generateResumeHTML(data: any, title: string): string {
           font-size: 1.25rem;
           font-weight: bold;
           color: #111827;
-          margin-bottom: 0.25rem;
+          margin-bottom: 0.375rem;
           line-height: 1.25;
         }
         
@@ -173,6 +215,7 @@ function generateResumeHTML(data: any, title: string): string {
           line-height: 1.25;
           font-size: 0.875rem;
           margin-top: 0.5rem;
+          text-align: justify;
         }
         
         .section {
@@ -184,7 +227,7 @@ function generateResumeHTML(data: any, title: string): string {
           font-weight: bold;
           color: #111827;
           border-bottom: 1px solid #d1d5db;
-          padding-bottom: 0.125rem;
+          padding-bottom: 0.25rem;
           margin-bottom: 0.5rem;
           text-transform: uppercase;
           letter-spacing: 0.025em;
@@ -195,7 +238,7 @@ function generateResumeHTML(data: any, title: string): string {
           font-weight: bold;
           color: #111827;
           border-bottom: 1px solid #d1d5db;
-          padding-bottom: 0.125rem;
+          padding-bottom: 0.25rem;
           margin-bottom: 0.5rem;
           text-transform: uppercase;
           letter-spacing: 0.025em;
@@ -213,7 +256,7 @@ function generateResumeHTML(data: any, title: string): string {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          margin-bottom: 0.125rem;
+          margin-bottom: 0.25rem;
         }
         
         .item-title {
@@ -246,20 +289,20 @@ function generateResumeHTML(data: any, title: string): string {
           color: #374151;
           line-height: 1.25;
           font-size: 0.75rem;
-          margin-top: 0.125rem;
-          white-space: pre-line;
+          margin-top: 0.25rem;
+          text-align: justify;
         }
         
         .skills-container {
           display: flex;
           flex-wrap: wrap;
-          gap: 0.25rem;
+          gap: 0.375rem;
         }
         
         .skill-tag {
           background: #f3f4f6;
           color: #374151;
-          padding: 0.125rem 0.375rem;
+          padding: 0.125rem 0.5rem;
           border-radius: 0.25rem;
           font-size: 0.75rem;
           border: 1px solid #d1d5db;
@@ -352,7 +395,9 @@ function generateResumeHTML(data: any, title: string): string {
           experience?.items?.length > 0
             ? `
           <div class="section">
-            <h2 class="experience-section-title">Professional Experience</h2>
+            <h2 class="experience-section-title">Professional Experience${
+              experience.isPartial ? " (continued)" : ""
+            }</h2>
             ${experience.items
               .map(
                 (exp: any) => `
@@ -375,7 +420,9 @@ function generateResumeHTML(data: any, title: string): string {
                 </div>
                 ${
                   exp.description
-                    ? `<div class="item-description">${exp.description}</div>`
+                    ? `<div class="item-description">${processDescription(
+                        exp.description
+                      )}</div>`
                     : ""
                 }
               </div>
@@ -391,7 +438,9 @@ function generateResumeHTML(data: any, title: string): string {
           education?.items?.length > 0
             ? `
           <div class="section">
-            <h2 class="section-title">Education</h2>
+            <h2 class="section-title">Education${
+              education.isPartial ? " (continued)" : ""
+            }</h2>
             ${education.items
               .map(
                 (edu: any) => `
@@ -399,15 +448,12 @@ function generateResumeHTML(data: any, title: string): string {
                 <div class="item-header">
                   <div>
                     <div class="item-title">${edu.degree}</div>
-                    <div class="item-company">${edu.school}</div>
+                    <div class="item-company">${
+                      edu.school + (edu.gpa ? ` • GPA: ${edu.gpa}` : "")
+                    }</div>
                     ${
                       edu.location
                         ? `<div class="item-location">${edu.location}</div>`
-                        : ""
-                    }
-                    ${
-                      edu.gpa
-                        ? `<div class="item-location">GPA: ${edu.gpa}</div>`
                         : ""
                     }
                   </div>
@@ -419,7 +465,9 @@ function generateResumeHTML(data: any, title: string): string {
                 </div>
                 ${
                   edu.description
-                    ? `<div class="item-description">${edu.description}</div>`
+                    ? `<div class="item-description">${processDescription(
+                        edu.description
+                      )}</div>`
                     : ""
                 }
               </div>
@@ -447,6 +495,49 @@ function generateResumeHTML(data: any, title: string): string {
         `
             : ""
         }
+        
+        ${Object.entries(customSections)
+          .map(([key, sectionData]: [string, any]) => {
+            if (
+              key.startsWith("custom_") &&
+              sectionData?.items &&
+              sectionData.items.length > 0
+            ) {
+              return `
+            <div class="section">
+              <h2 class="section-title">${
+                sectionData.title ||
+                key
+                  .replace(/^custom_/, "")
+                  .replace(/_/g, " ")
+                  .replace(/\b\w/g, (l) => l.toUpperCase())
+              }</h2>
+              ${sectionData.items
+                .map(
+                  (item: any, index: number) => `
+                <div class="education-item">
+                  <div class="item-header">
+                    <div>
+                      <div class="item-title">${item.title}</div>
+                    </div>
+                  </div>
+                  ${
+                    item.description
+                      ? `<div class="item-description">${processDescription(
+                          item.description
+                        )}</div>`
+                      : ""
+                  }
+                </div>
+              `
+                )
+                .join("")}
+            </div>
+          `;
+            }
+            return "";
+          })
+          .join("")}
       </div>
     </body>
     </html>

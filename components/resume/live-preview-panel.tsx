@@ -32,22 +32,22 @@ export function LivePreviewPanel({
     const { personalInfo, experience, education, skills, ...customSections } =
       resumeData;
 
-    // A4 page content height in mm (297mm - 30mm margins = 267mm available)
-    const PAGE_HEIGHT = 267;
-    const BOTTOM_MARGIN = 15; // Bottom margin as page-full indicator
-    const HEADER_HEIGHT = 50; // Personal info header (optimized)
-    const SECTION_TITLE_HEIGHT = 8; // Section title height (optimized)
-    const EXPERIENCE_ITEM_HEIGHT = 30; // Per experience item (optimized)
-    const EDUCATION_ITEM_HEIGHT = 24; // Per education item (optimized)
-    const SKILLS_HEIGHT = 20; // Skills section height (optimized)
-    const SECTION_SPACING = 4; // Spacing between sections (optimized)
+    // A4 page content height in pixels (1123px - 80px padding = 1043px available)
+    const PAGE_HEIGHT = 1043;
+    const BOTTOM_MARGIN = 20; // Reduced bottom margin for better space utilization
+    const HEADER_HEIGHT = 60; // Personal info header (optimized)
+    const SECTION_TITLE_HEIGHT = 12; // Section title height (optimized)
+    const EXPERIENCE_ITEM_HEIGHT = 35; // Per experience item (optimized)
+    const EDUCATION_ITEM_HEIGHT = 28; // Per education item (optimized)
+    const SKILLS_HEIGHT = 25; // Skills section height (optimized)
+    const SECTION_SPACING = 6; // Spacing between sections (optimized)
 
     const pageArray: Array<Array<{ type: string; content: any }>> = [];
     let currentPageItems: Array<{ type: string; content: any }> = [];
     let currentHeight = 0;
 
     const addItemToPage = (type: string, content: any, itemHeight: number) => {
-      // Check if we need to start a new page (using bottom margin as page-full indicator)
+      // Check if we need to start a new page (more aggressive space utilization)
       if (
         currentHeight + itemHeight > PAGE_HEIGHT - BOTTOM_MARGIN &&
         currentPageItems.length > 0
@@ -65,14 +65,14 @@ export function LivePreviewPanel({
     // Helper function to calculate dynamic content height
     const calculateContentHeight = (content: any, baseHeight: number) => {
       if (content?.summary) {
-        // Estimate height based on summary length (optimized for smaller text)
-        const summaryLines = Math.ceil(content.summary.length / 90); // ~90 chars per line with smaller text
-        return baseHeight + summaryLines * 3; // 3mm per line (optimized)
+        // Estimate height based on summary length (optimized for A4 preview)
+        const summaryLines = Math.ceil(content.summary.length / 85); // ~85 chars per line with A4 text
+        return baseHeight + summaryLines * 4; // 4px per line (optimized for A4)
       }
       if (content?.description) {
-        // Estimate height based on description length (optimized for smaller text)
-        const descLines = Math.ceil(content.description.length / 90);
-        return baseHeight + descLines * 3; // 3mm per line (optimized)
+        // Estimate height based on description length (optimized for A4 preview)
+        const descLines = Math.ceil(content.description.length / 85);
+        return baseHeight + descLines * 4; // 4px per line (optimized for A4)
       }
       return baseHeight;
     };
