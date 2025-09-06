@@ -1,63 +1,79 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { FileText, User, LogOut } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
-import { useRouter } from "next/navigation"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { User, LogOut } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 interface DashboardHeaderProps {
-  user: any
-  profile: any
+  user: any;
+  profile: any;
 }
 
 export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
-  const router = useRouter()
-  const supabase = createClient()
+  const router = useRouter();
+  const supabase = createClient();
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push("/")
-  }
+    await supabase.auth.signOut();
+    router.push("/");
+  };
 
   const getInitials = (name: string) => {
     return name
       .split(" ")
       .map((n) => n[0])
       .join("")
-      .toUpperCase()
-  }
+      .toUpperCase();
+  };
 
   return (
     <header className="border-b bg-white">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <FileText className="h-8 w-8 text-blue-600" />
+        <div className="flex items-center gap-1">
+          <Image
+            src="/rougeresume-logo.png"
+            alt="RougeResume Logo"
+            width={56}
+            height={56}
+            className="h-14 w-14"
+          />
           <span className="text-2xl font-bold text-gray-900">ResumeAI</span>
         </div>
 
         <div className="flex items-center gap-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Button
+                variant="ghost"
+                className="relative h-10 w-10 rounded-full"
+              >
                 <Avatar className="h-10 w-10">
                   <AvatarFallback className="bg-blue-100 text-blue-600">
-                    {profile?.full_name ? getInitials(profile.full_name) : getInitials(user.email)}
+                    {profile?.full_name
+                      ? getInitials(profile.full_name)
+                      : getInitials(user.email)}
                   </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <div className="flex flex-col space-y-1 p-2">
-                <p className="text-sm font-medium leading-none">{profile?.full_name || "User"}</p>
-                <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+                <p className="text-sm font-medium leading-none">
+                  {profile?.full_name || "User"}
+                </p>
+                <p className="text-xs leading-none text-muted-foreground">
+                  {user.email}
+                </p>
               </div>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
@@ -74,5 +90,5 @@ export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
         </div>
       </div>
     </header>
-  )
+  );
 }

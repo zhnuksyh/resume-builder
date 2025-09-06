@@ -31,20 +31,21 @@ export function LivePreviewPanel({
   const { pages, totalPages } = useMemo(() => {
     const { personalInfo, experience, education, skills } = resumeData;
 
-    // A4 page content height in mm (297mm - 40mm margins = 257mm available)
-    const PAGE_HEIGHT = 257;
-    const HEADER_HEIGHT = 70; // Personal info header
-    const SECTION_TITLE_HEIGHT = 12;
-    const EXPERIENCE_ITEM_HEIGHT = 45; // Per experience item
-    const EDUCATION_ITEM_HEIGHT = 35; // Per education item
-    const SKILLS_HEIGHT = 30;
-    const SECTION_SPACING = 8;
+    // A4 page content height in mm (297mm - 30mm margins = 267mm available)
+    const PAGE_HEIGHT = 267;
+    const HEADER_HEIGHT = 65; // Personal info header (reduced)
+    const SECTION_TITLE_HEIGHT = 10; // Section title height (reduced)
+    const EXPERIENCE_ITEM_HEIGHT = 40; // Per experience item (reduced)
+    const EDUCATION_ITEM_HEIGHT = 32; // Per education item (reduced)
+    const SKILLS_HEIGHT = 25; // Skills section height (reduced)
+    const SECTION_SPACING = 6; // Spacing between sections (reduced)
 
     const pageArray: Array<Array<{ type: string; content: any }>> = [];
     let currentPageItems: Array<{ type: string; content: any }> = [];
     let currentHeight = 0;
 
     const addItemToPage = (type: string, content: any, itemHeight: number) => {
+      // Check if we need to start a new page
       if (
         currentHeight + itemHeight > PAGE_HEIGHT &&
         currentPageItems.length > 0
@@ -59,21 +60,37 @@ export function LivePreviewPanel({
       }
     };
 
+    // Helper function to calculate dynamic content height
+    const calculateContentHeight = (content: any, baseHeight: number) => {
+      if (content?.summary) {
+        // Estimate height based on summary length
+        const summaryLines = Math.ceil(content.summary.length / 80); // ~80 chars per line
+        return baseHeight + summaryLines * 4; // 4mm per line
+      }
+      if (content?.description) {
+        // Estimate height based on description length
+        const descLines = Math.ceil(content.description.length / 80);
+        return baseHeight + descLines * 4;
+      }
+      return baseHeight;
+    };
+
     // Personal Info (always on first page)
     if (personalInfo) {
-      let personalHeight = HEADER_HEIGHT;
-      if (personalInfo.summary) {
-        personalHeight += Math.min(personalInfo.summary.length / 5, 40); // Estimate based on text length
-      }
+      const personalHeight = calculateContentHeight(
+        personalInfo,
+        HEADER_HEIGHT
+      );
       addItemToPage("personalInfo", personalInfo, personalHeight);
     }
 
-    // Experience section
+    // Experience section - improved pagination
     if (experience?.items?.length > 0) {
-      const totalExpHeight =
-        SECTION_TITLE_HEIGHT +
-        SECTION_SPACING +
-        experience.items.length * EXPERIENCE_ITEM_HEIGHT;
+      // Calculate total height for all experience items
+      let totalExpHeight = SECTION_TITLE_HEIGHT + SECTION_SPACING;
+      experience.items.forEach((item: any) => {
+        totalExpHeight += calculateContentHeight(item, EXPERIENCE_ITEM_HEIGHT);
+      });
 
       // Check if we can fit the entire experience section
       if (
@@ -82,35 +99,72 @@ export function LivePreviewPanel({
       ) {
         addItemToPage("experience", experience, totalExpHeight);
       } else {
-        // Split experience items across pages if needed
-        const itemsPerPage = Math.floor(
-          (PAGE_HEIGHT - SECTION_TITLE_HEIGHT - SECTION_SPACING) /
-            EXPERIENCE_ITEM_HEIGHT
-        );
-        const experienceChunks = [];
+        // Split experience items across pages intelligently
+        const availableHeight = PAGE_HEIGHT - currentHeight;
+        const sectionHeaderHeight = SECTION_TITLE_HEIGHT + SECTION_SPACING;
 
-        for (let i = 0; i < experience.items.length; i += itemsPerPage) {
-          experienceChunks.push({
-            items: experience.items.slice(i, i + itemsPerPage),
-          });
+        if (availableHeight > sectionHeaderHeight + EXPERIENCE_ITEM_HEIGHT) {
+          // Can fit at least one item on current page
+          const remainingHeight = availableHeight - sectionHeaderHeight;
+          let itemsOnCurrentPage = 0;
+          let currentItemHeight = 0;
+
+          for (let i = 0; i < experience.items.length; i++) {
+            const itemHeight = calculateContentHeight(
+              experience.items[i],
+              EXPERIENCE_ITEM_HEIGHT
+            );
+            if (currentItemHeight + itemHeight <= remainingHeight) {
+              currentItemHeight += itemHeight;
+              itemsOnCurrentPage++;
+            } else {
+              break;
+            }
+          }
+
+          if (itemsOnCurrentPage > 0) {
+            // Add partial experience section to current page
+            const partialExp = {
+              items: experience.items.slice(0, itemsOnCurrentPage),
+              isPartial: true,
+            };
+            addItemToPage(
+              "experience",
+              partialExp,
+              sectionHeaderHeight + currentItemHeight
+            );
+
+            // Add remaining items to new pages
+            const remainingItems = experience.items.slice(itemsOnCurrentPage);
+            if (remainingItems.length > 0) {
+              const remainingExp = { items: remainingItems };
+              const remainingHeight =
+                sectionHeaderHeight +
+                remainingItems.reduce(
+                  (sum: number, item: any) =>
+                    sum + calculateContentHeight(item, EXPERIENCE_ITEM_HEIGHT),
+                  0
+                );
+              addItemToPage("experience", remainingExp, remainingHeight);
+            }
+          } else {
+            // Start new page for experience section
+            addItemToPage("experience", experience, totalExpHeight);
+          }
+        } else {
+          // Start new page for experience section
+          addItemToPage("experience", experience, totalExpHeight);
         }
-
-        experienceChunks.forEach((chunk, index) => {
-          const chunkHeight =
-            SECTION_TITLE_HEIGHT +
-            SECTION_SPACING +
-            chunk.items.length * EXPERIENCE_ITEM_HEIGHT;
-          addItemToPage("experience", chunk, chunkHeight);
-        });
       }
     }
 
-    // Education section
+    // Education section - improved pagination
     if (education?.items?.length > 0) {
-      const totalEduHeight =
-        SECTION_TITLE_HEIGHT +
-        SECTION_SPACING +
-        education.items.length * EDUCATION_ITEM_HEIGHT;
+      // Calculate total height for all education items
+      let totalEduHeight = SECTION_TITLE_HEIGHT + SECTION_SPACING;
+      education.items.forEach((item: any) => {
+        totalEduHeight += calculateContentHeight(item, EDUCATION_ITEM_HEIGHT);
+      });
 
       if (
         currentHeight + totalEduHeight <= PAGE_HEIGHT ||
@@ -118,26 +172,62 @@ export function LivePreviewPanel({
       ) {
         addItemToPage("education", education, totalEduHeight);
       } else {
-        // Split education if needed
-        const itemsPerPage = Math.floor(
-          (PAGE_HEIGHT - SECTION_TITLE_HEIGHT - SECTION_SPACING) /
-            EDUCATION_ITEM_HEIGHT
-        );
-        const educationChunks = [];
+        // Split education items across pages intelligently
+        const availableHeight = PAGE_HEIGHT - currentHeight;
+        const sectionHeaderHeight = SECTION_TITLE_HEIGHT + SECTION_SPACING;
 
-        for (let i = 0; i < education.items.length; i += itemsPerPage) {
-          educationChunks.push({
-            items: education.items.slice(i, i + itemsPerPage),
-          });
+        if (availableHeight > sectionHeaderHeight + EDUCATION_ITEM_HEIGHT) {
+          // Can fit at least one item on current page
+          const remainingHeight = availableHeight - sectionHeaderHeight;
+          let itemsOnCurrentPage = 0;
+          let currentItemHeight = 0;
+
+          for (let i = 0; i < education.items.length; i++) {
+            const itemHeight = calculateContentHeight(
+              education.items[i],
+              EDUCATION_ITEM_HEIGHT
+            );
+            if (currentItemHeight + itemHeight <= remainingHeight) {
+              currentItemHeight += itemHeight;
+              itemsOnCurrentPage++;
+            } else {
+              break;
+            }
+          }
+
+          if (itemsOnCurrentPage > 0) {
+            // Add partial education section to current page
+            const partialEdu = {
+              items: education.items.slice(0, itemsOnCurrentPage),
+              isPartial: true,
+            };
+            addItemToPage(
+              "education",
+              partialEdu,
+              sectionHeaderHeight + currentItemHeight
+            );
+
+            // Add remaining items to new pages
+            const remainingItems = education.items.slice(itemsOnCurrentPage);
+            if (remainingItems.length > 0) {
+              const remainingEdu = { items: remainingItems };
+              const remainingHeight =
+                sectionHeaderHeight +
+                remainingItems.reduce(
+                  (sum: number, item: any) =>
+                    sum + calculateContentHeight(item, EDUCATION_ITEM_HEIGHT),
+                  0
+                );
+              addItemToPage("education", remainingEdu, remainingHeight);
+            }
+          } else {
+            // Start new page for education section
+            addItemToPage("education", education, totalEduHeight);
+          }
+        } else {
+          // Start new page for education section
+          addItemToPage("education", education, totalEduHeight);
         }
-
-        educationChunks.forEach((chunk) => {
-          const chunkHeight =
-            SECTION_TITLE_HEIGHT +
-            SECTION_SPACING +
-            chunk.items.length * EDUCATION_ITEM_HEIGHT;
-          addItemToPage("education", chunk, chunkHeight);
-        });
       }
     }
 

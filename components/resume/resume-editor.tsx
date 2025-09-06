@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Save, Eye, Trash2 } from "lucide-react";
+import { ArrowLeft, Save, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { PersonalInfoSection } from "./sections/personal-info-section";
@@ -14,7 +14,6 @@ import { EducationSection } from "./sections/education-section";
 import { SkillsSection } from "./sections/skills-section";
 import { CustomSection } from "./sections/custom-section";
 import { SectionTabs } from "./section-tabs";
-import { PreviewModal } from "./preview-modal";
 import { LivePreviewPanel } from "./live-preview-panel";
 
 interface Resume {
@@ -48,7 +47,6 @@ export function ResumeEditor({
   const [sections, setSections] = useState(initialSections);
   const [activeSection, setActiveSection] = useState("personal_info");
   const [isSaving, setIsSaving] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
   const supabase = createClient();
 
   const getJobContext = () => {
@@ -347,14 +345,6 @@ export function ResumeEditor({
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowPreview(true)}
-              >
-                <Eye className="mr-2 h-4 w-4" />
-                Preview
-              </Button>
               <Button size="sm" disabled={isSaving}>
                 <Save className="mr-2 h-4 w-4" />
                 {isSaving ? "Saving..." : "Save"}
@@ -443,14 +433,6 @@ export function ResumeEditor({
           </div>
         </div>
       </div>
-
-      <PreviewModal
-        isOpen={showPreview}
-        onClose={() => setShowPreview(false)}
-        resumeData={getResumeData()}
-        resumeId={resume.id}
-        resumeTitle={resume.title}
-      />
     </div>
   );
 }

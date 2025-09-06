@@ -1,7 +1,13 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { FileText, Sparkles, Download, Eye } from "lucide-react"
-import Link from "next/link"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Sparkles, Download, Eye } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function HomePage() {
   return (
@@ -9,8 +15,14 @@ export default function HomePage() {
       {/* Header */}
       <header className="border-b bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FileText className="h-8 w-8 text-blue-600" />
+          <div className="flex items-center gap-1">
+            <Image
+              src="/rougeresume-logo.png"
+              alt="RougeResume Logo"
+              width={56}
+              height={56}
+              className="h-14 w-14"
+            />
             <span className="text-2xl font-bold text-gray-900">ResumeAI</span>
           </div>
           <div className="flex items-center gap-4">
@@ -28,11 +40,13 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-20 text-center">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            Build Your Perfect Resume with <span className="text-blue-600">AI Assistance</span>
+            Build Your Perfect Resume with{" "}
+            <span className="text-blue-600">AI Assistance</span>
           </h1>
           <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-            Create professional, ATS-friendly resumes in minutes. Get AI-powered suggestions, real-time feedback, and
-            beautiful templates that land you interviews.
+            Create professional, ATS-friendly resumes in minutes. Get AI-powered
+            suggestions, real-time feedback, and beautiful templates that land
+            you interviews.
           </p>
           <div className="flex items-center justify-center gap-4">
             <Link href="/auth/sign-up">
@@ -42,7 +56,11 @@ export default function HomePage() {
               </Button>
             </Link>
             <Link href="/auth/login">
-              <Button variant="outline" size="lg" className="px-8 py-3 bg-transparent">
+              <Button
+                variant="outline"
+                size="lg"
+                className="px-8 py-3 bg-transparent"
+              >
                 Sign In
               </Button>
             </Link>
@@ -58,7 +76,8 @@ export default function HomePage() {
               <Sparkles className="h-12 w-12 text-blue-600 mx-auto mb-4" />
               <CardTitle>AI-Powered Suggestions</CardTitle>
               <CardDescription>
-                Get intelligent recommendations for content, formatting, and keywords tailored to your industry.
+                Get intelligent recommendations for content, formatting, and
+                keywords tailored to your industry.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -68,7 +87,8 @@ export default function HomePage() {
               <Eye className="h-12 w-12 text-green-600 mx-auto mb-4" />
               <CardTitle>Live Preview</CardTitle>
               <CardDescription>
-                See your resume come to life in real-time as you make changes. What you see is what you get.
+                See your resume come to life in real-time as you make changes.
+                What you see is what you get.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -78,7 +98,8 @@ export default function HomePage() {
               <Download className="h-12 w-12 text-purple-600 mx-auto mb-4" />
               <CardTitle>Professional Export</CardTitle>
               <CardDescription>
-                Download your resume as a high-quality PDF ready for job applications and ATS systems.
+                Download your resume as a high-quality PDF ready for job
+                applications and ATS systems.
               </CardDescription>
             </CardHeader>
           </Card>
@@ -92,5 +113,5 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }

@@ -2,7 +2,7 @@
 
 A modern, intelligent resume builder that helps you create professional, ATS-friendly resumes with AI assistance. Built with Next.js 15, React 19, TypeScript, and Supabase.
 
-![ResumeAI](public/placeholder-logo.svg)
+![ResumeAI](public/rougeresume-logo.png)
 
 ## ✨ Features
 
@@ -18,6 +18,7 @@ A modern, intelligent resume builder that helps you create professional, ATS-fri
 ## 🚀 Tech Stack
 
 ### Frontend
+
 - **Framework**: Next.js 15 with App Router
 - **Language**: TypeScript 5
 - **Styling**: Tailwind CSS 4 with custom animations
@@ -27,12 +28,14 @@ A modern, intelligent resume builder that helps you create professional, ATS-fri
 - **Fonts**: Geist font family
 
 ### Backend & Database
+
 - **Backend**: Supabase (PostgreSQL + Auth + Real-time)
 - **Database**: PostgreSQL with Row Level Security (RLS)
 - **Authentication**: Supabase Auth with SSR support
 - **AI Integration**: Google Gemini AI for intelligent suggestions
 
 ### Development & Tools
+
 - **PDF Generation**: Puppeteer for high-quality resume exports
 - **Form Handling**: React Hook Form with validation
 - **Date Handling**: date-fns for date manipulation
@@ -50,12 +53,14 @@ Before running this project, make sure you have:
 ## 🛠️ Installation
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/zhnuksyh/resume-builder.git
    cd resume-builder
    ```
 
 2. **Install dependencies**:
+
    ```bash
    npm install
    # or
@@ -66,15 +71,16 @@ Before running this project, make sure you have:
 
 3. **Set up environment variables**:
    Create a `.env.local` file in the root directory:
+
    ```env
    # Supabase Configuration
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
    SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-   
+
    # Google Gemini AI Configuration (optional)
    GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_api_key
-   
+
    # Next.js Configuration
    NEXTAUTH_URL=http://localhost:3000
    NEXTAUTH_SECRET=your_nextauth_secret
@@ -82,6 +88,7 @@ Before running this project, make sure you have:
 
 4. **Set up the database**:
    Run the SQL scripts in your Supabase SQL editor:
+
    ```bash
    # Run these scripts in order in your Supabase SQL editor
    scripts/001_create_resume_tables.sql
@@ -89,6 +96,7 @@ Before running this project, make sure you have:
    ```
 
 5. **Start the development server**:
+
    ```bash
    npm run dev
    # or
@@ -120,17 +128,20 @@ npm run check-icons
 ```
 
 This script will:
+
 - Scan all TypeScript/TSX files for icon usage
 - Verify that all icons are properly imported from `lucide-react`
 - Report any missing imports with specific file locations
 - Exit with error code 1 if issues are found
 
 **Best Practices:**
+
 - Always import icons from `lucide-react` before using them in JSX
 - Use the `check-icons` script before committing changes
 - Run `npm run pre-commit` to catch both icon and linting issues
 
 **Example of proper icon import:**
+
 ```tsx
 import { User, Briefcase, GraduationCap, FileText } from "lucide-react";
 
@@ -138,7 +149,8 @@ import { User, Briefcase, GraduationCap, FileText } from "lucide-react";
 <User className="h-4 w-4" />
 <FileText className="h-4 w-4" />
 ```
-   Navigate to [http://localhost:3000](http://localhost:3000)
+
+Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## 📁 Project Structure
 

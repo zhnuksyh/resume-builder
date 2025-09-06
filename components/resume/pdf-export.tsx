@@ -1,72 +1,80 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Download, Loader2 } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Download, Loader2 } from "lucide-react";
 
 interface PDFExportProps {
-  resumeId: string
-  resumeTitle: string
-  variant?: "default" | "outline"
-  size?: "default" | "sm" | "lg"
+  resumeId: string;
+  resumeTitle: string;
+  variant?: "default" | "outline";
+  size?: "default" | "sm" | "lg";
 }
 
-export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "sm" }: PDFExportProps) {
-  const [isGenerating, setIsGenerating] = useState(false)
+export function PDFExport({
+  resumeId,
+  resumeTitle,
+  variant = "outline",
+  size = "sm",
+}: PDFExportProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const generatePDF = async () => {
-    setIsGenerating(true)
+    setIsGenerating(true);
     try {
       // Get resume data
       const response = await fetch(`/api/resume/${resumeId}/pdf-client`, {
         method: "POST",
-      })
+      });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch resume data")
+        throw new Error("Failed to fetch resume data");
       }
 
-      const { resumeData, title } = await response.json()
+      const { resumeData, title } = await response.json();
 
       // Generate PDF using browser APIs
-      await generateClientPDF(resumeData, title)
+      await generateClientPDF(resumeData, title);
     } catch (error) {
-      console.error("PDF generation error:", error)
-      alert("Failed to generate PDF. Please try again.")
+      console.error("PDF generation error:", error);
+      alert("Failed to generate PDF. Please try again.");
     } finally {
-      setIsGenerating(false)
+      setIsGenerating(false);
     }
-  }
+  };
 
   const generateClientPDF = async (resumeData: any, title: string) => {
     // Create a new window with the resume content
-    const printWindow = window.open("", "_blank")
+    const printWindow = window.open("", "_blank");
     if (!printWindow) {
-      alert("Please allow popups to download PDF")
-      return
+      alert("Please allow popups to download PDF");
+      return;
     }
 
-    const html = generatePrintHTML(resumeData, title)
-    printWindow.document.write(html)
-    printWindow.document.close()
+    const html = generatePrintHTML(resumeData, title);
+    printWindow.document.write(html);
+    printWindow.document.close();
 
     // Wait for content to load then trigger print
     printWindow.onload = () => {
       setTimeout(() => {
-        printWindow.print()
-        printWindow.close()
-      }, 500)
-    }
-  }
+        printWindow.print();
+        printWindow.close();
+      }, 500);
+    };
+  };
 
   const generatePrintHTML = (data: any, title: string): string => {
-    const { personalInfo, experience, education, skills } = data
+    const { personalInfo, experience, education, skills } = data;
 
     const formatDate = (dateString: string) => {
-      if (!dateString) return ""
-      const date = new Date(dateString + "-01")
-      return date.toLocaleDateString("en-US", { year: "numeric", month: "short" })
-    }
+      if (!dateString) return "";
+      const date = new Date(dateString + "-01");
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+      });
+    };
 
     return `
       <!DOCTYPE html>
@@ -93,30 +101,30 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
             width: 210mm;
             height: 297mm;
             margin: 0 auto;
-            padding: 20mm;
+            padding: 15mm;
             background: white;
           }
           
           .header {
             border-bottom: 2px solid #e5e7eb;
-            padding-bottom: 1.5rem;
-            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            margin-bottom: 1.25rem;
           }
           
           .name {
             font-size: 2rem;
             font-weight: bold;
             color: #1f2937;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
           }
           
           .contact-info {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.75rem;
             font-size: 0.9rem;
             color: #6b7280;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
           }
           
           .contact-item {
@@ -132,7 +140,7 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
           }
           
           .section {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
           }
           
           .section-title {
@@ -140,19 +148,19 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
             font-weight: bold;
             color: #1f2937;
             border-bottom: 1px solid #e5e7eb;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
+            padding-bottom: 0.375rem;
+            margin-bottom: 0.875rem;
           }
           
           .experience-item, .education-item {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
           }
           
           .item-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.375rem;
           }
           
           .item-title {
@@ -205,7 +213,7 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
             }
             .resume { 
               margin: 0; 
-              padding: 20mm;
+              padding: 15mm;
               width: 210mm;
               height: 297mm;
             }
@@ -224,13 +232,37 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
             <div class="header">
               <h1 class="name">${personalInfo.fullName || "Your Name"}</h1>
               <div class="contact-info">
-                ${personalInfo.email ? `<div class="contact-item">📧 ${personalInfo.email}</div>` : ""}
-                ${personalInfo.phone ? `<div class="contact-item">📞 ${personalInfo.phone}</div>` : ""}
-                ${personalInfo.location ? `<div class="contact-item">📍 ${personalInfo.location}</div>` : ""}
-                ${personalInfo.website ? `<div class="contact-item">🌐 ${personalInfo.website}</div>` : ""}
-                ${personalInfo.linkedin ? `<div class="contact-item">💼 ${personalInfo.linkedin}</div>` : ""}
+                ${
+                  personalInfo.email
+                    ? `<div class="contact-item">📧 ${personalInfo.email}</div>`
+                    : ""
+                }
+                ${
+                  personalInfo.phone
+                    ? `<div class="contact-item">📞 ${personalInfo.phone}</div>`
+                    : ""
+                }
+                ${
+                  personalInfo.location
+                    ? `<div class="contact-item">📍 ${personalInfo.location}</div>`
+                    : ""
+                }
+                ${
+                  personalInfo.website
+                    ? `<div class="contact-item">🌐 ${personalInfo.website}</div>`
+                    : ""
+                }
+                ${
+                  personalInfo.linkedin
+                    ? `<div class="contact-item">💼 ${personalInfo.linkedin}</div>`
+                    : ""
+                }
               </div>
-              ${personalInfo.summary ? `<div class="summary">${personalInfo.summary}</div>` : ""}
+              ${
+                personalInfo.summary
+                  ? `<div class="summary">${personalInfo.summary}</div>`
+                  : ""
+              }
             </div>
           `
               : ""
@@ -249,15 +281,25 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
                     <div>
                       <div class="item-title">${exp.jobTitle}</div>
                       <div class="item-company">${exp.company}</div>
-                      ${exp.location ? `<div class="item-location">${exp.location}</div>` : ""}
+                      ${
+                        exp.location
+                          ? `<div class="item-location">${exp.location}</div>`
+                          : ""
+                      }
                     </div>
                     <div class="item-date">
-                      ${formatDate(exp.startDate)} - ${exp.current ? "Present" : formatDate(exp.endDate)}
+                      ${formatDate(exp.startDate)} - ${
+                    exp.current ? "Present" : formatDate(exp.endDate)
+                  }
                     </div>
                   </div>
-                  ${exp.description ? `<div class="item-description">${exp.description}</div>` : ""}
+                  ${
+                    exp.description
+                      ? `<div class="item-description">${exp.description}</div>`
+                      : ""
+                  }
                 </div>
-              `,
+              `
                 )
                 .join("")}
             </div>
@@ -278,16 +320,30 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
                     <div>
                       <div class="item-title">${edu.degree}</div>
                       <div class="item-company">${edu.school}</div>
-                      ${edu.location ? `<div class="item-location">${edu.location}</div>` : ""}
-                      ${edu.gpa ? `<div class="item-location">GPA: ${edu.gpa}</div>` : ""}
+                      ${
+                        edu.location
+                          ? `<div class="item-location">${edu.location}</div>`
+                          : ""
+                      }
+                      ${
+                        edu.gpa
+                          ? `<div class="item-location">GPA: ${edu.gpa}</div>`
+                          : ""
+                      }
                     </div>
                     <div class="item-date">
-                      ${formatDate(edu.startDate)} - ${edu.current ? "Present" : formatDate(edu.endDate)}
+                      ${formatDate(edu.startDate)} - ${
+                    edu.current ? "Present" : formatDate(edu.endDate)
+                  }
                     </div>
                   </div>
-                  ${edu.description ? `<div class="item-description">${edu.description}</div>` : ""}
+                  ${
+                    edu.description
+                      ? `<div class="item-description">${edu.description}</div>`
+                      : ""
+                  }
                 </div>
-              `,
+              `
                 )
                 .join("")}
             </div>
@@ -301,7 +357,11 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
             <div class="section">
               <h2 class="section-title">Skills</h2>
               <div class="skills-container">
-                ${skills.skills.map((skill: string) => `<span class="skill-tag">${skill}</span>`).join("")}
+                ${skills.skills
+                  .map(
+                    (skill: string) => `<span class="skill-tag">${skill}</span>`
+                  )
+                  .join("")}
               </div>
             </div>
           `
@@ -310,11 +370,16 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
         </div>
       </body>
       </html>
-    `
-  }
+    `;
+  };
 
   return (
-    <Button variant={variant} size={size} onClick={generatePDF} disabled={isGenerating}>
+    <Button
+      variant={variant}
+      size={size}
+      onClick={generatePDF}
+      disabled={isGenerating}
+    >
       {isGenerating ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -327,5 +392,5 @@ export function PDFExport({ resumeId, resumeTitle, variant = "outline", size = "
         </>
       )}
     </Button>
-  )
+  );
 }

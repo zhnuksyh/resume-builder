@@ -84,26 +84,26 @@ export function ResumePreview({
     });
   };
 
-  // A4 preview styles that match PDF generation exactly
+  // A4 preview styles that match PDF generation exactly - optimized for space
   const a4Styles = isA4Preview
     ? {
         container: "max-w-none mx-0 h-full",
-        header: "border-b-2 border-gray-200 pb-4 mb-5",
-        name: "text-2xl font-bold text-gray-900 mb-2 leading-tight",
-        contactInfo: "flex flex-wrap gap-3 text-xs text-gray-600 mb-3",
+        header: "border-b-2 border-gray-200 pb-3 mb-4",
+        name: "text-2xl font-bold text-gray-900 mb-1.5 leading-tight",
+        contactInfo: "flex flex-wrap gap-2.5 text-xs text-gray-600 mb-2.5",
         contactItem: "flex items-center gap-1.5",
-        summary: "text-gray-700 leading-normal text-sm mt-3",
-        section: "mb-5",
+        summary: "text-gray-700 leading-normal text-sm mt-2.5",
+        section: "mb-4",
         sectionTitle:
-          "text-lg font-bold text-gray-900 mb-3 border-b border-gray-300 pb-1.5 uppercase tracking-wide",
-        experienceItem: "mb-4",
-        educationItem: "mb-3",
-        itemHeader: "flex justify-between items-start mb-1.5",
+          "text-lg font-bold text-gray-900 mb-2.5 border-b border-gray-300 pb-1 uppercase tracking-wide",
+        experienceItem: "mb-3.5",
+        educationItem: "mb-2.5",
+        itemHeader: "flex justify-between items-start mb-1",
         itemTitle: "text-base font-semibold text-gray-900 leading-tight",
         itemCompany: "text-blue-600 font-medium text-sm",
         itemLocation: "text-xs text-gray-600 mt-0.5",
         itemDate: "text-xs text-gray-600 text-right leading-tight",
-        itemDescription: "text-gray-700 leading-normal text-sm mt-1.5",
+        itemDescription: "text-gray-700 leading-normal text-sm mt-1",
         skillsContainer: "flex flex-wrap gap-1.5",
         skillTag: "text-xs px-2 py-1",
       }
@@ -183,7 +183,10 @@ export function ResumePreview({
         {/* Experience */}
         {experience?.items && experience.items.length > 0 && (
           <div className={a4Styles.section}>
-            <h2 className={a4Styles.sectionTitle}>Professional Experience</h2>
+            <h2 className={a4Styles.sectionTitle}>
+              Professional Experience
+              {experience.isPartial ? " (continued)" : ""}
+            </h2>
             <div className="space-y-6">
               {experience.items.map((exp) => (
                 <div key={exp.id} className={a4Styles.experienceItem}>
@@ -220,7 +223,9 @@ export function ResumePreview({
         {/* Education */}
         {education?.items && education.items.length > 0 && (
           <div className={a4Styles.section}>
-            <h2 className={a4Styles.sectionTitle}>Education</h2>
+            <h2 className={a4Styles.sectionTitle}>
+              Education{education.isPartial ? " (continued)" : ""}
+            </h2>
             <div className="space-y-4">
               {education.items.map((edu) => (
                 <div key={edu.id} className={a4Styles.educationItem}>

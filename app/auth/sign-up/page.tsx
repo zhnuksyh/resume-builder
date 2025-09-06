@@ -1,42 +1,48 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { createClient } from "@/lib/supabase/client"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { FileText } from "lucide-react"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import Image from "next/image";
 
 export default function SignUpPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [fullName, setFullName] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault()
-    const supabase = createClient()
-    setIsLoading(true)
-    setError(null)
+    e.preventDefault();
+    const supabase = createClient();
+    setIsLoading(true);
+    setError(null);
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match")
-      setIsLoading(false)
-      return
+      setError("Passwords do not match");
+      setIsLoading(false);
+      return;
     }
 
     if (password.length < 6) {
-      setError("Password must be at least 6 characters long")
-      setIsLoading(false)
-      return
+      setError("Password must be at least 6 characters long");
+      setIsLoading(false);
+      return;
     }
 
     try {
@@ -48,37 +54,45 @@ export default function SignUpPage() {
             full_name: fullName,
           },
         },
-      })
-      
-      if (error) throw error
-      
+      });
+
+      if (error) throw error;
+
       // Ensure session is established before redirect
       if (data.session) {
         // Use router.push for cleaner navigation
-        router.push('/dashboard')
+        router.push("/dashboard");
       } else {
-        throw new Error('Signup successful but no session created')
+        throw new Error("Signup successful but no session created");
       }
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : "An error occurred")
+      setError(error instanceof Error ? error.message : "An error occurred");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         <div className="flex flex-col gap-6">
           {/* Logo */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <FileText className="h-8 w-8 text-blue-600" />
+          <div className="flex items-center justify-center gap-1 mb-8">
+            <Image
+              src="/rougeresume-logo.png"
+              alt="RougeResume Logo"
+              width={56}
+              height={56}
+              className="h-14 w-14"
+            />
             <span className="text-2xl font-bold text-gray-900">ResumeAI</span>
           </div>
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl text-center">Create Your Account</CardTitle>
+              <CardTitle className="text-2xl text-center">
+                Create Your Account
+              </CardTitle>
               <CardDescription className="text-center">
                 Start building professional resumes with AI assistance
               </CardDescription>
@@ -131,7 +145,9 @@ export default function SignUpPage() {
                     />
                   </div>
                   {error && (
-                    <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">{error}</div>
+                    <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
+                      {error}
+                    </div>
                   )}
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? "Creating account..." : "Create Account"}
@@ -140,7 +156,10 @@ export default function SignUpPage() {
               </form>
               <div className="mt-6 text-center text-sm">
                 Already have an account?{" "}
-                <Link href="/auth/login" className="text-blue-600 hover:underline">
+                <Link
+                  href="/auth/login"
+                  className="text-blue-600 hover:underline"
+                >
                   Sign in here
                 </Link>
               </div>
@@ -149,5 +168,5 @@ export default function SignUpPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

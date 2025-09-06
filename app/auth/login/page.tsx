@@ -13,10 +13,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FileText } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -68,8 +68,14 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="flex flex-col gap-6">
           {/* Logo */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            <FileText className="h-8 w-8 text-blue-600" />
+          <div className="flex items-center justify-center gap-1 mb-8">
+            <Image
+              src="/rougeresume-logo.png"
+              alt="RougeResume Logo"
+              width={56}
+              height={56}
+              className="h-14 w-14"
+            />
             <span className="text-2xl font-bold text-gray-900">ResumeAI</span>
           </div>
 

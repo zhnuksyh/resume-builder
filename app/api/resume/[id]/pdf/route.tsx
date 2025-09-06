@@ -1,19 +1,22 @@
-import { type NextRequest, NextResponse } from "next/server"
-import { createClient } from "@/lib/supabase/server"
-import puppeteer from "puppeteer"
+import { type NextRequest, NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
+import puppeteer from "puppeteer";
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const { id } = await params
-    const supabase = await createClient()
+    const { id } = await params;
+    const supabase = await createClient();
 
     // Get user
     const {
       data: { user },
       error: authError,
-    } = await supabase.auth.getUser()
+    } = await supabase.auth.getUser();
     if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get resume
@@ -22,10 +25,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       .select("*")
       .eq("id", id)
       .eq("user_id", user.id)
-      .single()
+      .single();
 
     if (resumeError || !resume) {
-      return NextResponse.json({ error: "Resume not found" }, { status: 404 })
+      return NextResponse.json({ error: "Resume not found" }, { status: 404 });
     }
 
     // Get sections
@@ -33,66 +36,81 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       .from("resume_sections")
       .select("*")
       .eq("resume_id", id)
-      .order("order_index")
+      .order("order_index");
 
     if (sectionsError) {
-      console.error("Error fetching sections:", sectionsError)
+      console.error("Error fetching sections:", sectionsError);
     }
 
     // Transform sections data
     const resumeData = {
-      personalInfo: sections?.find((s: any) => s.section_type === "personal_info")?.content || {},
-      experience: sections?.find((s: any) => s.section_type === "experience")?.content || { items: [] },
-      education: sections?.find((s: any) => s.section_type === "education")?.content || { items: [] },
-      skills: sections?.find((s: any) => s.section_type === "skills")?.content || { skills: [] },
-    }
+      personalInfo:
+        sections?.find((s: any) => s.section_type === "personal_info")
+          ?.content || {},
+      experience: sections?.find((s: any) => s.section_type === "experience")
+        ?.content || { items: [] },
+      education: sections?.find((s: any) => s.section_type === "education")
+        ?.content || { items: [] },
+      skills: sections?.find((s: any) => s.section_type === "skills")
+        ?.content || { skills: [] },
+    };
 
     // Generate HTML for PDF
-    const html = generateResumeHTML(resumeData, resume.title)
+    const html = generateResumeHTML(resumeData, resume.title);
 
     // Launch Puppeteer and generate PDF
     const browser = await puppeteer.launch({
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    })
+    });
 
-    const page = await browser.newPage()
-    await page.setContent(html, { waitUntil: "networkidle0" })
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: "networkidle0" });
 
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
       margin: {
-        top: "0.5in",
-        right: "0.5in",
-        bottom: "0.5in",
-        left: "0.5in",
+        top: "0.6in",
+        right: "0.6in",
+        bottom: "0.6in",
+        left: "0.6in",
       },
-    })
+      preferCSSPageSize: true,
+    });
 
-    await browser.close()
+    await browser.close();
 
     // Return PDF
     return new NextResponse(pdf, {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="${resume.title.replace(/[^a-zA-Z0-9]/g, "_")}.pdf"`,
+        "Content-Disposition": `attachment; filename="${resume.title.replace(
+          /[^a-zA-Z0-9]/g,
+          "_"
+        )}.pdf"`,
       },
-    })
+    });
   } catch (error) {
-    console.error("PDF generation error:", error)
-    return NextResponse.json({ error: "Failed to generate PDF" }, { status: 500 })
+    console.error("PDF generation error:", error);
+    return NextResponse.json(
+      { error: "Failed to generate PDF" },
+      { status: 500 }
+    );
   }
 }
 
 function generateResumeHTML(data: any, title: string): string {
-  const { personalInfo, experience, education, skills } = data
+  const { personalInfo, experience, education, skills } = data;
 
   const formatDate = (dateString: string) => {
-    if (!dateString) return ""
-    const date = new Date(dateString + "-01")
-    return date.toLocaleDateString("en-US", { year: "numeric", month: "short" })
-  }
+    if (!dateString) return "";
+    const date = new Date(dateString + "-01");
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+    });
+  };
 
   return `
     <!DOCTYPE html>
@@ -117,29 +135,29 @@ function generateResumeHTML(data: any, title: string): string {
         .resume {
           max-width: 8.5in;
           margin: 0 auto;
-          padding: 0.5in;
+          padding: 0.6in;
         }
         
         .header {
           border-bottom: 2px solid #e5e7eb;
-          padding-bottom: 1rem;
-          margin-bottom: 1.5rem;
+          padding-bottom: 0.75rem;
+          margin-bottom: 1.25rem;
         }
         
         .name {
           font-size: 2rem;
           font-weight: bold;
           color: #1f2937;
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.375rem;
         }
         
         .contact-info {
           display: flex;
           flex-wrap: wrap;
-          gap: 1rem;
+          gap: 0.75rem;
           font-size: 0.9rem;
           color: #6b7280;
-          margin-bottom: 1rem;
+          margin-bottom: 0.75rem;
         }
         
         .contact-item {
@@ -154,7 +172,7 @@ function generateResumeHTML(data: any, title: string): string {
         }
         
         .section {
-          margin-bottom: 1.5rem;
+          margin-bottom: 1.25rem;
         }
         
         .section-title {
@@ -162,19 +180,19 @@ function generateResumeHTML(data: any, title: string): string {
           font-weight: bold;
           color: #1f2937;
           border-bottom: 1px solid #e5e7eb;
-          padding-bottom: 0.5rem;
-          margin-bottom: 1rem;
+          padding-bottom: 0.375rem;
+          margin-bottom: 0.875rem;
         }
         
         .experience-item, .education-item {
-          margin-bottom: 1.5rem;
+          margin-bottom: 1.25rem;
         }
         
         .item-header {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.375rem;
         }
         
         .item-title {
@@ -221,8 +239,27 @@ function generateResumeHTML(data: any, title: string): string {
         }
         
         @media print {
-          body { print-color-adjust: exact; }
-          .resume { margin: 0; padding: 0.25in; }
+          body { 
+            print-color-adjust: exact; 
+            -webkit-print-color-adjust: exact;
+          }
+          .resume { 
+            margin: 0; 
+            padding: 0.6in; 
+            page-break-inside: avoid;
+          }
+          .section {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+          .experience-item, .education-item {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+          @page {
+            size: A4;
+            margin: 0.6in;
+          }
         }
       </style>
     </head>
@@ -234,13 +271,37 @@ function generateResumeHTML(data: any, title: string): string {
           <div class="header">
             <h1 class="name">${personalInfo.fullName || "Your Name"}</h1>
             <div class="contact-info">
-              ${personalInfo.email ? `<div class="contact-item">📧 ${personalInfo.email}</div>` : ""}
-              ${personalInfo.phone ? `<div class="contact-item">📞 ${personalInfo.phone}</div>` : ""}
-              ${personalInfo.location ? `<div class="contact-item">📍 ${personalInfo.location}</div>` : ""}
-              ${personalInfo.website ? `<div class="contact-item">🌐 ${personalInfo.website}</div>` : ""}
-              ${personalInfo.linkedin ? `<div class="contact-item">💼 ${personalInfo.linkedin}</div>` : ""}
+              ${
+                personalInfo.email
+                  ? `<div class="contact-item">📧 ${personalInfo.email}</div>`
+                  : ""
+              }
+              ${
+                personalInfo.phone
+                  ? `<div class="contact-item">📞 ${personalInfo.phone}</div>`
+                  : ""
+              }
+              ${
+                personalInfo.location
+                  ? `<div class="contact-item">📍 ${personalInfo.location}</div>`
+                  : ""
+              }
+              ${
+                personalInfo.website
+                  ? `<div class="contact-item">🌐 ${personalInfo.website}</div>`
+                  : ""
+              }
+              ${
+                personalInfo.linkedin
+                  ? `<div class="contact-item">💼 ${personalInfo.linkedin}</div>`
+                  : ""
+              }
             </div>
-            ${personalInfo.summary ? `<div class="summary">${personalInfo.summary}</div>` : ""}
+            ${
+              personalInfo.summary
+                ? `<div class="summary">${personalInfo.summary}</div>`
+                : ""
+            }
           </div>
         `
             : ""
@@ -259,15 +320,25 @@ function generateResumeHTML(data: any, title: string): string {
                   <div>
                     <div class="item-title">${exp.jobTitle}</div>
                     <div class="item-company">${exp.company}</div>
-                    ${exp.location ? `<div class="item-location">${exp.location}</div>` : ""}
+                    ${
+                      exp.location
+                        ? `<div class="item-location">${exp.location}</div>`
+                        : ""
+                    }
                   </div>
                   <div class="item-date">
-                    ${formatDate(exp.startDate)} - ${exp.current ? "Present" : formatDate(exp.endDate)}
+                    ${formatDate(exp.startDate)} - ${
+                  exp.current ? "Present" : formatDate(exp.endDate)
+                }
                   </div>
                 </div>
-                ${exp.description ? `<div class="item-description">${exp.description}</div>` : ""}
+                ${
+                  exp.description
+                    ? `<div class="item-description">${exp.description}</div>`
+                    : ""
+                }
               </div>
-            `,
+            `
               )
               .join("")}
           </div>
@@ -288,16 +359,30 @@ function generateResumeHTML(data: any, title: string): string {
                   <div>
                     <div class="item-title">${edu.degree}</div>
                     <div class="item-company">${edu.school}</div>
-                    ${edu.location ? `<div class="item-location">${edu.location}</div>` : ""}
-                    ${edu.gpa ? `<div class="item-location">GPA: ${edu.gpa}</div>` : ""}
+                    ${
+                      edu.location
+                        ? `<div class="item-location">${edu.location}</div>`
+                        : ""
+                    }
+                    ${
+                      edu.gpa
+                        ? `<div class="item-location">GPA: ${edu.gpa}</div>`
+                        : ""
+                    }
                   </div>
                   <div class="item-date">
-                    ${formatDate(edu.startDate)} - ${edu.current ? "Present" : formatDate(edu.endDate)}
+                    ${formatDate(edu.startDate)} - ${
+                  edu.current ? "Present" : formatDate(edu.endDate)
+                }
                   </div>
                 </div>
-                ${edu.description ? `<div class="item-description">${edu.description}</div>` : ""}
+                ${
+                  edu.description
+                    ? `<div class="item-description">${edu.description}</div>`
+                    : ""
+                }
               </div>
-            `,
+            `
               )
               .join("")}
           </div>
@@ -311,7 +396,11 @@ function generateResumeHTML(data: any, title: string): string {
           <div class="section">
             <h2 class="section-title">Skills</h2>
             <div class="skills-container">
-              ${skills.skills.map((skill: string) => `<span class="skill-tag">${skill}</span>`).join("")}
+              ${skills.skills
+                .map(
+                  (skill: string) => `<span class="skill-tag">${skill}</span>`
+                )
+                .join("")}
             </div>
           </div>
         `
@@ -320,5 +409,5 @@ function generateResumeHTML(data: any, title: string): string {
       </div>
     </body>
     </html>
-  `
+  `;
 }
