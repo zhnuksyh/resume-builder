@@ -304,7 +304,7 @@ export function LivePreviewPanel({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <CardTitle className="text-lg">Live Preview</CardTitle>
-            <div className="px-2 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded">
+            <div className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded">
               A4 Format
             </div>
           </div>
@@ -348,7 +348,7 @@ export function LivePreviewPanel({
               </Button>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-muted-foreground">
                   Page {currentPage + 1} of {pages.length}
                 </span>
                 <div className="flex gap-1">
@@ -359,7 +359,7 @@ export function LivePreviewPanel({
                       className={`w-2 h-2 rounded-full transition-colors ${
                         index === currentPage
                           ? "bg-primary"
-                          : "bg-gray-300 hover:bg-gray-400"
+                          : "bg-muted hover:bg-muted-foreground/50"
                       }`}
                     />
                   ))}

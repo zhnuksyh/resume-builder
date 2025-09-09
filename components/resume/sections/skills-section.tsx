@@ -33,7 +33,9 @@ export function SkillsSection({
   const [newSkill, setNewSkill] = useState("");
 
   useEffect(() => {
-    setFormData(content.skills ? content : { skills: [] });
+    setFormData({
+      skills: content.skills || [],
+    });
   }, [content]);
 
   const addSkill = () => {
@@ -153,7 +155,9 @@ export function SkillsSection({
                   variant="outline"
                   className="cursor-pointer hover:bg-purple-50"
                   onClick={() => {
-                    setFormData({ skills: [...formData.skills, skill] });
+                    const newFormData = { skills: [...formData.skills, skill] };
+                    setFormData(newFormData);
+                    onChange?.(newFormData);
                   }}
                 >
                   {skill}

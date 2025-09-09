@@ -38,6 +38,40 @@ export const getGeminiModel = () => {
   })
 }
 
+// Helper function to check if API key is valid and quota is available
+export async function checkGeminiAPIStatus(): Promise<{ valid: boolean; error?: string }> {
+  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+    return { valid: false, error: "API key not configured" }
+  }
+
+  try {
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        temperature: 0.1,
+        maxOutputTokens: 10,
+      },
+    })
+
+    // Make a minimal test request
+    const result = await model.generateContent("test")
+    await result.response.text()
+    return { valid: true }
+  } catch (error) {
+    console.error("API status check failed:", error)
+    if (error instanceof Error) {
+      const errorMessage = error.message.toLowerCase()
+      if (errorMessage.includes('quota') || errorMessage.includes('rate limit')) {
+        return { valid: false, error: "API quota exceeded" }
+      }
+      if (errorMessage.includes('api key') || errorMessage.includes('unauthorized')) {
+        return { valid: false, error: "Invalid API key" }
+      }
+    }
+    return { valid: false, error: error instanceof Error ? error.message : "Unknown error" }
+  }
+}
+
 // Helper function to generate text using Gemini
 export async function generateWithGemini(
   prompt: string,
@@ -88,6 +122,27 @@ export async function generateWithGemini(
     return text
   } catch (error) {
     console.error("Gemini generation error:", error)
+    
+    // Check for specific error types
+    if (error instanceof Error) {
+      const errorMessage = error.message.toLowerCase()
+      
+      // Handle rate limit/quota errors
+      if (errorMessage.includes('quota') || errorMessage.includes('rate limit') || errorMessage.includes('limit exceeded')) {
+        throw new Error('API quota exceeded. Please try again later or upgrade your Google AI plan.')
+      }
+      
+      // Handle authentication errors
+      if (errorMessage.includes('api key') || errorMessage.includes('unauthorized') || errorMessage.includes('permission')) {
+        throw new Error('Invalid or missing Google AI API key. Please check your configuration.')
+      }
+      
+      // Handle other specific errors
+      if (errorMessage.includes('safety')) {
+        throw new Error('Content was blocked by safety filters. Please try rephrasing your request.')
+      }
+    }
+    
     throw new Error(`Gemini AI generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

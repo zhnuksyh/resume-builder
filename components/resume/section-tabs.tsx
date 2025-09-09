@@ -87,8 +87,8 @@ function SortableTab({
       ref={setNodeRef}
       style={style}
       value={section.section_type}
-      className={`flex items-center gap-2 px-4 py-2 data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700 whitespace-nowrap ${
-        isActive ? "bg-purple-50 text-purple-700" : ""
+      className={`flex items-center gap-2 px-4 py-2 data-[state=active]:bg-primary/30 data-[state=active]:text-primary data-[state=active]:border-primary/50 data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground whitespace-nowrap ${
+        isActive ? "bg-primary/30 text-primary border-primary/50 shadow-sm" : ""
       }`}
       onClick={() => onSectionChange(section.section_type)}
     >
@@ -97,7 +97,7 @@ function SortableTab({
         {...listeners}
         className="cursor-grab active:cursor-grabbing mr-1"
       >
-        <GripVertical className="h-3 w-3 text-gray-400" />
+        <GripVertical className="h-3 w-3 text-muted-foreground" />
       </div>
       <CustomIcon className="h-4 w-4 flex-shrink-0" />
       <span className="hidden sm:inline">{capitalizedTitle}</span>
@@ -107,7 +107,7 @@ function SortableTab({
           <div className="w-2 h-2 bg-green-500 rounded-full" />
         )}
         {status === "empty" && (
-          <div className="w-2 h-2 bg-gray-300 rounded-full" />
+          <div className="w-2 h-2 bg-muted-foreground/40 rounded-full" />
         )}
       </div>
     </TabsTrigger>
@@ -303,7 +303,7 @@ export function SectionTabs({
         <div className="flex items-center justify-between mb-3">
           <div className="flex-1 min-w-0">
             <div className="overflow-x-auto scrollbar-hide">
-              <TabsList className="flex w-max bg-white border min-w-full">
+              <TabsList className="flex w-max min-w-full bg-muted/70 border border-border/50">
                 {sectionConfig.map((section) => {
                   const Icon = section.icon;
                   const status = getSectionStatus(section.id);
@@ -312,7 +312,7 @@ export function SectionTabs({
                     <TabsTrigger
                       key={section.id}
                       value={section.id}
-                      className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-purple-50 data-[state=active]:text-purple-700 whitespace-nowrap"
+                      className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-primary/30 data-[state=active]:text-primary data-[state=active]:border-primary/50 data-[state=active]:shadow-sm text-muted-foreground hover:text-foreground whitespace-nowrap"
                     >
                       <Icon className="h-4 w-4 flex-shrink-0" />
                       <span className="hidden sm:inline">{section.label}</span>
@@ -332,7 +332,7 @@ export function SectionTabs({
                           <div className="w-2 h-2 bg-green-500 rounded-full" />
                         )}
                         {status === "empty" && (
-                          <div className="w-2 h-2 bg-gray-300 rounded-full" />
+                          <div className="w-2 h-2 bg-muted-foreground/40 rounded-full" />
                         )}
                       </div>
                     </TabsTrigger>
@@ -363,7 +363,7 @@ export function SectionTabs({
                     items={customSections.map((s) => s.section_type)}
                     strategy={horizontalListSortingStrategy}
                   >
-                    <TabsList className="flex w-max bg-white border min-w-full">
+                    <TabsList className="flex w-max min-w-full bg-muted/70 border border-border/50">
                       {customSections.map((section) => (
                         <SortableTab
                           key={section.section_type}

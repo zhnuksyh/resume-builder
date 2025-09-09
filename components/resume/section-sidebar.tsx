@@ -97,7 +97,7 @@ export function SectionSidebar({
     <Card>
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Resume Sections</h3>
+          <h3 className="font-semibold text-foreground">Resume Sections</h3>
           <AddCustomSectionDialog onAddSection={onAddCustomSection} />
         </div>
         <div className="space-y-2">
@@ -128,7 +128,7 @@ export function SectionSidebar({
                       <div className="w-2 h-2 bg-green-500 rounded-full" />
                     )}
                     {status === "empty" && (
-                      <div className="w-2 h-2 bg-gray-300 rounded-full" />
+                      <div className="w-2 h-2 bg-muted-foreground/40 rounded-full" />
                     )}
                   </div>
                 </div>
@@ -164,7 +164,7 @@ export function SectionSidebar({
                           <div className="w-2 h-2 bg-green-500 rounded-full" />
                         )}
                         {status === "empty" && (
-                          <div className="w-2 h-2 bg-gray-300 rounded-full" />
+                          <div className="w-2 h-2 bg-muted-foreground/40 rounded-full" />
                         )}
                       </div>
                     </div>
@@ -173,7 +173,7 @@ export function SectionSidebar({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 hover:text-red-600"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
                       onClick={(e) => {
                         e.stopPropagation();
                         onDeleteCustomSection(section.section_type);

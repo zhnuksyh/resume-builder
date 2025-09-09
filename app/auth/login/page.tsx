@@ -64,10 +64,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-violet-100 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         <div className="flex flex-col gap-6">
-          {/* Logo */}
+          {/* Header */}
           <div className="flex items-center justify-center mb-8">
             <Image
               src="/rougeresume-logo.png"

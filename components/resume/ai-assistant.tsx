@@ -8,10 +8,17 @@ import { Badge } from "@/components/ui/badge";
 import { Sparkles, Copy, Check, Loader2 } from "lucide-react";
 
 interface AIAssistantProps {
-  sectionType: "experience" | "skills" | "summary" | "education" | "custom";
+  sectionType:
+    | "experience"
+    | "skills"
+    | "summary"
+    | "education"
+    | "custom"
+    | "personal_info";
   currentContent: string;
   jobTitle?: string;
   industry?: string;
+  customSectionTitle?: string;
   onApplySuggestion: (suggestion: string) => void;
 }
 
@@ -20,6 +27,7 @@ export function AIAssistant({
   currentContent,
   jobTitle,
   industry,
+  customSectionTitle,
   onApplySuggestion,
 }: AIAssistantProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -40,12 +48,25 @@ export function AIAssistant({
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to get suggestion");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage =
+          errorData.details ||
+          errorData.error ||
+          `HTTP ${response.status}: ${response.statusText}`;
+        throw new Error(`Failed to get suggestion: ${errorMessage}`);
+      }
 
       const data = await response.json();
       setSuggestion(data.suggestion);
     } catch (error) {
       console.error("AI suggestion error:", error);
+      // You could also show a toast notification here
+      alert(
+        `Error: ${
+          error instanceof Error ? error.message : "Unknown error occurred"
+        }`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -73,6 +94,16 @@ export function AIAssistant({
       case "education":
         return "Education";
       case "custom":
+        return customSectionTitle
+          ? customSectionTitle
+              .split(" ")
+              .map(
+                (word) =>
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+              )
+              .join(" ")
+          : "Custom Section";
+      case "personal_info":
         return "Professional Summary";
       default:
         return "Content";
@@ -80,9 +111,9 @@ export function AIAssistant({
   };
 
   return (
-    <Card className="border-purple-200 bg-purple-50/50">
+    <Card className="border-primary/20 bg-primary/5">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-sm font-medium text-purple-700">
+        <CardTitle className="flex items-center gap-2 text-sm font-medium text-primary">
           <Sparkles className="h-4 w-4" />
           AI Assistant - {getSectionLabel()}
         </CardTitle>
@@ -93,7 +124,7 @@ export function AIAssistant({
             onClick={getSuggestion}
             disabled={isLoading || !currentContent.trim()}
             size="sm"
-            className="bg-purple-600 hover:bg-purple-700"
+            className="bg-primary hover:bg-primary/90"
           >
             {isLoading ? (
               <>
@@ -149,7 +180,7 @@ export function AIAssistant({
         )}
 
         {!currentContent.trim() && (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             Add some content first to get AI suggestions
           </p>
         )}
