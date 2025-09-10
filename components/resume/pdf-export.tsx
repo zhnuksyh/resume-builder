@@ -34,7 +34,10 @@ export function PDFExport({
       );
 
       if (!response.ok) {
-        throw new Error("Failed to generate PDF");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error || `HTTP ${response.status}: Failed to generate PDF`
+        );
       }
 
       // Get the PDF blob
@@ -53,7 +56,11 @@ export function PDFExport({
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("PDF generation error:", error);
-      alert("Failed to generate PDF. Please try again.");
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to generate PDF. Please try again.";
+      alert(errorMessage);
     } finally {
       setIsGenerating(false);
     }

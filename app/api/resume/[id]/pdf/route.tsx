@@ -73,11 +73,25 @@ export async function GET(
     // Launch Puppeteer and generate PDF
     const browser = await puppeteer.launch({
       headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-accelerated-2d-canvas",
+        "--no-first-run",
+        "--disable-gpu",
+      ],
     });
 
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
+
+    // Set timeout for page operations
+    page.setDefaultTimeout(30000);
+
+    await page.setContent(html, {
+      waitUntil: "networkidle0",
+      timeout: 30000,
+    });
 
     const pdf = await page.pdf({
       format: "A4",
@@ -89,6 +103,7 @@ export async function GET(
         left: "0mm",
       },
       preferCSSPageSize: true,
+      timeout: 30000,
     });
 
     await browser.close();
@@ -105,8 +120,24 @@ export async function GET(
     });
   } catch (error) {
     console.error("PDF generation error:", error);
+
+    // More specific error messages
+    let errorMessage = "Failed to generate PDF";
+    if (error instanceof Error) {
+      if (error.message.includes("timeout")) {
+        errorMessage = "PDF generation timed out. Please try again.";
+      } else if (error.message.includes("browser")) {
+        errorMessage = "Browser initialization failed. Please try again.";
+      } else if (error.message.includes("network")) {
+        errorMessage = "Network error during PDF generation. Please try again.";
+      }
+    }
+
     return NextResponse.json(
-      { error: "Failed to generate PDF" },
+      {
+        error: errorMessage,
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }
