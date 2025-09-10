@@ -27,10 +27,10 @@ export async function POST(request: NextRequest) {
 
     switch (sectionType) {
       case "experience":
-        prompt = `As a professional resume writer, improve this work experience description for a resume.
+        prompt = `As a professional resume writer, ${currentContent.trim() ? 'improve this work experience description' : 'create a work experience description'} for a resume.
         Job Title: ${jobTitle || "Not specified"}
         Industry: ${industry || "Not specified"}
-        Current content: ${currentContent}
+        ${currentContent.trim() ? `Current content: ${currentContent}` : 'No existing content provided'}
         
         Provide exactly 3-4 concise bullet points that are:
         - Action-oriented with strong verbs
@@ -46,12 +46,13 @@ export async function POST(request: NextRequest) {
         prompt = `As a career expert, suggest relevant skills for this professional profile:
         Job Title: ${jobTitle || "Not specified"}
         Industry: ${industry || "Not specified"}
-        Current skills: ${currentContent}
+        ${currentContent.trim() ? `Current skills: ${currentContent}` : 'No existing skills provided'}
         
-        Suggest 6-8 additional relevant skills that are:
+        Suggest 6-8 relevant skills that are:
         - Industry-specific and in-demand
         - Mix of technical and soft skills
         - ATS-optimized keywords
+        - Tailored to the job title and industry
         
         Return only the skill names, separated by commas. Do not provide multiple options or explanations.`
         break
@@ -60,7 +61,7 @@ export async function POST(request: NextRequest) {
         prompt = `Write a compelling professional summary for this resume:
         Job Title: ${jobTitle || "Not specified"}
         Industry: ${industry || "Not specified"}
-        Current summary: ${currentContent}
+        ${currentContent.trim() ? `Current summary: ${currentContent}` : 'No existing summary provided'}
         
         Create a concise 2-3 sentence professional summary that:
         - Highlights key strengths and experience
@@ -72,10 +73,10 @@ export async function POST(request: NextRequest) {
         break
 
       case "education":
-        prompt = `As a professional resume writer, improve this education description for a resume.
+        prompt = `As a professional resume writer, ${currentContent.trim() ? 'improve this education description' : 'create an education description'} for a resume.
         Job Title: ${jobTitle || "Not specified"}
         Industry: ${industry || "Not specified"}
-        Current content: ${currentContent}
+        ${currentContent.trim() ? `Current content: ${currentContent}` : 'No existing content provided'}
         
         Provide exactly 2-3 concise bullet points for education details that are:
         - Relevant to the job title and industry
@@ -104,20 +105,20 @@ export async function POST(request: NextRequest) {
         break
 
       case "custom":
-        prompt = `As a professional resume writer, improve this custom section for a resume:
+        prompt = `As a professional resume writer, ${currentContent.trim() ? 'improve this custom section' : 'create content for this custom section'} for a resume:
         Section Title: ${customSectionTitle || "Custom Section"}
         Job Title: ${jobTitle || "Not specified"}
         Industry: ${industry || "Not specified"}
-        Current content: ${currentContent}
+        ${currentContent.trim() ? `Current content: ${currentContent}` : 'No existing content provided'}
         
-        Provide concise improved content for this custom section that:
+        Provide concise content for this custom section that:
         - Is relevant to the job title and industry
         - Uses professional language and formatting
         - Highlights achievements and skills
         - Is ATS-friendly with relevant keywords
         - Keep content brief and impactful
         
-        Return only the improved content. Do not provide multiple options or explanations.`
+        Return only the content. Do not provide multiple options or explanations.`
         break
 
       default:

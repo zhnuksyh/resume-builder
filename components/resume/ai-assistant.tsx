@@ -126,7 +126,7 @@ export function AIAssistant({
         <div className="flex gap-2">
           <Button
             onClick={getSuggestion}
-            disabled={isLoading || !currentContent.trim()}
+            disabled={isLoading}
             size="sm"
             className="bg-primary hover:bg-primary/90"
           >
@@ -200,7 +200,7 @@ export function AIAssistant({
 
         {!currentContent.trim() && (
           <p className="text-xs text-muted-foreground">
-            Add some content first to get AI suggestions
+            Please add some content first to get AI suggestions
           </p>
         )}
 

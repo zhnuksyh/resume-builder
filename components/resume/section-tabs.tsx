@@ -87,9 +87,9 @@ function SortableTab({
       ref={setNodeRef}
       style={style}
       value={section.section_type}
-      className={`flex items-center gap-2 px-4 py-2 data-[state=active]:bg-primary/30 data-[state=active]:text-purple-900 data-[state=active]:border-primary/50 data-[state=active]:shadow-sm text-muted-foreground hover:text-purple-900 whitespace-nowrap relative z-10 ${
+      className={`flex items-center gap-2 px-4 py-2 data-[state=active]:bg-primary/30 data-[state=active]:text-purple-900 data-[state=active]:border-primary/50 data-[state=active]:shadow-sm dark:data-[state=active]:bg-primary/30 dark:data-[state=active]:text-primary dark:data-[state=active]:border-primary/60 dark:data-[state=active]:shadow-lg text-muted-foreground hover:text-purple-900 dark:hover:text-primary whitespace-nowrap relative z-10 ${
         isActive
-          ? "bg-primary/30 text-purple-900 border-primary/50 shadow-sm"
+          ? "bg-primary/30 text-purple-900 border-primary/50 shadow-sm dark:bg-primary/30 dark:text-primary dark:border-primary/60 dark:shadow-lg"
           : ""
       }`}
       onClick={() => onSectionChange(section.section_type)}
@@ -108,12 +108,12 @@ function SortableTab({
       <span className="sm:hidden flex-1 min-w-0 relative z-20">
         {capitalizedTitle.split(" ")[0]}
       </span>
-      <div className="ml-3 flex-shrink-0 relative z-20">
+      <div className="ml-3 flex-shrink-0 relative z-30">
         {status === "completed" && (
-          <div className="w-2 h-2 bg-green-500 rounded-full" />
+          <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full" />
         )}
         {status === "empty" && (
-          <div className="w-2 h-2 bg-muted-foreground/40 rounded-full" />
+          <div className="w-2 h-2 bg-muted-foreground/40 dark:bg-muted-foreground/60 rounded-full" />
         )}
       </div>
     </TabsTrigger>
@@ -318,7 +318,7 @@ export function SectionTabs({
                     <TabsTrigger
                       key={section.id}
                       value={section.id}
-                      className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-primary/30 data-[state=active]:text-purple-900 data-[state=active]:border-primary/50 data-[state=active]:shadow-sm text-muted-foreground hover:text-purple-900 whitespace-nowrap relative z-10"
+                      className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-primary/30 data-[state=active]:text-purple-900 data-[state=active]:border-primary/50 data-[state=active]:shadow-sm dark:data-[state=active]:bg-primary/30 dark:data-[state=active]:text-primary dark:data-[state=active]:border-primary/60 dark:data-[state=active]:shadow-lg text-muted-foreground hover:text-purple-900 dark:hover:text-primary whitespace-nowrap relative z-10"
                     >
                       <Icon className="h-4 w-4 flex-shrink-0 relative z-20" />
                       <span className="hidden sm:inline flex-1 min-w-0 relative z-20">
@@ -330,17 +330,17 @@ export function SectionTabs({
                       {section.required && (
                         <Badge
                           variant="secondary"
-                          className="text-xs ml-1 flex-shrink-0 relative z-20 bg-purple-100 text-purple-800 border border-purple-200"
+                          className="text-xs ml-1 flex-shrink-0 relative z-20 bg-purple-100 text-purple-800 border border-purple-200 dark:bg-primary/10 dark:text-primary dark:border-primary/20 hover:bg-purple-200 dark:hover:bg-primary/20 transition-colors"
                         >
                           Required
                         </Badge>
                       )}
-                      <div className="ml-3 flex-shrink-0 relative z-20">
+                      <div className="ml-3 flex-shrink-0 relative z-30">
                         {status === "completed" && (
-                          <div className="w-2 h-2 bg-green-500 rounded-full" />
+                          <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full" />
                         )}
                         {status === "empty" && (
-                          <div className="w-2 h-2 bg-muted-foreground/40 rounded-full" />
+                          <div className="w-2 h-2 bg-muted-foreground/40 dark:bg-muted-foreground/60 rounded-full" />
                         )}
                       </div>
                     </TabsTrigger>

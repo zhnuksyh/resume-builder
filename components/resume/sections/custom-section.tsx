@@ -249,10 +249,11 @@ export function CustomSection({
                 rows={4}
               />
             </div>
-            {item.title && !isReferenceSection && (
+            {!isReferenceSection && (
               <AIAssistant
                 sectionType="custom"
                 currentContent={item.description}
+                customSectionTitle={sectionTitle}
                 onApplySuggestion={(suggestion) =>
                   handleAISuggestion(item.id, suggestion)
                 }

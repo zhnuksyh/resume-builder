@@ -110,7 +110,11 @@ export function SectionSidebar({
               <Button
                 key={section.id}
                 variant={isActive ? "default" : "ghost"}
-                className="w-full justify-start h-auto p-3"
+                className={`w-full justify-start h-auto p-3 hover:bg-primary/10 dark:hover:bg-primary/20 hover:text-primary dark:hover:text-primary transition-all duration-200 ${
+                  isActive
+                    ? "bg-primary/30 text-purple-900 border border-primary/50 shadow-sm dark:bg-primary/30 dark:text-primary dark:border-primary/60 dark:shadow-lg"
+                    : ""
+                }`}
                 onClick={() => onSectionChange(section.id)}
               >
                 <div className="flex items-center justify-between w-full">
@@ -118,17 +122,20 @@ export function SectionSidebar({
                     <Icon className="h-4 w-4" />
                     <span>{section.label}</span>
                     {section.required && (
-                      <Badge variant="secondary" className="text-xs">
+                      <Badge
+                        variant="secondary"
+                        className="text-xs bg-purple-100 text-purple-800 border border-purple-200 dark:bg-primary/10 dark:text-primary dark:border-primary/20 hover:bg-purple-200 dark:hover:bg-primary/20 transition-colors"
+                      >
                         Required
                       </Badge>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
                     {status === "completed" && (
-                      <div className="w-2 h-2 bg-green-500 rounded-full" />
+                      <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full" />
                     )}
                     {status === "empty" && (
-                      <div className="w-2 h-2 bg-muted-foreground/40 rounded-full" />
+                      <div className="w-2 h-2 bg-muted-foreground/40 dark:bg-muted-foreground/60 rounded-full" />
                     )}
                   </div>
                 </div>
