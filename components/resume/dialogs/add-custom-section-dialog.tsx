@@ -1,16 +1,37 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Plus, FileText, Award, Heart, Lightbulb, Code, Users, Globe } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Plus,
+  FileText,
+  Award,
+  Heart,
+  Lightbulb,
+  Code,
+  Users,
+  Globe,
+} from "lucide-react";
 
 interface AddCustomSectionDialogProps {
-  onAddSection: (sectionType: string, title: string, template: string) => void
-  children?: React.ReactNode
+  onAddSection: (sectionType: string, title: string, template: string) => void;
+  children?: React.ReactNode;
 }
 
 const customSectionTemplates = [
@@ -29,10 +50,10 @@ const customSectionTemplates = [
           url: "",
           github: "",
           startDate: "",
-          endDate: ""
-        }
-      ]
-    }
+          endDate: "",
+        },
+      ],
+    },
   },
   {
     id: "certifications",
@@ -48,10 +69,10 @@ const customSectionTemplates = [
           date: "",
           expiryDate: "",
           credentialId: "",
-          url: ""
-        }
-      ]
-    }
+          url: "",
+        },
+      ],
+    },
   },
   {
     id: "achievements",
@@ -65,10 +86,10 @@ const customSectionTemplates = [
           title: "",
           description: "",
           date: "",
-          issuer: ""
-        }
-      ]
-    }
+          issuer: "",
+        },
+      ],
+    },
   },
   {
     id: "volunteer",
@@ -85,10 +106,10 @@ const customSectionTemplates = [
           startDate: "",
           endDate: "",
           current: false,
-          description: ""
-        }
-      ]
-    }
+          description: "",
+        },
+      ],
+    },
   },
   {
     id: "languages",
@@ -100,10 +121,10 @@ const customSectionTemplates = [
         {
           id: "1",
           language: "",
-          proficiency: ""
-        }
-      ]
-    }
+          proficiency: "",
+        },
+      ],
+    },
   },
   {
     id: "interests",
@@ -111,8 +132,8 @@ const customSectionTemplates = [
     icon: Heart,
     description: "Share your personal interests",
     template: {
-      interests: []
-    }
+      interests: [],
+    },
   },
   {
     id: "publications",
@@ -127,10 +148,10 @@ const customSectionTemplates = [
           publication: "",
           date: "",
           authors: "",
-          url: ""
-        }
-      ]
-    }
+          url: "",
+        },
+      ],
+    },
   },
   {
     id: "custom",
@@ -142,36 +163,44 @@ const customSectionTemplates = [
         {
           id: "1",
           title: "",
-          description: ""
-        }
-      ]
-    }
-  }
-]
+          description: "",
+        },
+      ],
+    },
+  },
+];
 
-export function AddCustomSectionDialog({ onAddSection, children }: AddCustomSectionDialogProps) {
-  const [open, setOpen] = useState(false)
-  const [selectedTemplate, setSelectedTemplate] = useState("")
-  const [customTitle, setCustomTitle] = useState("")
-  
+export function AddCustomSectionDialog({
+  onAddSection,
+  children,
+}: AddCustomSectionDialogProps) {
+  const [open, setOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState("");
+  const [customTitle, setCustomTitle] = useState("");
+
   const handleAddSection = () => {
-    if (!selectedTemplate) return
-    
-    const template = customSectionTemplates.find(t => t.id === selectedTemplate)
-    if (!template) return
-    
-    const title = customTitle || template.label
-    const sectionType = selectedTemplate === "custom" ? `custom_${Date.now()}` : selectedTemplate
-    
-    onAddSection(sectionType, title, template.template)
-    
-    // Reset form
-    setSelectedTemplate("")
-    setCustomTitle("")
-    setOpen(false)
-  }
+    if (!selectedTemplate) return;
 
-  const selectedTemplateData = customSectionTemplates.find(t => t.id === selectedTemplate)
+    const template = customSectionTemplates.find(
+      (t) => t.id === selectedTemplate
+    );
+    if (!template) return;
+
+    const title = customTitle || template.label;
+    const sectionType =
+      selectedTemplate === "custom" ? `custom_${Date.now()}` : selectedTemplate;
+
+    onAddSection(sectionType, title, template.template);
+
+    // Reset form
+    setSelectedTemplate("");
+    setCustomTitle("");
+    setOpen(false);
+  };
+
+  const selectedTemplateData = customSectionTemplates.find(
+    (t) => t.id === selectedTemplate
+  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -191,13 +220,16 @@ export function AddCustomSectionDialog({ onAddSection, children }: AddCustomSect
         <div className="space-y-4">
           <div className="space-y-2">
             <Label>Section Type</Label>
-            <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+            <Select
+              value={selectedTemplate}
+              onValueChange={setSelectedTemplate}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Choose a section type" />
               </SelectTrigger>
               <SelectContent>
                 {customSectionTemplates.map((template) => {
-                  const Icon = template.icon
+                  const Icon = template.icon;
                   return (
                     <SelectItem key={template.id} value={template.id}>
                       <div className="flex items-center gap-2">
@@ -205,12 +237,14 @@ export function AddCustomSectionDialog({ onAddSection, children }: AddCustomSect
                         <span>{template.label}</span>
                       </div>
                     </SelectItem>
-                  )
+                  );
                 })}
               </SelectContent>
             </Select>
             {selectedTemplateData && (
-              <p className="text-sm text-gray-600">{selectedTemplateData.description}</p>
+              <p className="text-sm text-muted-foreground">
+                {selectedTemplateData.description}
+              </p>
             )}
           </div>
 
@@ -220,9 +254,11 @@ export function AddCustomSectionDialog({ onAddSection, children }: AddCustomSect
               <Input
                 value={customTitle}
                 onChange={(e) => setCustomTitle(e.target.value)}
-                placeholder={selectedTemplateData?.label || "Enter section title"}
+                placeholder={
+                  selectedTemplateData?.label || "Enter section title"
+                }
               />
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-muted-foreground">
                 Leave blank to use the default title
               </p>
             </div>
@@ -239,5 +275,5 @@ export function AddCustomSectionDialog({ onAddSection, children }: AddCustomSect
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

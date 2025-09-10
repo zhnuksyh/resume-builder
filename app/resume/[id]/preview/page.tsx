@@ -78,9 +78,9 @@ export default async function PreviewPage({
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-white">
+      <header className="border-b bg-background">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -90,7 +90,7 @@ export default async function PreviewPage({
                   Back to Editor
                 </Button>
               </Link>
-              <h1 className="text-xl font-semibold">
+              <h1 className="text-xl font-semibold text-foreground">
                 {resume.title} - Preview (A4)
               </h1>
             </div>

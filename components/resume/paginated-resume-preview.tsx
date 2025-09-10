@@ -309,7 +309,7 @@ export function PaginatedResumePreview({
   if (pages.length === 0) {
     return (
       <div className="flex items-center justify-center h-96">
-        <p className="text-gray-600">No content to display</p>
+        <p className="text-muted-foreground">No content to display</p>
       </div>
     );
   }
@@ -350,7 +350,7 @@ export function PaginatedResumePreview({
           </Button>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-muted-foreground">
               Page {currentPage + 1} of {pages.length}
             </span>
             <div className="flex gap-1">

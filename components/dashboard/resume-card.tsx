@@ -177,14 +177,14 @@ export function ResumeCard({ resume }: ResumeCardProps) {
       <CardContent className="p-6 flex-1 flex flex-col">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-purple-100 p-2">
-              <FileText className="h-6 w-6 text-purple-600" />
+            <div className="rounded-lg bg-primary/10 p-2">
+              <FileText className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h3 className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
+              <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
                 {resume.title}
               </h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Created {formatDate(resume.created_at)}
               </p>
             </div>
@@ -225,19 +225,21 @@ export function ResumeCard({ resume }: ResumeCardProps) {
           <Badge variant={resume.is_published ? "default" : "secondary"}>
             {resume.is_published ? "Published" : "Saved"}
           </Badge>
-          <span className="text-xs text-gray-500 capitalize">
+          <span className="text-xs text-muted-foreground capitalize">
             {resume.template_id} template
           </span>
         </div>
 
         {resume.last_changed_section && (
-          <div className="mt-auto pt-4 border-t border-gray-100">
-            <div className="text-xs text-gray-500 mb-1">Last changed:</div>
-            <div className="text-sm text-gray-700 font-medium">
+          <div className="mt-auto pt-4 border-t border-border">
+            <div className="text-xs text-muted-foreground mb-1">
+              Last changed:
+            </div>
+            <div className="text-sm text-foreground font-medium">
               {capitalizeFirstWord(resume.last_changed_section.title) ||
                 formatSectionType(resume.last_changed_section.section_type)}
             </div>
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-muted-foreground">
               {formatDate(resume.last_changed_section.updated_at)}
             </div>
           </div>

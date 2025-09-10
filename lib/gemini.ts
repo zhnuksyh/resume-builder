@@ -88,6 +88,20 @@ export async function generateWithGemini(
     return text
   } catch (error) {
     console.error("Gemini generation error:", error)
+    
+    // Provide more specific error messages
+    if (error instanceof Error) {
+      if (error.message.includes("API_KEY")) {
+        throw new Error("GOOGLE_GENERATIVE_AI_API_KEY environment variable is not set or invalid")
+      } else if (error.message.includes("quota")) {
+        throw new Error("AI service quota exceeded. Please try again later.")
+      } else if (error.message.includes("safety")) {
+        throw new Error("Content was blocked by safety filters. Please try with different content.")
+      } else if (error.message.includes("network") || error.message.includes("fetch")) {
+        throw new Error("Network error. Please check your internet connection and try again.")
+      }
+    }
+    
     throw new Error(`Gemini AI generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

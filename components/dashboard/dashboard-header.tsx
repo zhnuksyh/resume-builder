@@ -13,6 +13,7 @@ import { User, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 interface DashboardHeaderProps {
   user: any;
@@ -37,7 +38,7 @@ export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
   };
 
   return (
-    <header className="border-b bg-white">
+    <header className="border-b bg-background">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Image
@@ -47,10 +48,13 @@ export function DashboardHeader({ user, profile }: DashboardHeaderProps) {
             height={56}
             className="h-14 w-14"
           />
-          <span className="text-2xl font-bold text-gray-900">RougeResume</span>
+          <span className="text-2xl font-bold text-foreground">
+            RougeResume
+          </span>
         </div>
 
         <div className="flex items-center gap-4">
+          <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button

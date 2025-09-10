@@ -132,11 +132,80 @@
   position: relative;
 }
 
+.dark .a4-preview-container {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+/* Dark mode styles for A4 content - More specific overrides */
+.dark .a4-preview-container,
+.dark .a4-preview-container * {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+.dark .a4-preview-container h1,
+.dark .a4-preview-container h2,
+.dark .a4-preview-container h3,
+.dark .a4-preview-container h4,
+.dark .a4-preview-container h5,
+.dark .a4-preview-container h6 {
+  color: #ffffff !important;
+}
+
+.dark .a4-preview-container p,
+.dark .a4-preview-container span,
+.dark .a4-preview-container div {
+  color: #e5e7eb !important;
+}
+
+.dark .a4-preview-container .text-gray-900 {
+  color: #ffffff !important;
+}
+
+.dark .a4-preview-container .text-gray-700 {
+  color: #e5e7eb !important;
+}
+
+.dark .a4-preview-container .text-gray-600 {
+  color: #9ca3af !important;
+}
+
+.dark .a4-preview-container .border-gray-300,
+.dark .a4-preview-container .border-gray-200 {
+  border-color: #374151 !important;
+}
+
+/* Override any white backgrounds in A4 content */
+.dark .a4-preview-container .bg-white {
+  background: #1a1a1a !important;
+}
+
+.dark .a4-preview-container .bg-gray-50 {
+  background: #1a1a1a !important;
+}
+
 .a4-paper {
   background: white;
   border-radius: 0;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dark .a4-paper {
+  background: #1a1a1a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.dark .a4-paper .a4-preview-container {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.dark .a4-paper .a4-preview-container,
+.dark .a4-paper .a4-preview-container * {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
 }
 
 .a4-paper .a4-preview-container {
@@ -153,6 +222,22 @@
   background: white;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dark .a4-paper-scaled {
+  background: #1a1a1a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.dark .a4-paper-scaled .a4-preview-container {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.dark .a4-paper-scaled .a4-preview-container,
+.dark .a4-paper-scaled .a4-preview-container * {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
 }
 
 .a4-paper-scaled .a4-preview-container {
@@ -172,6 +257,22 @@
   transform: scale(0.7);
   transform-origin: top center;
   margin-bottom: -90px;
+}
+
+.dark .a4-preview-proper {
+  background: #1a1a1a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.dark .a4-preview-proper .a4-preview-container {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.dark .a4-preview-proper .a4-preview-container,
+.dark .a4-preview-proper .a4-preview-container * {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
 }
 
 .a4-preview-proper .a4-preview-container {
@@ -194,6 +295,23 @@
   overflow: hidden;
   position: relative;
   border: 1px solid #e5e7eb;
+}
+
+.dark .a4-preview-paginated {
+  background: #1a1a1a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border: 1px solid #374151;
+}
+
+.dark .a4-preview-paginated .a4-preview-container {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.dark .a4-preview-paginated .a4-preview-container,
+.dark .a4-preview-paginated .a4-preview-container * {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
 }
 
 .a4-content-wrapper {
@@ -233,6 +351,23 @@
   position: relative;
   border: 1px solid #e5e7eb;
   flex-shrink: 0;
+}
+
+.dark .a4-live-preview {
+  background: #1a1a1a !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid #374151 !important;
+}
+
+.dark .a4-live-preview .a4-preview-container {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.dark .a4-live-preview .a4-preview-container,
+.dark .a4-live-preview .a4-preview-container * {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
 }
 
 .a4-live-preview .a4-preview-container {
@@ -492,6 +627,62 @@
   --resume-primary-foreground: oklch(0.98 0 0);
   --resume-accent: oklch(0.9 0 0);
   --resume-accent-foreground: oklch(0.2 0 0);
+}
+
+/* Dark mode variants for resume themes */
+.dark .resume-theme-purple {
+  --resume-primary: oklch(0.7 0.15 300);
+  --resume-primary-foreground: oklch(0.1 0.01 300);
+  --resume-accent: oklch(0.3 0.08 300);
+  --resume-accent-foreground: oklch(0.9 0.02 300);
+}
+
+.dark .resume-theme-dark-blue {
+  --resume-primary: oklch(0.4 0.15 240);
+  --resume-primary-foreground: oklch(0.1 0.01 240);
+  --resume-accent: oklch(0.3 0.08 240);
+  --resume-accent-foreground: oklch(0.9 0.02 240);
+}
+
+.dark .resume-theme-grey {
+  --resume-primary: oklch(0.6 0.02 0);
+  --resume-primary-foreground: oklch(0.1 0 0);
+  --resume-accent: oklch(0.3 0 0);
+  --resume-accent-foreground: oklch(0.9 0 0);
+}
+
+/* Force dark mode colors for skill tags in A4 preview */
+.dark .a4-preview-container .bg-\[var\(--resume-accent\)\] {
+  background: oklch(0.3 0.08 300) !important;
+}
+
+.dark .a4-preview-container .text-\[var\(--resume-accent-foreground\)\] {
+  color: oklch(0.9 0.02 300) !important;
+}
+
+/* Force dark mode colors for all resume theme variants */
+.dark .resume-theme-purple .bg-\[var\(--resume-accent\)\] {
+  background: oklch(0.3 0.08 300) !important;
+}
+
+.dark .resume-theme-purple .text-\[var\(--resume-accent-foreground\)\] {
+  color: oklch(0.9 0.02 300) !important;
+}
+
+.dark .resume-theme-dark-blue .bg-\[var\(--resume-accent\)\] {
+  background: oklch(0.3 0.08 240) !important;
+}
+
+.dark .resume-theme-dark-blue .text-\[var\(--resume-accent-foreground\)\] {
+  color: oklch(0.9 0.02 240) !important;
+}
+
+.dark .resume-theme-grey .bg-\[var\(--resume-accent\)\] {
+  background: oklch(0.3 0 0) !important;
+}
+
+.dark .resume-theme-grey .text-\[var\(--resume-accent-foreground\)\] {
+  color: oklch(0.9 0 0) !important;
 }
 
 @layer base {

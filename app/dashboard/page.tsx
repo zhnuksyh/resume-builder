@@ -87,15 +87,15 @@ export default async function DashboardPage() {
     );
 
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-background">
         <DashboardHeader user={user} profile={profile} />
 
         <main className="container mx-auto px-4 py-8">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-foreground mb-2">
               My Resumes
             </h1>
-            <p className="text-gray-600">
+            <p className="text-muted-foreground">
               Create and manage your professional resumes
             </p>
           </div>

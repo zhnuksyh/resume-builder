@@ -107,54 +107,54 @@ export function ResumePreview({
     ? {
         container: "max-w-none mx-0 h-full",
         header: "mb-4",
-        name: "text-xl font-bold text-gray-900 mb-2 leading-tight",
-        contactInfo: "flex flex-wrap gap-2 text-xs text-gray-600 mb-3",
+        name: "text-xl font-bold text-foreground mb-2 leading-tight",
+        contactInfo: "flex flex-wrap gap-2 text-xs text-muted-foreground mb-3",
         contactItem: "flex items-center gap-1",
-        summary: "text-gray-700 leading-relaxed text-xs mt-3 text-justify",
+        summary: "text-foreground leading-relaxed text-xs mt-3 text-justify",
         section: "mb-4",
         sectionTitle:
-          "text-base font-bold text-gray-900 mb-3 border-b border-gray-300 pb-1.5 uppercase tracking-wide",
+          "text-base font-bold text-foreground mb-3 border-b border-border pb-1.5 uppercase tracking-wide",
         experienceSectionTitle:
-          "text-base font-bold text-gray-900 mb-3 border-b border-gray-300 pb-1.5 uppercase tracking-wide",
+          "text-base font-bold text-foreground mb-3 border-b border-border pb-1.5 uppercase tracking-wide",
         experienceItem: "mb-3.5",
         educationItem: "mb-3.5",
         itemHeader: "flex justify-between items-start mb-1.5",
-        itemTitle: "text-sm font-semibold text-gray-900 leading-tight",
-        itemCompany: "text-[var(--resume-primary)] font-medium text-xs",
-        itemLocation: "text-xs text-gray-600 mt-0",
-        itemDate: "text-xs text-gray-600 text-right leading-tight",
+        itemTitle: "text-sm font-semibold text-foreground leading-tight",
+        itemCompany: "text-primary font-medium text-xs",
+        itemLocation: "text-xs text-muted-foreground mt-0",
+        itemDate: "text-xs text-muted-foreground text-right leading-tight",
         itemDescription:
-          "text-gray-700 leading-relaxed text-xs mt-1.5 text-justify",
+          "text-foreground leading-relaxed text-xs mt-1.5 text-justify",
         skillsContainer: "flex flex-wrap gap-1.5",
         skillTag: "text-xs px-2 py-1",
       }
     : {
         container: "max-w-4xl mx-auto",
         header: "pb-8",
-        name: "text-3xl font-bold text-gray-900 mb-3",
-        contactInfo: "flex flex-wrap gap-4 text-sm text-gray-600",
+        name: "text-3xl font-bold text-foreground mb-3",
+        contactInfo: "flex flex-wrap gap-4 text-sm text-muted-foreground",
         contactItem: "flex items-center gap-1",
-        summary: "text-gray-700 leading-relaxed mt-5 text-justify text-sm",
+        summary: "text-foreground leading-relaxed mt-5 text-justify text-sm",
         section: "mb-8",
         sectionTitle:
-          "text-xl font-bold text-gray-900 mb-5 border-b border-gray-200 pb-2.5",
+          "text-xl font-bold text-foreground mb-5 border-b border-border pb-2.5",
         experienceSectionTitle:
-          "text-xl font-bold text-gray-900 mb-5 border-b border-gray-200 pb-2.5",
+          "text-xl font-bold text-foreground mb-5 border-b border-border pb-2.5",
         experienceItem: "mb-7",
         educationItem: "mb-5",
         itemHeader: "flex justify-between items-start mb-2.5",
-        itemTitle: "text-lg font-semibold text-gray-900",
-        itemCompany: "text-[var(--resume-primary)] font-medium",
-        itemLocation: "text-sm text-gray-600",
-        itemDate: "text-sm text-gray-600 text-right",
-        itemDescription: "text-gray-700 leading-relaxed text-justify mt-1.5",
+        itemTitle: "text-lg font-semibold text-foreground",
+        itemCompany: "text-primary font-medium",
+        itemLocation: "text-sm text-muted-foreground",
+        itemDate: "text-sm text-muted-foreground text-right",
+        itemDescription: "text-foreground leading-relaxed text-justify mt-1.5",
         skillsContainer: "flex flex-wrap gap-2",
         skillTag: "text-sm",
       };
 
   return (
     <div
-      className={`bg-white ${a4Styles.container} ${className} resume-theme-${colorTheme}`}
+      className={`bg-background ${a4Styles.container} ${className} resume-theme-${colorTheme}`}
     >
       <div className={isA4Preview ? "space-y-5" : "p-8 space-y-8"}>
         {/* Header */}
