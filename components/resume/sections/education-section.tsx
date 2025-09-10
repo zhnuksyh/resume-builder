@@ -266,15 +266,17 @@ export function EducationSection({
                 rows={3}
               />
             </div>
-            <AIAssistant
-              sectionType="education"
-              currentContent={education.description || ""}
-              jobTitle={jobTitle}
-              industry={industry}
-              onApplySuggestion={(suggestion) =>
-                handleAISuggestion(education.id, suggestion)
-              }
-            />
+            {education.degree && (
+              <AIAssistant
+                sectionType="education"
+                currentContent={education.description || ""}
+                jobTitle={jobTitle}
+                industry={industry}
+                onApplySuggestion={(suggestion) =>
+                  handleAISuggestion(education.id, suggestion)
+                }
+              />
+            )}
           </CardContent>
         </Card>
       ))}

@@ -250,14 +250,16 @@ export function ExperienceSection({
                 rows={4}
               />
             </div>
-            <AIAssistant
-              sectionType="experience"
-              currentContent={experience.description}
-              jobTitle={experience.jobTitle}
-              onApplySuggestion={(suggestion) =>
-                handleAISuggestion(experience.id, suggestion)
-              }
-            />
+            {experience.jobTitle && (
+              <AIAssistant
+                sectionType="experience"
+                currentContent={experience.description}
+                jobTitle={experience.jobTitle}
+                onApplySuggestion={(suggestion) =>
+                  handleAISuggestion(experience.id, suggestion)
+                }
+              />
+            )}
           </CardContent>
         </Card>
       ))}

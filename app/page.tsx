@@ -2,13 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
-      <header className="border-b bg-background">
+      <header className="border-b bg-white">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Image
@@ -18,12 +17,11 @@ export default function HomePage() {
               height={56}
               className="h-14 w-14"
             />
-            <span className="text-2xl font-bold text-foreground">
+            <span className="text-2xl font-bold text-gray-900">
               RougeResume
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <ThemeToggle />
             <Link href="/auth/login">
               <Button variant="ghost">Login</Button>
             </Link>
@@ -37,7 +35,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="container mx-auto px-4 flex-1 flex items-center justify-center">
         <div className="max-w-5xl mx-auto text-center">
-          <h1 className="text-7xl font-bold text-foreground mb-6 leading-tight">
+          <h1 className="text-7xl font-bold text-gray-900 mb-6 leading-tight">
             <span className="whitespace-nowrap">
               Build your perfect{" "}
               <span className="relative inline-block">
@@ -75,7 +73,7 @@ export default function HomePage() {
             <br />
             <span className="text-purple-600">Land your dream job</span>
           </h1>
-          <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-4xl mx-auto">
+          <p className="text-xl text-gray-600 mb-12 leading-relaxed max-w-4xl mx-auto">
             Transform your career with professional, ATS-friendly resumes.
             <br />
             <span className="whitespace-nowrap">
@@ -107,8 +105,8 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-background mt-auto">
-        <div className="container mx-auto px-4 py-8 text-center text-muted-foreground">
+      <footer className="border-t bg-white mt-auto">
+        <div className="container mx-auto px-4 py-8 text-center text-gray-600">
           <p>&copy; 2025 RougeResume. Forked from zhnuksyh repo.</p>
         </div>
       </footer>

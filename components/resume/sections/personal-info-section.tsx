@@ -33,10 +33,10 @@ export function PersonalInfoSection({
   jobTitle,
   industry,
 }: PersonalInfoSectionProps) {
-  const [formData, setFormData] = useState<PersonalInfoContent>(content || {});
+  const [formData, setFormData] = useState<PersonalInfoContent>(content);
 
   useEffect(() => {
-    setFormData(content || {});
+    setFormData(content);
   }, [content]);
 
   const handleChange = (field: keyof PersonalInfoContent, value: string) => {
@@ -209,7 +209,7 @@ export function PersonalInfoSection({
         </div>
 
         <AIAssistant
-          sectionType="personal_info"
+          sectionType="summary"
           currentContent={formData.summary || ""}
           jobTitle={jobTitle}
           industry={industry}

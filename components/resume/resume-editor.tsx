@@ -16,7 +16,6 @@ import { CustomSection } from "./sections/custom-section";
 import { SectionTabs } from "./section-tabs";
 import { LivePreviewPanel } from "./live-preview-panel";
 import { ColorPicker, ResumeColor } from "./color-picker";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 interface Resume {
   id: string;
@@ -260,23 +259,7 @@ export function ResumeEditor({
 
   const getSectionContent = (sectionType: string) => {
     const section = sections.find((s) => s.section_type === sectionType);
-    if (section?.content) {
-      return section.content;
-    }
-
-    // Return appropriate default content based on section type
-    switch (sectionType) {
-      case "skills":
-        return { skills: [] };
-      case "personal_info":
-        return {};
-      case "experience":
-        return { experiences: [] };
-      case "education":
-        return { education: [] };
-      default:
-        return {};
-    }
+    return section?.content || {};
   };
 
   const handleContentChange = () => {
@@ -426,9 +409,9 @@ export function ResumeEditor({
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background shadow-sm">
+      <header className="sticky top-0 z-50 border-b bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -467,7 +450,6 @@ export function ResumeEditor({
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <ThemeToggle />
               <ColorPicker
                 selectedColor={resumeColor}
                 onColorChange={setResumeColor}

@@ -28,16 +28,16 @@ export default async function ProfilePage() {
     }
 
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gray-50">
         <DashboardHeader user={user} profile={profile} />
         <div className="container mx-auto px-4 py-8">
           <div className="max-w-2xl mx-auto">
-            <div className="bg-card rounded-lg shadow-sm border p-6">
+            <div className="bg-white rounded-lg shadow-sm border p-6">
               <div className="mb-6">
-                <h1 className="text-2xl font-bold text-foreground">
+                <h1 className="text-2xl font-bold text-gray-900">
                   Profile Settings
                 </h1>
-                <p className="text-muted-foreground mt-1">
+                <p className="text-gray-600 mt-1">
                   Manage your account information and preferences.
                 </p>
               </div>

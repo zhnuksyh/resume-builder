@@ -79,21 +79,6 @@ export async function POST(request: NextRequest) {
         Return only the bullet points, one per line, starting with "•"`
         break
 
-      case "personal_info":
-        prompt = `As a professional resume writer, help improve this professional summary.
-        Job Title: ${jobTitle || "Not specified"}
-        Industry: ${industry || "Not specified"}
-        Current summary: ${currentContent}
-        
-        Create a 3-4 sentence professional summary that:
-        - Highlights key strengths and experience
-        - Includes relevant industry keywords
-        - Shows value proposition to employers
-        - Is engaging and professional
-        
-        Return only the summary text.`
-        break
-
       default:
         return NextResponse.json({ error: "Invalid section type" }, { status: 400 })
     }
