@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { useResume } from "../context/ResumeContext";
-import { Plus, Trash2, X, Upload, Check, Info } from "lucide-react";
+import { Plus, Trash2, X, Upload, Check, Info, List, Sparkles, GripVertical, ChevronUp, ChevronDown } from "lucide-react";
 import { clsx } from "clsx";
 
 const TABS = [
@@ -11,7 +11,16 @@ const TABS = [
     { id: "experience", label: "Experience", color: "green" },
     { id: "education", label: "Education", color: "purple" },
     { id: "skills", label: "Skills", color: "red" },
+    { id: "extra", label: "Extra", color: "gray" },
 ] as const;
+
+const SECTION_LABELS: Record<string, string> = {
+    volunteering: "Volunteering",
+    projects: "Projects",
+    organizations: "Organizations",
+    references: "References",
+    additionalInfo: "Additional Info",
+};
 
 const Input = ({
     label,
@@ -47,28 +56,115 @@ const Input = ({
 const TextArea = ({
     label,
     tooltip,
+    value,
+    onChange,
+    enableAI = false,
+    aiContext = "",
+    enableBullets = true,
     ...props
-}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label?: string; tooltip?: string }) => (
-    <div className="group relative">
-        {label && (
-            <label className="block text-xs font-medium text-[#9B9A97] mb-1 uppercase tracking-wider flex items-center gap-1">
-                {label}
-                {tooltip && (
-                    <div className="relative group/tooltip cursor-help">
-                        <Info size={12} />
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-[#37352F] text-white text-xs p-2 rounded shadow-lg opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none z-10">
-                            {tooltip}
-                        </div>
-                    </div>
+}: React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
+    label?: string;
+    tooltip?: string;
+    enableAI?: boolean;
+    aiContext?: string;
+    enableBullets?: boolean;
+}) => {
+    const [isGenerating, setIsGenerating] = useState(false);
+
+    const handleBulletClick = () => {
+        const textarea = document.getElementById(props.id || "") as HTMLTextAreaElement;
+        // Simple append if not selected, or wrap selection
+        // For simplicity, we just append a bullet
+        const newValue = value ? value + "\n• " : "• ";
+        const event = {
+            target: { value: newValue },
+            currentTarget: { value: newValue },
+        } as unknown as React.ChangeEvent<HTMLTextAreaElement>;
+        onChange?.(event);
+    };
+
+    const handleAIGenerate = async () => {
+        setIsGenerating(true);
+        try {
+            const response = await fetch("/api/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    prompt: `Write a description for ${label}.`,
+                    context: aiContext,
+                }),
+            });
+            const data = await response.json();
+            if (data.text) {
+                const event = {
+                    target: { value: data.text },
+                    currentTarget: { value: data.text },
+                } as unknown as React.ChangeEvent<HTMLTextAreaElement>;
+                onChange?.(event);
+            }
+        } catch (error) {
+            console.error("AI Error", error);
+            alert("Failed to generate content. Check API Key.");
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    return (
+        <div className="group relative">
+            <div className="flex justify-between items-end mb-1">
+                {label && (
+                    <label className="block text-xs font-medium text-[#9B9A97] uppercase tracking-wider flex items-center gap-1">
+                        {label}
+                        {tooltip && (
+                            <div className="relative group/tooltip cursor-help">
+                                <Info size={12} />
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-[#37352F] text-white text-xs p-2 rounded shadow-lg opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none z-10">
+                                    {tooltip}
+                                </div>
+                            </div>
+                        )}
+                    </label>
                 )}
-            </label>
-        )}
-        <textarea
-            {...props}
-            className="w-full bg-[#F7F7F5] border border-transparent focus:border-[var(--accent-orange)] focus:bg-white rounded p-3 outline-none transition-all placeholder-[#9B9A97] text-sm resize-none"
-        />
-    </div>
-);
+                <div className="flex items-center gap-1">
+                    {enableBullets && (
+                        <button
+                            onClick={handleBulletClick}
+                            className="p-1 rounded text-[#9B9A97] hover:bg-[#F1F1EF] hover:text-[#37352F] transition-colors"
+                            title="Add Bullet Point"
+                            type="button"
+                        >
+                            <List size={14} />
+                        </button>
+                    )}
+                    {enableAI && (
+                        <button
+                            onClick={handleAIGenerate}
+                            disabled={isGenerating}
+                            className={clsx(
+                                "flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium transition-all",
+                                isGenerating
+                                    ? "bg-gray-100 text-gray-400 cursor-wait"
+                                    : "bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 hover:from-purple-200 hover:to-blue-200"
+                            )}
+                            title="Generate with AI"
+                            type="button"
+                        >
+                            <Sparkles size={12} />
+                            {isGenerating ? "Generating..." : "AI Generate"}
+                        </button>
+                    )}
+                </div>
+            </div>
+            <textarea
+                {...props}
+                value={value}
+                onChange={onChange}
+                className="w-full bg-[#F7F7F5] border border-transparent focus:border-[var(--accent-orange)] focus:bg-white rounded p-3 outline-none transition-all placeholder-[#9B9A97] text-sm resize-none"
+            />
+        </div>
+    );
+};
 
 const ResumeForm = () => {
     const {
@@ -82,6 +178,20 @@ const ResumeForm = () => {
         updateEducation,
         removeEducation,
         updateSkills,
+        addVolunteering,
+        updateVolunteering,
+        removeVolunteering,
+        addProject,
+        updateProject,
+        removeProject,
+        addOrganization,
+        updateOrganization,
+        removeOrganization,
+        updateAdditionalInfo,
+        addReference,
+        updateReference,
+        removeReference,
+        reorderSection,
     } = useResume();
 
     const [activeTab, setActiveTab] = useState<(typeof TABS)[number]["id"]>("personal");
@@ -110,6 +220,13 @@ const ResumeForm = () => {
                 updatePersonalInfo("photoUrl", reader.result as string);
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const moveSection = (index: number, direction: 'up' | 'down') => {
+        const newIndex = direction === 'up' ? index - 1 : index + 1;
+        if (newIndex >= 0 && newIndex < resumeData.sectionOrder.length) {
+            reorderSection(index, newIndex);
         }
     };
 
@@ -211,6 +328,9 @@ const ResumeForm = () => {
                             onChange={(e) => updateSummary(e.target.value)}
                             rows={8}
                             tooltip="Keep it concise (2-3 sentences). Focus on your unique value proposition."
+                            enableBullets={false}
+                            enableAI={true}
+                            aiContext={`Job Title: ${resumeData.personalInfo.title}`}
                         />
                     </div>
                 )}
@@ -257,6 +377,8 @@ const ResumeForm = () => {
                                         onChange={(e) => updateExperience(exp.id, "description", e.target.value)}
                                         rows={4}
                                         tooltip="Use bullet points. Start with action verbs."
+                                        enableAI={true}
+                                        aiContext={`Role: ${exp.title} at ${exp.company}`}
                                     />
                                 </div>
                                 <button
@@ -358,6 +480,146 @@ const ResumeForm = () => {
                                 </span>
                             ))}
                         </div>
+                    </div>
+                )}
+
+                {/* Extra Tab (Consolidated) */}
+                {activeTab === "extra" && (
+                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        {/* Reorder Controls */}
+                        <div className="bg-[#F7F7F5] p-3 rounded-lg border border-[#E0E0E0]">
+                            <h3 className="text-xs font-bold text-[#9B9A97] uppercase tracking-wider mb-2">Section Order</h3>
+                            <div className="space-y-1">
+                                {resumeData.sectionOrder.map((sectionKey, index) => (
+                                    <div key={sectionKey} className="flex items-center justify-between bg-white p-2 rounded border border-[#E0E0E0] shadow-sm">
+                                        <span className="text-sm font-medium text-[#37352F]">{SECTION_LABELS[sectionKey]}</span>
+                                        <div className="flex items-center gap-1">
+                                            <button
+                                                onClick={() => moveSection(index, 'up')}
+                                                disabled={index === 0}
+                                                className="p-1 hover:bg-[#F1F1EF] rounded disabled:opacity-30"
+                                            >
+                                                <ChevronUp size={14} />
+                                            </button>
+                                            <button
+                                                onClick={() => moveSection(index, 'down')}
+                                                disabled={index === resumeData.sectionOrder.length - 1}
+                                                className="p-1 hover:bg-[#F1F1EF] rounded disabled:opacity-30"
+                                            >
+                                                <ChevronDown size={14} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Render Sections based on Order */}
+                        {resumeData.sectionOrder.map((sectionKey) => {
+                            if (sectionKey === "volunteering") {
+                                return (
+                                    <div key="volunteering" className="space-y-4">
+                                        <h3 className="text-lg font-bold text-[#37352F] border-b pb-1">Volunteering</h3>
+                                        {resumeData.volunteering.map((vol) => (
+                                            <div key={vol.id} className="p-4 border border-[#E0E0E0] rounded-lg bg-[#FAFAFA] relative">
+                                                <div className="grid grid-cols-1 gap-4 mb-3">
+                                                    <Input label="Organization" value={vol.organization} onChange={(e) => updateVolunteering(vol.id, "organization", e.target.value)} />
+                                                    <Input label="Role" value={vol.role} onChange={(e) => updateVolunteering(vol.id, "role", e.target.value)} />
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <Input label="Start" value={vol.startDate} onChange={(e) => updateVolunteering(vol.id, "startDate", e.target.value)} />
+                                                        <Input label="End" value={vol.endDate} onChange={(e) => updateVolunteering(vol.id, "endDate", e.target.value)} />
+                                                    </div>
+                                                    <TextArea label="Description" value={vol.description} onChange={(e) => updateVolunteering(vol.id, "description", e.target.value)} rows={3} enableAI={true} aiContext={`Volunteer Role: ${vol.role}`} />
+                                                </div>
+                                                <button onClick={() => removeVolunteering(vol.id)} className="text-[#D44C47] text-xs flex items-center gap-1"><Trash2 size={14} /> Remove</button>
+                                            </div>
+                                        ))}
+                                        <button onClick={addVolunteering} className="flex items-center gap-2 text-[var(--accent-blue)] text-sm font-medium"><Plus size={14} /> Add Volunteering</button>
+                                    </div>
+                                );
+                            }
+                            if (sectionKey === "projects") {
+                                return (
+                                    <div key="projects" className="space-y-4">
+                                        <h3 className="text-lg font-bold text-[#37352F] border-b pb-1">Projects</h3>
+                                        {resumeData.projects.map((proj) => (
+                                            <div key={proj.id} className="p-4 border border-[#E0E0E0] rounded-lg bg-[#FAFAFA] relative">
+                                                <div className="grid grid-cols-1 gap-4 mb-3">
+                                                    <Input label="Project Name" value={proj.name} onChange={(e) => updateProject(proj.id, "name", e.target.value)} />
+                                                    <Input label="Role" value={proj.role} onChange={(e) => updateProject(proj.id, "role", e.target.value)} />
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <Input label="Start" value={proj.startDate} onChange={(e) => updateProject(proj.id, "startDate", e.target.value)} />
+                                                        <Input label="End" value={proj.endDate} onChange={(e) => updateProject(proj.id, "endDate", e.target.value)} />
+                                                    </div>
+                                                    <TextArea label="Description" value={proj.description} onChange={(e) => updateProject(proj.id, "description", e.target.value)} rows={3} enableAI={true} aiContext={`Project: ${proj.name}`} />
+                                                </div>
+                                                <button onClick={() => removeProject(proj.id)} className="text-[#D44C47] text-xs flex items-center gap-1"><Trash2 size={14} /> Remove</button>
+                                            </div>
+                                        ))}
+                                        <button onClick={addProject} className="flex items-center gap-2 text-[var(--accent-green)] text-sm font-medium"><Plus size={14} /> Add Project</button>
+                                    </div>
+                                );
+                            }
+                            if (sectionKey === "organizations") {
+                                return (
+                                    <div key="organizations" className="space-y-4">
+                                        <h3 className="text-lg font-bold text-[#37352F] border-b pb-1">Organizations</h3>
+                                        {resumeData.organizations.map((org) => (
+                                            <div key={org.id} className="p-4 border border-[#E0E0E0] rounded-lg bg-[#FAFAFA] relative">
+                                                <div className="grid grid-cols-1 gap-4 mb-3">
+                                                    <Input label="Organization" value={org.name} onChange={(e) => updateOrganization(org.id, "name", e.target.value)} />
+                                                    <Input label="Role" value={org.role} onChange={(e) => updateOrganization(org.id, "role", e.target.value)} />
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <Input label="Start" value={org.startDate} onChange={(e) => updateOrganization(org.id, "startDate", e.target.value)} />
+                                                        <Input label="End" value={org.endDate} onChange={(e) => updateOrganization(org.id, "endDate", e.target.value)} />
+                                                    </div>
+                                                </div>
+                                                <button onClick={() => removeOrganization(org.id)} className="text-[#D44C47] text-xs flex items-center gap-1"><Trash2 size={14} /> Remove</button>
+                                            </div>
+                                        ))}
+                                        <button onClick={addOrganization} className="flex items-center gap-2 text-[var(--accent-purple)] text-sm font-medium"><Plus size={14} /> Add Organization</button>
+                                    </div>
+                                );
+                            }
+                            if (sectionKey === "references") {
+                                return (
+                                    <div key="references" className="space-y-4">
+                                        <h3 className="text-lg font-bold text-[#37352F] border-b pb-1">References</h3>
+                                        {resumeData.references.map((ref) => (
+                                            <div key={ref.id} className="p-4 border border-[#E0E0E0] rounded-lg bg-[#FAFAFA] relative">
+                                                <div className="grid grid-cols-1 gap-4 mb-3">
+                                                    <Input label="Name" value={ref.name} onChange={(e) => updateReference(ref.id, "name", e.target.value)} />
+                                                    <Input label="Title" value={ref.title} onChange={(e) => updateReference(ref.id, "title", e.target.value)} />
+                                                    <Input label="Company" value={ref.company} onChange={(e) => updateReference(ref.id, "company", e.target.value)} />
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <Input label="Email" value={ref.email} onChange={(e) => updateReference(ref.id, "email", e.target.value)} />
+                                                        <Input label="Phone" value={ref.phone} onChange={(e) => updateReference(ref.id, "phone", e.target.value)} />
+                                                    </div>
+                                                </div>
+                                                <button onClick={() => removeReference(ref.id)} className="text-[#D44C47] text-xs flex items-center gap-1"><Trash2 size={14} /> Remove</button>
+                                            </div>
+                                        ))}
+                                        <button onClick={addReference} className="flex items-center gap-2 text-[var(--accent-orange)] text-sm font-medium"><Plus size={14} /> Add Reference</button>
+                                    </div>
+                                );
+                            }
+                            if (sectionKey === "additionalInfo") {
+                                return (
+                                    <div key="additionalInfo" className="space-y-4">
+                                        <h3 className="text-lg font-bold text-[#37352F] border-b pb-1">Additional Info</h3>
+                                        <TextArea
+                                            label="Details"
+                                            value={resumeData.additionalInfo}
+                                            onChange={(e) => updateAdditionalInfo(e.target.value)}
+                                            rows={6}
+                                            enableAI={true}
+                                            aiContext="Additional Skills, Awards, Languages"
+                                        />
+                                    </div>
+                                );
+                            }
+                            return null;
+                        })}
                     </div>
                 )}
             </div>
