@@ -15,14 +15,14 @@ export default function Home() {
           <div className="p-6 border-b border-[#F1F1EF] flex items-center gap-3">
             <div className="w-8 h-8 relative">
               <Image
-                src="/logo.png"
-                alt="Nano Banana Logo"
+                src="/rouge_logo.png"
+                alt="Rouge Resume Logo"
                 fill
                 className="object-contain"
               />
             </div>
             <h1 className="font-bold text-lg text-[#37352F] tracking-tight">
-              Nano Resume
+              Rouge Resume
             </h1>
           </div>
 

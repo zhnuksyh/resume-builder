@@ -9,7 +9,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Resume Builder",
+  title: "Rouge Resume",
   description: "Build your professional resume in minutes",
 };
 
