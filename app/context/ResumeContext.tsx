@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { ResumeData, Experience, Education } from "../types";
+import { ResumeData, Experience, Education, Volunteering, Project, Organization, Reference } from "../types";
 
 const initialResumeData: ResumeData = {
     personalInfo: {
@@ -16,6 +16,12 @@ const initialResumeData: ResumeData = {
     experience: [],
     education: [],
     skills: [],
+    volunteering: [],
+    projects: [],
+    organizations: [],
+    additionalInfo: "",
+    references: [],
+    sectionOrder: ["volunteering", "projects", "organizations", "references", "additionalInfo"],
 };
 
 interface ResumeContextType {
@@ -29,12 +35,29 @@ interface ResumeContextType {
     updateEducation: (id: string, field: keyof Education, value: string) => void;
     removeEducation: (id: string) => void;
     updateSkills: (skills: string[]) => void;
+    addVolunteering: () => void;
+    updateVolunteering: (id: string, field: keyof Volunteering, value: string) => void;
+    removeVolunteering: (id: string) => void;
+    addProject: () => void;
+    updateProject: (id: string, field: keyof Project, value: string) => void;
+    removeProject: (id: string) => void;
+    addOrganization: () => void;
+    updateOrganization: (id: string, field: keyof Organization, value: string) => void;
+    removeOrganization: (id: string) => void;
+    updateAdditionalInfo: (value: string) => void;
+    addReference: () => void;
+    updateReference: (id: string, field: keyof Reference, value: string) => void;
+    removeReference: (id: string) => void;
+    reorderSection: (fromIndex: number, toIndex: number) => void;
 }
 
 const ResumeContext = createContext<ResumeContextType | undefined>(undefined);
 
 export const ResumeProvider = ({ children }: { children: ReactNode }) => {
-    const [resumeData, setResumeData] = useState<ResumeData>(initialResumeData);
+    const [resumeData, setResumeData] = useState<ResumeData>({
+        ...initialResumeData,
+        sectionOrder: ["volunteering", "projects", "organizations", "references", "additionalInfo"],
+    });
 
     const updatePersonalInfo = (field: keyof ResumeData["personalInfo"], value: string) => {
         setResumeData((prev) => ({
@@ -112,6 +135,150 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
         setResumeData((prev) => ({ ...prev, skills }));
     };
 
+    const addVolunteering = () => {
+        setResumeData((prev) => ({
+            ...prev,
+            volunteering: [
+                ...prev.volunteering,
+                {
+                    id: crypto.randomUUID(),
+                    organization: "",
+                    role: "",
+                    startDate: "",
+                    endDate: "",
+                    description: "",
+                },
+            ],
+        }));
+    };
+
+    const updateVolunteering = (id: string, field: keyof Volunteering, value: string) => {
+        setResumeData((prev) => ({
+            ...prev,
+            volunteering: prev.volunteering.map((item) =>
+                item.id === id ? { ...item, [field]: value } : item
+            ),
+        }));
+    };
+
+    const removeVolunteering = (id: string) => {
+        setResumeData((prev) => ({
+            ...prev,
+            volunteering: prev.volunteering.filter((item) => item.id !== id),
+        }));
+    };
+
+    const addProject = () => {
+        setResumeData((prev) => ({
+            ...prev,
+            projects: [
+                ...prev.projects,
+                {
+                    id: crypto.randomUUID(),
+                    name: "",
+                    role: "",
+                    startDate: "",
+                    endDate: "",
+                    description: "",
+                },
+            ],
+        }));
+    };
+
+    const updateProject = (id: string, field: keyof Project, value: string) => {
+        setResumeData((prev) => ({
+            ...prev,
+            projects: prev.projects.map((item) =>
+                item.id === id ? { ...item, [field]: value } : item
+            ),
+        }));
+    };
+
+    const removeProject = (id: string) => {
+        setResumeData((prev) => ({
+            ...prev,
+            projects: prev.projects.filter((item) => item.id !== id),
+        }));
+    };
+
+    const addOrganization = () => {
+        setResumeData((prev) => ({
+            ...prev,
+            organizations: [
+                ...prev.organizations,
+                {
+                    id: crypto.randomUUID(),
+                    name: "",
+                    role: "",
+                    startDate: "",
+                    endDate: "",
+                },
+            ],
+        }));
+    };
+
+    const updateOrganization = (id: string, field: keyof Organization, value: string) => {
+        setResumeData((prev) => ({
+            ...prev,
+            organizations: prev.organizations.map((item) =>
+                item.id === id ? { ...item, [field]: value } : item
+            ),
+        }));
+    };
+
+    const removeOrganization = (id: string) => {
+        setResumeData((prev) => ({
+            ...prev,
+            organizations: prev.organizations.filter((item) => item.id !== id),
+        }));
+    };
+
+    const updateAdditionalInfo = (value: string) => {
+        setResumeData((prev) => ({ ...prev, additionalInfo: value }));
+    };
+
+    const addReference = () => {
+        setResumeData((prev) => ({
+            ...prev,
+            references: [
+                ...prev.references,
+                {
+                    id: crypto.randomUUID(),
+                    name: "",
+                    title: "",
+                    company: "",
+                    email: "",
+                    phone: "",
+                },
+            ],
+        }));
+    };
+
+    const updateReference = (id: string, field: keyof Reference, value: string) => {
+        setResumeData((prev) => ({
+            ...prev,
+            references: prev.references.map((item) =>
+                item.id === id ? { ...item, [field]: value } : item
+            ),
+        }));
+    };
+
+    const removeReference = (id: string) => {
+        setResumeData((prev) => ({
+            ...prev,
+            references: prev.references.filter((item) => item.id !== id),
+        }));
+    };
+
+    const reorderSection = (fromIndex: number, toIndex: number) => {
+        setResumeData((prev) => {
+            const newOrder = [...prev.sectionOrder];
+            const [movedItem] = newOrder.splice(fromIndex, 1);
+            newOrder.splice(toIndex, 0, movedItem);
+            return { ...prev, sectionOrder: newOrder };
+        });
+    };
+
     return (
         <ResumeContext.Provider
             value={{
@@ -125,6 +292,20 @@ export const ResumeProvider = ({ children }: { children: ReactNode }) => {
                 updateEducation,
                 removeEducation,
                 updateSkills,
+                addVolunteering,
+                updateVolunteering,
+                removeVolunteering,
+                addProject,
+                updateProject,
+                removeProject,
+                addOrganization,
+                updateOrganization,
+                removeOrganization,
+                updateAdditionalInfo,
+                addReference,
+                updateReference,
+                removeReference,
+                reorderSection,
             }}
         >
             {children}
